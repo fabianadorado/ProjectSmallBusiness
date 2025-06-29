@@ -96,6 +96,14 @@ double Venda::getValorTotal() const
     return total;
 }
 
+double Venda::getTotalComIVA() const {
+    double total = 0.0;
+    for (const auto& item : itens) {
+        total += item.totalComIVA;
+    }
+    return total;
+}
+
 double Venda::getTroco() const
 {
     return troco;

@@ -13,6 +13,7 @@ struct ItemVenda {
     int numeroLinha;
     string nomeProduto;
     int quantidade;
+    double precoUnitario;
     double precoSemIVA;
     double iva;
     double totalComIVA;
@@ -47,6 +48,8 @@ public:
     int getIdCliente() const;
     double getValorTotal() const;
     double getTroco() const;
+    double getTotalComIVA() const;
+
 
     bool isGratis() const
     {

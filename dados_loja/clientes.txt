@@ -1,4 +1,4 @@
 #IDs_DISPONIVEIS:
-1;Joao Silva;910520630;Rua A;20.00
+1;Joao Silva;910520630;Rua A;21.60
 2; Maria Jose; 925478963; Rua B;15.00
 3; Pedro Maia; 910258741; Rua C;17.00

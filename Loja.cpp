@@ -437,13 +437,46 @@ void Loja::efetuarVenda(int idCliente)
     double valorEntregue = ganhouTalãoGratis ? 0.0 : lerFloatPositivo("Valor entregue pelo cliente: ");
 
     novaVenda.finalizarVenda(valorEntregue);
+   
+    mostrarResumoVenda(novaVenda);
     novaVenda.imprimirTalao();
+
 
     if (!ganhouTalãoGratis)
     clienteEncontrado->adicionarCompra(totalVenda);
 
     vendas[proximaPosicaoVenda] = novaVenda;
     proximaPosicaoVenda = (proximaPosicaoVenda + 1) % MAX_VENDAS;
+}
+
+void Loja::mostrarResumoVenda(const Venda& venda) const {
+    cout << "\n========== RESUMO DA VENDA ==========\n";
+    cout << "ID: " << venda.getIdCliente() << "\n\n";
+
+    cout << left << setw(20) << "Produto"
+        << setw(10) << "Qtd"
+        << setw(15) << "Preco (s/IVA)"
+        << setw(15) << "Preco (c/IVA)"
+        << setw(15) << "Total Item" << "\n";
+
+    cout << string(70, '-') << "\n";
+
+    for (const auto& item : venda.getItens()) {
+        double precoSemIVA = item.precoUnitario;
+        double precoComIVA = precoSemIVA * 1.23;
+        double totalItem = precoComIVA * item.quantidade;
+
+        cout << left << setw(20) << item.nomeProduto
+            << setw(10) << item.quantidade
+            << setw(15) << fixed << setprecision(2) << precoSemIVA
+            << setw(15) << precoComIVA
+            << setw(15) << totalItem << "\n";
+    }
+
+    cout << string(70, '-') << "\n";
+    cout << right << setw(60) << "Total da venda (com IVA): "
+        << fixed << setprecision(2) << venda.getTotalComIVA() << "\n";
+    cout << "=====================================\n\n";
 }
 
 bool Loja::salvarDados(const string& diretorio) {
