@@ -1,5 +1,18 @@
+<<<<<<< HEAD
 1;Monsters Punch;10;1.55
 2;Monsters Red;20;1.99
 3;Monsters Pink;10;1.8
 4;Monsters Black;10;1.75
 5;Monsters White;10;1.99
+=======
+1; Monsters Punch;9;1.00
+2; Monsters Ultra;10;2.00
+3; Monsters Mango;10;1.00
+4; Monsters Rehab;10;1.00
+5; Monsters Rosa;10;2.00
+6; Monsters Blue;10;1.00
+7; Monsters Red;10;1.00
+8; Monsters Gold;10;1.00
+9; Monsters Black;10;1.00
+10; Monsters White;10;1.00
+>>>>>>> cb0a2d4c66515667b8f468156483aacf7c611b68

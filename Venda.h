@@ -13,11 +13,13 @@ struct ItemVenda {
     int numeroLinha;
     string nomeProduto;
     int quantidade;
+    double precoUnitario;
     double precoSemIVA;
     double iva;
     double totalComIVA;
+    double precoCusto;
 
-    ItemVenda(int linha, const string& nomeProduto, int quantidade, double precoUnit);
+    ItemVenda(int linha, const string& nomeProduto, int quantidade, double precoUnit, double precoCusto);
 };
 
 class Venda {
@@ -37,7 +39,7 @@ public:
     //explicit Venda(int idCliente);  // explicit previne conversões implícitas
     Venda(int idCliente);
 
-    void adicionarItem(const string& nomeProduto, int quantidade, double precoUnit);
+    void adicionarItem(const string& nomeProduto, int quantidade, double precoUnit, double precoCusto);
     void finalizarVenda(double valorEntregue);
     void imprimirTalao() const;
 
@@ -46,6 +48,8 @@ public:
     int getIdCliente() const;
     double getValorTotal() const;
     double getTroco() const;
+    double getTotalComIVA() const;
+
 
     bool isGratis() const
     {
