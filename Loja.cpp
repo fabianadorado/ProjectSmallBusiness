@@ -1,5 +1,4 @@
 ﻿
-// -*-coding: utf - 8 - *-
 #include "Loja.h"
 #include "auxiliar.h"
 #include <windows.h>
@@ -52,7 +51,7 @@ void Loja::criarProduto()
     getline(cin, nome);
 
     quantidade = lernumero("Quantidade: ");
-    preco = lerFloatPositivo("Preço de custo: ");
+    preco = lerFloatPositivo("Preco de custo: ");
 
     criarProduto(nome, quantidade, preco);  // Chama a versão já implementada
 }
@@ -69,23 +68,23 @@ void Loja::adicionarStock(int idProduto, int quantidade)
             return;
         }
     }
-    cout << "Produto não encontrado.\n";
+    cout << "Produto nao encontrado.\n";
 }
 
 void Loja::eliminarProduto(int idProduto)
 {
-    //listarProdutos();
+    
     for (size_t i = 0; i < produtos.size(); i++) 
     {
         if (produtos[i].getId() == idProduto) 
         {
             produtos.erase(produtos.begin() + i);
             cout << "Produto removido.\n";
-            //listarProdutos();
+            
             return;
         }
     }
-    cout << "Produto não encontrado.\n";
+    cout << "Produto nao encontrado.\n";
 }
 
 void Loja::eliminarProduto() 
@@ -96,30 +95,41 @@ void Loja::eliminarProduto()
 }
 
 
-void Loja::listarProdutos() const 
+void Loja::listarProdutos() const
 {
-    cout << "\n-------------------------- Produtos Disponíveis --------------------------\n";
-    cout << left
-        << setw(6) << "ID"
-        << setw(30) << "Nome"
-        << setw(10) << "Qtde"
-        << setw(15) << "Preço de Custo "
-        << setw(15) << "Preço de Venda"
-        << "\n";
-    cout << string(76, '-') << "\n";
+    const int larguraTotal = 86;
+    cout << "\n" << string(larguraTotal, '=') << "\n";
+    cout << "| " << setw((larguraTotal - 4) / 2) << left << "PRODUTOS DISPONIVEIS"
+        << setw((larguraTotal - 4) / 2) << right << " |" << "\n";
+    cout << string(larguraTotal, '=') << "\n";
 
+    // Cabeçalho da tabela
+    cout << left
+        << "| " << setw(4) << "ID"
+        << "| " << setw(28) << "Nome"
+        << "| " << setw(8) << "Qtd"
+        << "| " << setw(15) << "Preco Custo"
+        << "| " << setw(15) << "Preco Venda"
+        << "|\n";
+
+    cout << string(larguraTotal, '-') << "\n";
+
+    // Conteúdo da tabela
     cout << fixed << setprecision(2);
-    for (const auto& p : produtos) 
+    for (const auto& p : produtos)
     {
         cout << left
-            << setw(6) << p.getId()
-            << setw(30) << p.getNome()
-            << setw(10) << p.getQuantidade()
-            << setw(15) << p.getPrecoCusto()
-            << setw(15) << p.getPrecoVenda()
-            << "\n";
+            << "| " << setw(4) << p.getId()
+            << "| " << setw(28) << p.getNome()
+            << "| " << setw(8) << p.getQuantidade()
+            << "| " << setw(15) << p.getPrecoCusto()
+            << "| " << setw(15) << p.getPrecoVenda()
+            << "|\n";
     }
+
+    cout << string(larguraTotal, '=') << "\n";
 }
+
 
 void Loja::criarCliente(const string& nome, const string& telefone, const string& morada) 
 {
@@ -172,7 +182,7 @@ void Loja::eliminarCliente(int idCliente)
             return;
         }
     }
-    cout << "Cliente não encontrado.\n";
+    cout << "Cliente nao encontrado.\n";
 }
 
 void Loja::alterarNomeCliente(int idCliente, const string& novoNome) 
@@ -186,7 +196,7 @@ void Loja::alterarNomeCliente(int idCliente, const string& novoNome)
             return;
         }
     }
-    cout << "Cliente não encontrado.\n";
+    cout << "Cliente nao encontrado.\n";
 }
 bool Loja::carregarClientes(const string& caminho) {
     if (!arquivoExiste(caminho)) {
@@ -271,16 +281,41 @@ void Loja::listarClientes() const {
         [](const Cliente& a, const Cliente& b) {
             return a.getIdCliente() < b.getIdCliente();
         });
-    cout << "\n--- Lista de Clientes (Ordenada por ID) ---\n";
-    for (const auto& c : clientesOrdenados) 
-    {
-        cout << "ID: " << c.getIdCliente()
-            << " | Nome: " << c.getNome()
-            << " | Telefone: " << c.getTelefone()
-            << " | Morada: " << c.getMorada()
-            << "\n";
+
+    const int larguraTotal = 86;
+
+    cout << "\n" << string(larguraTotal, '=') << "\n";
+    cout << "| " << setw((larguraTotal - 4) / 2) << left << "LISTA DE CLIENTES"
+        << setw((larguraTotal - 4) / 2) << right << " |\n";
+    cout << string(larguraTotal, '=') << "\n";
+
+    // Cabeçalho
+    cout << left
+        << "| " << setw(4) << "ID"
+        << "| " << setw(28) << "Nome"
+        << "| " << setw(15) << "Telefone"
+        << "| " << setw(30) << "Morada"
+        << "|\n";
+
+    cout << string(larguraTotal, '-') << "\n";
+
+    if (clientesOrdenados.empty()) {
+        cout << "| " << setw(larguraTotal - 4) << left << "Nenhum cliente cadastrado." << " |\n";
     }
+    else {
+        for (const auto& c : clientesOrdenados) {
+            cout << left
+                << "| " << setw(4) << c.getIdCliente()
+                << "| " << setw(28) << c.getNome()
+                << "| " << setw(15) << c.getTelefone()
+                << "| " << setw(30) << c.getMorada()
+                << "|\n";
+        }
+    }
+
+    cout << string(larguraTotal, '=') << "\n";
 }
+
 
 bool Loja::criarCarteiraClientes(const string& carteiraClientes) const 
 {
@@ -343,13 +378,11 @@ void Loja::efetuarVenda(int idCliente)
 
     if (!clienteEncontrado)
     {
-        cout << "Cliente não encontrado.\n";
+        cout << "Cliente nao encontrado.\n";
         return;
     }
 
     Venda novaVenda(idCliente);
-    //proximoNumeroFatura++;
-
     listarProdutos();
 
     char mais;
@@ -364,7 +397,7 @@ void Loja::efetuarVenda(int idCliente)
             if (p.getId() == idProduto)
             {
                 produtoSelecionado = &p;
-                break;
+                
             }
         }
 
@@ -374,7 +407,13 @@ void Loja::efetuarVenda(int idCliente)
             continue;
         }
 
-        novaVenda.adicionarItem(produtoSelecionado->getNome(), quantidade, produtoSelecionado->getPrecoVenda());
+        novaVenda.adicionarItem(
+            produtoSelecionado->getNome(),
+            quantidade,
+            produtoSelecionado->getPrecoVenda(),
+            produtoSelecionado->getPrecoCusto()
+        );
+
         produtoSelecionado->removerStock(quantidade);
 
         cout << "Adicionar mais produtos? (s/n): ";
@@ -384,10 +423,23 @@ void Loja::efetuarVenda(int idCliente)
     double totalVenda = novaVenda.getValorTotal();
     cout << fixed << setprecision(2);
     cout << "\nTotal a pagar: " << totalVenda << "€\n";
-    double valorEntregue = lerFloatPositivo("Valor entregue pelo cliente: ");
+
+    //Sorteio do talão grátis (10% de chance)
+    srand(static_cast<unsigned>(time(0)));
+    bool ganhouTalãoGratis = (rand() % 10 == 0); 
+
+    double valorFinal = ganhouTalãoGratis ? 0.0 : totalVenda;
+
+    if (ganhouTalãoGratis) {
+        cout << GREEN << "PARABENS! Voce ganhou o talao gratis!\n" << RESET;
+    }
+
+    double valorEntregue = ganhouTalãoGratis ? 0.0 : lerFloatPositivo("Valor entregue pelo cliente: ");
 
     novaVenda.finalizarVenda(valorEntregue);
     novaVenda.imprimirTalao();
+
+    if (!ganhouTalãoGratis)
     clienteEncontrado->adicionarCompra(totalVenda);
 
     vendas[proximaPosicaoVenda] = novaVenda;
@@ -403,7 +455,7 @@ bool Loja::salvarDados(const string& diretorio) {
     sucesso &= salvarVendas(diretorio + "/vendas.txt");
 
     if (sucesso) {
-        cout << GREEN << "Dados salvos com sucesso no diretório '" << diretorio << "'" << RESET << endl;
+        cout << GREEN << "Dados salvos com sucesso no diretorio '" << diretorio << "'" << RESET << endl;
     }
     else {
         cout << RED << "Erro ao salvar alguns dados." << RESET << endl;
@@ -419,10 +471,10 @@ bool Loja::carregarDados(const string& diretorio) {
     sucesso &= carregarVendas(diretorio + "/vendas.txt");
 
     if (sucesso) {
-        cout << GREEN << "Dados carregados com sucesso do diretório '" << diretorio << "'" << RESET << endl;
+        cout << GREEN << "Dados carregados com sucesso do diretorio '" << diretorio << "'" << RESET << endl;
     }
     else {
-        cout << YELLOW << "Aviso: Alguns dados não puderam ser carregados." << RESET << endl;
+        cout << YELLOW << "Aviso: Alguns dados nao puderam ser carregados." << RESET << endl;
     }
 
     return sucesso;
@@ -590,6 +642,7 @@ bool Loja::carregarVendas(const string& caminho) {
     vendas.resize(MAX_VENDAS);
     proximaPosicaoVenda = 0;
 
+
     string primeiraLinha;
     if (getline(arquivo, primeiraLinha)) {
         try {
@@ -616,7 +669,7 @@ bool Loja::carregarVendas(const string& caminho) {
                 double total = stod(totalStr);
                 double troco = stod(trocoStr);
 
-                Venda venda(idCliente);
+                                Venda venda(idCliente);
                 venda.finalizarVenda(total + troco);
 
                 vector<string> itensVenda;
@@ -634,8 +687,9 @@ bool Loja::carregarVendas(const string& caminho) {
 
                         int qtd = stoi(qtdStr);
                         double precoUnit = stod(precoStr);
+                        double precoCusto = precoUnit / 1.3;
 
-                        venda.adicionarItem(nome, qtd, precoUnit);
+                        venda.adicionarItem(nome, qtd, precoUnit, precoCusto);
                     }
                 }
 
@@ -653,9 +707,11 @@ bool Loja::carregarVendas(const string& caminho) {
 }
 
 void Loja::listarHistoricoVendas() const {
-    cout << CYAN << "\n╔══════════════════════════════╗\n";
-    cout << BOLD << "       HISTÓRICO DE VENDAS" << RESET << CYAN << "\n╚══════════════════════════════╝\n" << RESET;
     const int largura = 60;
+    cout << "\n" << string(largura, '=') << "\n";
+    cout << "| " << setw((largura - 4) / 2) << left << "HISTORICO DE VENDAS"
+        << setw((largura - 4) / 2) << right << " |\n";
+    cout << string(largura, '=') << "\n";
 
     bool encontrouVendas = false;
 
@@ -692,77 +748,46 @@ void Loja::listarHistoricoVendas() const {
         cout << "Nenhuma venda registrada.\n";
     }
 }
-//void Loja::listarHistoricoVendas() const {
-//    cout << CYAN << "\n╔══════════════════════════════╗\n";
-//    cout << BOLD << "       HISTÓRICO DE VENDAS" << RESET << CYAN << "\n╚══════════════════════════════╝\n" << RESET;
-//    const int largura = 60;
-//    if (vendas.empty()) {
-//        cout << "Nenhuma venda registrada.\n";
-//        return;
-//    }
-//
-//    for (const Venda& venda : vendas) {
-//        cout << "\n" << string(largura, '-') << "\n";
-//        cout << "Fatura Nº: " << venda.getNumeroFatura()
-//            << " | Cliente ID: " << venda.getIdCliente() << "\n";
-//        cout << "Total da Venda: " << fixed << setprecision(2)
-//            << venda.getValorTotal() << "€\n";
-//
-//        cout << string(largura, '-') << "\n";
-//        cout << left << setw(25) << "Produto"
-//            << setw(10) << "Qtd"
-//            << setw(15) << "Total c/IVA" << "\n";
-//        cout << string(largura, '-') << "\n";
-//
-//        for (const ItemVenda& item : venda.getItens()) {
-//            cout << left << setw(25) << item.nomeProduto
-//                << setw(10) << item.quantidade
-//                << fixed << setprecision(2) << item.totalComIVA << "€\n";
-//        }
-//    }
-//
-//}
-
 
 void Loja::relatorioStock() const {
-    cout << CYAN << "\n╔═════════════════════════════════════╗\n";
-    cout << BOLD << "     RELATÓRIO DE STOCK" << RESET << CYAN << "\n╚═════════════════════════════════════╝\n" << RESET;
+    const int largura = 60;
+    cout << "\n" << string(largura, '=') << "\n";
+        cout << "| " << setw((largura - 4) / 2) << left 
+            << "RELATORIO DE STOCK"
+        << setw((largura - 4) / 2) << right << "|\n";
+        cout << string(largura, '=') << "\n";
 
-    if (produtos.empty()) {
-        cout << RED << "Nenhum produto encontrado.\n" << RESET;
-        return;
-    }
+        if (produtos.empty()) {
+            cout << "Nenhum produto encontrado.\n";
+            return;
+        }
 
-    cout << GREEN << setw(25) << left << "Produto" << "Quantidade\n" << RESET;
+    cout << left << setw(25) << "Produto" << "Quantidade\n";
+    cout << string(45, '-') << "\n";
+
     for (const auto& p : produtos) {
-        cout << setw(25) << p.getNome() << p.getQuantidade() << "\n";
+        cout << left << setw(25) << p.getNome() << p.getQuantidade() << "\n";
     }
+
+    cout << string(45, '=') << "\n";
 }
 
 
 void Loja::relatorioVendasPorProduto(const string& nomeProduto) const {
-    SetConsoleOutputCP(CP_UTF8);
-    SetConsoleCP(CP_UTF8);
+    const int largura = 78;
+    cout << "\n" << string(largura, '=') << "\n";
+    cout << "| " << setw((largura - 4) / 2) << left
+        << "DETALHAMENTO DE VENDAS - PRODUTO: " + nomeProduto
+        << setw((largura - 4) / 2) << right << " |\n";
+    cout << string(largura, '=') << "\n";
 
-    const int largura = 66;
-    string titulo = "DETALHAMENTO DE VENDAS - PRODUTO: " + nomeProduto;
-    int espacoEsq = (largura - titulo.size()) / 2;
-    int espacoDir = largura - titulo.size() - espacoEsq;
-
-    cout << CYAN << "\n╔══════════════════════════════════════════════════════════════╗\n";
-    cout << "║" << string(espacoEsq, ' ') << BOLD << titulo << RESET << CYAN << string(espacoDir, ' ') << "║\n";
-        cout << "\n╚══════════════════════════════════════════════════════════════╝\n" << RESET;
-        
-
-    cout << BOLD << left
-        << setw(12) << "Fatura Nº"
-        << setw(10) << "Qtd"
-        << setw(12) << "Preço"
-        << setw(12) << "Total c/IVA"
-        << setw(10) << "Custo"
-        << setw(10) << "Lucro"
-        << RESET << "\n";
-
+    cout << left
+        << "| " << setw(12) << "Fatura Nº"
+        << "| " << setw(6) << "Qtd"
+        << "| " << setw(12) << "Preço Unit."
+        << "| " << setw(12) << "Total c/IVA"
+        << "| " << setw(12) << "Custo"
+        << "| " << setw(12) << "Lucro" << "|\n";
     cout << string(largura, '-') << "\n";
 
     bool encontrado = false;
@@ -775,18 +800,16 @@ void Loja::relatorioVendasPorProduto(const string& nomeProduto) const {
                 encontrado = true;
 
                 double precoUnitario = item.precoSemIVA / item.quantidade;
-                double custoUnit = precoUnitario / 1.3f;
-                double custoTotal = custoUnit * item.quantidade;
-                double lucro = (item.precoSemIVA - custoTotal);
+                double custoTotal = item.precoCusto * item.quantidade;
+                double lucro = item.totalComIVA - custoTotal;
 
                 cout << left
-                    << setw(12) << venda.getNumeroFatura()
-                    << setw(10) << item.quantidade
-                    << setw(12) << fixed << setprecision(2) << precoUnitario
-                    << setw(12) << item.totalComIVA
-                    << setw(10) << custoTotal
-                    << setw(10) << lucro
-                    << "\n";
+                    << "| " << setw(12) << venda.getNumeroFatura()
+                    << "| " << setw(6) << item.quantidade
+                    << "| " << setw(12) << fixed << setprecision(2) << precoUnitario
+                    << "| " << setw(12) << item.totalComIVA
+                    << "| " << setw(12) << custoTotal
+                    << "| " << setw(12) << lucro << "|\n";
 
                 totalQtd += item.quantidade;
                 totalCusto += custoTotal;
@@ -797,158 +820,126 @@ void Loja::relatorioVendasPorProduto(const string& nomeProduto) const {
     }
 
     if (!encontrado) {
-        cout << RED << "Nenhuma venda encontrada para este produto.\n" << RESET;
+        cout << "| Nenhuma venda encontrada para este produto.                      |\n";
     }
     else {
         cout << string(largura, '-') << "\n";
-        cout << BOLD
-            << setw(12) << "TOTAL"
-            << setw(10) << totalQtd
-            << setw(12) << "-"
-            << setw(12) << totalComIVA
-            << setw(10) << totalCusto
-            << setw(10) << totalLucro
-            << RESET << "\n";
+        cout << left
+            << "| " << setw(12) << "TOTAL"
+            << "| " << setw(6) << totalQtd
+            << "| " << setw(12) << "-"
+            << "| " << setw(12) << totalComIVA
+            << "| " << setw(12) << totalCusto
+            << "| " << setw(12) << totalLucro << "|\n";
     }
 
+    cout << string(largura, '=') << "\n";
 }
 
-
 void Loja::relatorioTotalVendas() const {
-    cout << CYAN << "\n╔══════════════════════════════════════════╗\n";
-    cout << BOLD << "      RELATÓRIO TOTAL DE VENDAS" << RESET << CYAN << "\n╚══════════════════════════════════════════╝\n" << RESET;
+    const int largura = 86;
+    cout << "\n" << string(largura, '=') << "\n";
+    cout << "| " << setw((largura - 4) / 2) << left << "RELATORIO TOTAL DE VENDAS"
+        << setw((largura - 4) / 2) << right << " |\n";
+    cout << string(largura, '=') << "\n";
 
-    double total = 0.0f;
+    double total = 0.0;
     map<string, int> vendasPorProduto;
     map<int, double> totalPorCliente;
 
-    // 1. Calcular total vendido e contagens
     for (const auto& venda : vendas) {
         total += venda.getValorTotal();
         totalPorCliente[venda.getIdCliente()] += venda.getValorTotal();
-
         for (const auto& item : venda.getItens()) {
             vendasPorProduto[item.nomeProduto] += item.quantidade;
         }
     }
 
-    // 2. Produto mais e menos vendido
-    string maisVendido = "N/A", menosVendido = "N/A";
-    int maxQtd = -1, minQtd = INT_MAX;
-    for (const auto& par : vendasPorProduto) {
-        if (par.second > maxQtd) {
-            maxQtd = par.second;
-            maisVendido = par.first;
-        }
-        if (par.second < minQtd) {
-            minQtd = par.second;
-            menosVendido = par.first;
-        }
-    }
-
-    // 3. Lucro do produto mais vendido
-    double lucroMaisVendido = 0.0f;
-    for (const auto& p : produtos) {
-        if (p.getNome() == maisVendido) {
-            double precoCusto = p.getPrecoCusto();
-            double precoVendaComIVA = p.getPrecoVendaComIVA();
-            lucroMaisVendido = maxQtd * (precoVendaComIVA - precoCusto);
-            break;
-        }
-    }
-
-    // 4. Cliente que mais comprou
-    int idTopCliente = -1;
-    double maiorCompra = -1;
-    for (const auto& par : totalPorCliente) {
-        if (par.second > maiorCompra) {
-            maiorCompra = par.second;
-            idTopCliente = par.first;
-        }
-    }
-
-    // 5. Exibir resultados
-    cout << GREEN << fixed << setprecision(2);
-    cout << "\n→ Total vendido: €" << total;
-    cout << "\n→ Produto mais vendido: " << maisVendido << " (" << maxQtd << " unidades)";
-    cout << "\n→ Produto menos vendido: " << menosVendido << " (" << minQtd << " unidades)";
-    cout << "\n→ Lucro estimado do mais vendido: €" << lucroMaisVendido;
-    cout << "\n→ Cliente que mais comprou (ID): " << idTopCliente << " com €" << maiorCompra << RESET << "\n";
-}
-
-
-void Loja::relatorioGraficoVendas() const {
-    cout << CYAN << "\n╔══════════════════════════════╗\n";
-    cout << BOLD << "  GRÁFICO DE VENDAS POR PRODUTO" << RESET << CYAN << "\n╚══════════════════════════════╝\n" << RESET;
-
-    // Mapeia vendas por produto
-    map<string, double> totalPorProduto;
-    for (const auto& venda : vendas) {
-        for (const auto& item : venda.getItens()) {
-            totalPorProduto[item.nomeProduto] += item.totalComIVA;
-        }
-    }
-
-    // Nada para exibir
-    if (totalPorProduto.empty()) {
-        cout << RED << "Nenhuma venda registrada.\n" << RESET;
+    if (vendas.empty()) {
+        cout << "Nenhuma venda registrada.\n";
         return;
     }
 
-    // Descobre valor máximo
-    double maxValor = 0.0f;
-    for (const auto& p : totalPorProduto) {
-        if (p.second > maxValor)
-            maxValor = p.second;
+    string maisVendido = "N/A", menosVendido = "N/A";
+    int maxQtd = -1, minQtd = INT_MAX;
+
+    for (const auto& par : vendasPorProduto) {
+        const string& produto = par.first;
+        int qtd = par.second;
+        if (qtd > maxQtd) {
+            maxQtd = qtd;
+            maisVendido = produto;
+        }
+        if (qtd < minQtd) {
+            minQtd = qtd;
+            menosVendido = produto;
+        }
     }
 
-    // Ordena por valor (decrescente)
-    vector<pair<string, double>> produtosOrdenados(totalPorProduto.begin(), totalPorProduto.end());
-    sort(produtosOrdenados.begin(), produtosOrdenados.end(),
-        [](const auto& a, const auto& b) {
-            return a.second > b.second;
-        });
-
-    // Mostra gráfico
-    for (const auto& p : produtosOrdenados) {
-        int barras = static_cast<int>((p.second / maxValor) * 30); // tamanho proporcional
-        cout << setw(20) << left << p.first << " │ "
-            << GRAY << string(barras, '#') << RESET
-            << " " << fixed << setprecision(2) << p.second << "€\n";
+    double lucroMaisVendido = 0.0;
+    for (const auto& venda : vendas) {
+        for (const auto& item : venda.getItens()) {
+            if (item.nomeProduto == maisVendido) {
+                lucroMaisVendido += (item.totalComIVA - (item.precoCusto * item.quantidade));
+            }
+        }
     }
+
+    int idTopCliente = -1;
+    double maiorCompra = -1;
+    for (const auto& par : totalPorCliente) {
+        int id = par.first;
+        double valor = par.second;
+        if (valor > maiorCompra) {
+            maiorCompra = valor;
+            idTopCliente = id;
+        }
+    }
+
+    cout << fixed << setprecision(2);
+    cout << "→ Total vendido: €" << total << "\n";
+    cout << "→ Produto mais vendido: " << maisVendido << " (" << maxQtd << " unidades)\n";
+    cout << "→ Produto menos vendido: " << menosVendido << " (" << minQtd << " unidades)\n";
+    cout << "→ Lucro do mais vendido: €" << lucroMaisVendido << "\n";
+    cout << "→ Cliente que mais comprou (ID): " << idTopCliente << " com €" << maiorCompra << "\n";
+    cout << string(58, '=') << "\n";
 }
+
+
 void Loja::relatorioVendasDetalhadoPorProduto() const {
-    SetConsoleOutputCP(CP_UTF8);
-    SetConsoleCP(CP_UTF8);
+    const int largura = 86;
 
     map<string, int> quantidadePorProduto;
     map<string, double> receitaPorProduto;
+    map<string, double> custoPorProduto;
 
-    // Agrupa vendas
     for (const auto& venda : vendas) {
         for (const auto& item : venda.getItens()) {
-            quantidadePorProduto[item.nomeProduto] += item.quantidade;
-            receitaPorProduto[item.nomeProduto] += item.totalComIVA;
+            string nome = item.nomeProduto;
+            quantidadePorProduto[nome] += item.quantidade;
+            receitaPorProduto[nome] += item.totalComIVA;
+            custoPorProduto[nome] += item.precoCusto * item.quantidade;
         }
     }
 
     if (quantidadePorProduto.empty()) {
-        cout << RED << "Nenhuma venda registrada.\n" << RESET;
+        cout << "\nNenhuma venda registrada.\n";
         return;
     }
 
-    // Cabeçalho
-    cout << CYAN << "\n╔══════════════════════════════════════════════════════════════╗\n";
-    cout << BOLD << "                  RELATÓRIO DETALHADO POR PRODUTO" << RESET << CYAN 
-        << "\n╚══════════════════════════════════════════════════════════════╝\n" << RESET;
+    cout << "\n" << string(largura, '=') << "\n";
+    cout << "| " << setw((largura - 4) / 2) << left << "RELATORIO DETALHADO POR PRODUTO"
+        << setw((largura - 4) / 2) << right << " |\n";
+    cout << string(largura, '=') << "\n";
 
-    cout << BOLD;
-    cout << left << setw(20) << "Produto"
-        << setw(8) << "Qtde"
-        << setw(10) << "Preço"
-        << setw(10) << "Receita"
-        << setw(10) << "Custo"
-        << setw(10) << "Lucro" << RESET << "\n";
+    cout << left
+        << "| " << setw(25) << "Produto"
+        << "| " << setw(6) << "Qtd"
+        << "| " << setw(10) << "Preço"
+        << "| " << setw(12) << "Receita"
+        << "| " << setw(12) << "Custo"
+        << "| " << setw(12) << "Lucro" << "|\n";
+    cout << string(largura, '-') << "\n";
 
     double totalLucro = 0.0;
 
@@ -956,30 +947,26 @@ void Loja::relatorioVendasDetalhadoPorProduto() const {
         const string& nome = par.first;
         int qtd = par.second;
         double receita = receitaPorProduto[nome];
-        double preco = 0.0, custo = 0.0;
-
-        // Busca produto na lista original para pegar os preços
-        for (const auto& p : produtos) {
-            if (p.getNome() == nome) {
-                preco = p.getPrecoVendaComIVA();
-                custo = p.getPrecoCusto();
-                break;
-            }
-        }
-
-        double custoTotal = qtd * custo;
-        double lucro = receita - custoTotal;
+        double custo = custoPorProduto[nome];
+        double preco = qtd > 0 ? receita / qtd : 0.0;
+        double lucro = receita - custo;
         totalLucro += lucro;
 
-        // Imprime linha
-        cout << left << setw(20) << nome
-            << setw(8) << qtd
-            << setw(10) << fixed << setprecision(2) << preco
-            << setw(10) << receita
-            << setw(10) << custoTotal
-            << setw(10) << lucro << "\n";
+        cout << left
+            << "| " << setw(25) << nome
+            << "| " << setw(6) << qtd
+            << "| " << setw(10) << fixed << setprecision(2) << preco
+            << "| " << setw(12) << receita
+            << "| " << setw(12) << custo
+            << "| " << setw(12) << lucro << "|\n";
     }
 
-    // Total
-    cout << BOLD << "\nLucro total estimado: " << GREEN << fixed << setprecision(2) << totalLucro << "€" << RESET << "\n";
+    cout << string(largura, '=') << "\n";
+    cout << "| " << setw(70) << left << "Lucro total estimado:"
+        << "€ " << fixed << setprecision(2) << totalLucro << " |\n";
+    cout << string(largura, '=') << "\n";
+}
+void Loja::relatorioGraficoVendas() const {
+    // Implemente a lógica aqui, ou apenas coloque algo provisório:
+    cout << "Relatorio grafico de vendas ainda nao implementado.\n";
 }

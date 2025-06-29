@@ -16,10 +16,11 @@
 #define GREEN "\033[32m" // Define a cor de texto para verde
 
 
-ItemVenda::ItemVenda(int linha, const string& nomeProduto, int quantidade, double precoUnit)
+ItemVenda::ItemVenda(int linha, const string& nomeProduto, int quantidade, double precoUnit, double precoCusto)
     :   numeroLinha(linha),
         nomeProduto(nomeProduto),
         quantidade(quantidade),
+        precoCusto(precoCusto),
         precoSemIVA(precoUnit* quantidade),
         iva(precoSemIVA * 0.23), // 23% IVA
         totalComIVA(precoSemIVA + iva)
@@ -53,7 +54,7 @@ Venda::Venda(int idCliente)
 }
 
 // Métodos da Venda
-void Venda::adicionarItem(const string& nomeProduto, int quantidade, double precoUnit)
+void Venda::adicionarItem(const string& nomeProduto, int quantidade, double precoUnit, double precoCusto)
 {
     // Validações essenciais
     if (quantidade <= 0)
@@ -66,21 +67,25 @@ void Venda::adicionarItem(const string& nomeProduto, int quantidade, double prec
         throw invalid_argument("Preço unitário não pode ser negativo");
     }
     int linha = itens.size() + 1;
-    ItemVenda item(linha, nomeProduto, quantidade, precoUnit);
+    ItemVenda item(linha, nomeProduto, quantidade, precoUnit, precoCusto);
     itens.push_back(item);
 }
 
 void Venda::finalizarVenda(double valorEntregue)
 {
-    this->valorEntregue = valorEntregue;
     double total = getValorTotal();
+    if (valorEntregue < total)
+    {
+        throw invalid_argument("Valor entregue é inferior ao valor total da compra!");
+    }
+    this->valorEntregue = valorEntregue;
+
     troco = valorEntregue - total;
     if (troco < 0)
     {
         troco = 0;
     }
 }
-
 double Venda::getValorTotal() const
 {
     double total = 0.0;

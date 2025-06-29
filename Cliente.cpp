@@ -2,6 +2,7 @@
 #include <string>
 #include <sstream>
 #include <algorithm>
+#include <iomanip> 
 
 using namespace std;
 
@@ -11,7 +12,7 @@ vector<int> Cliente::idsDisponiveis;
 
 // Construtor padrão
 Cliente::Cliente()
-    : idCliente(proximoCliente++), nome(""), telefone(""), morada(""), totalComprado(0.0f) {
+    : idCliente(proximoCliente++), nome(""), telefone(""), morada(""), totalComprado(0.0) {
 }
 
 // Construtor com parâmetros
@@ -85,9 +86,10 @@ void Cliente::adicionarCompra(double valor) {
 
 string Cliente::toString() const {
     stringstream dadosCliente;
-    dadosCliente << "ID: " << idCliente
-        << " | Nome: " << nome
-        << " | Telefone: " << telefone
-        << " | Morada: " << morada;
+    dadosCliente << left
+        << "ID: " << setw(6) << idCliente
+        << " | Nome: " << setw(20) << nome
+        << " | Telefone: " << setw(15) << telefone
+        << " | Morada: " << setw(30) << morada;
     return dadosCliente.str();
 }

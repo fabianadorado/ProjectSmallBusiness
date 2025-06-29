@@ -26,7 +26,7 @@ int lernumero(const string& mensagem) {
             cin.ignore(1000, '\n');
             return valor;
         }
-        cout << "\033[31mEntrada inválida. Digite um número inteiro maior que 0.\033[0m\n";
+        cout << "\033[31mEntrada invalida. Digite um numero inteiro maior que 0.\033[0m\n";
         cin.clear();
         cin.ignore(1000, '\n');
     }
@@ -40,7 +40,7 @@ double lerFloatPositivo(const string& mensagem) {
             cin.ignore(1000, '\n');
             return valor;
         }
-        cout << "\033[31mEntrada inválida. Digite um número válido (>= 0).\033[0m\n";
+        cout << "\033[31mEntrada invalida. Digite um numero valido (>= 0).\033[0m\n";
         cin.clear();
         cin.ignore(1000, '\n');
     }
@@ -120,7 +120,7 @@ int mostrarMenu(const string& titulo, const vector<string>& opcoes) {
     }
 
     cout << CYAN << bordaBottom << "\n" << RESET;
-    cout << YELLOW << "Escolha uma opção: " << RESET;
+    cout << YELLOW << "Escolha uma opcao: " << RESET;
 
     int opcao;
     cin >> opcao;
