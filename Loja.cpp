@@ -1,4 +1,3 @@
-﻿// -*-coding: utf - 8 - *-
 #include "Loja.h"
 #include "auxiliar.h"
 #include <windows.h>
@@ -51,6 +50,7 @@ void Loja::criarProduto()
     getline(cin, nome);
 
     quantidade = lernumero("Quantidade: ");
+    preco = lerFloatPositivo("Preco de custo: ");
 
     criarProduto(nome, quantidade, preco);  // Chama a versão já implementada
 }
@@ -67,19 +67,23 @@ void Loja::adicionarStock(int idProduto, int quantidade)
             return;
         }
     }
+    cout << "Produto nao encontrado.\n";
 }
 
 void Loja::eliminarProduto(int idProduto)
 {
+    
     for (size_t i = 0; i < produtos.size(); i++) 
     {
         if (produtos[i].getId() == idProduto) 
         {
             produtos.erase(produtos.begin() + i);
             cout << "Produto removido.\n";
+            
             return;
         }
     }
+    cout << "Produto nao encontrado.\n";
 }
 
 void Loja::eliminarProduto() 
@@ -90,14 +94,41 @@ void Loja::eliminarProduto()
 }
 
 
+void Loja::listarProdutos() const
 {
-    cout << left
+    const int larguraTotal = 86;
+    cout << "\n" << string(larguraTotal, '=') << "\n";
+    cout << "| " << setw((larguraTotal - 4) / 2) << left << "PRODUTOS DISPONIVEIS"
+        << setw((larguraTotal - 4) / 2) << right << " |" << "\n";
+    cout << string(larguraTotal, '=') << "\n";
 
+    // Cabeçalho da tabela
+    cout << left
+        << "| " << setw(4) << "ID"
+        << "| " << setw(28) << "Nome"
+        << "| " << setw(8) << "Qtd"
+        << "| " << setw(15) << "Preco Custo"
+        << "| " << setw(15) << "Preco Venda"
+        << "|\n";
+
+    cout << string(larguraTotal, '-') << "\n";
+
+    // Conteúdo da tabela
     cout << fixed << setprecision(2);
+    for (const auto& p : produtos)
     {
         cout << left
+            << "| " << setw(4) << p.getId()
+            << "| " << setw(28) << p.getNome()
+            << "| " << setw(8) << p.getQuantidade()
+            << "| " << setw(15) << p.getPrecoCusto()
+            << "| " << setw(15) << p.getPrecoVenda()
+            << "|\n";
     }
+
+    cout << string(larguraTotal, '=') << "\n";
 }
+
 
 void Loja::criarCliente(const string& nome, const string& telefone, const string& morada) 
 {
@@ -150,6 +181,7 @@ void Loja::eliminarCliente(int idCliente)
             return;
         }
     }
+    cout << "Cliente nao encontrado.\n";
 }
 
 void Loja::alterarNomeCliente(int idCliente, const string& novoNome) 
@@ -163,6 +195,7 @@ void Loja::alterarNomeCliente(int idCliente, const string& novoNome)
             return;
         }
     }
+    cout << "Cliente nao encontrado.\n";
 }
 bool Loja::carregarClientes(const string& caminho) {
     if (!arquivoExiste(caminho)) {
@@ -246,8 +279,41 @@ void Loja::listarClientes() const {
         [](const Cliente& a, const Cliente& b) {
             return a.getIdCliente() < b.getIdCliente();
         });
+
+    const int larguraTotal = 86;
+
+    cout << "\n" << string(larguraTotal, '=') << "\n";
+    cout << "| " << setw((larguraTotal - 4) / 2) << left << "LISTA DE CLIENTES"
+        << setw((larguraTotal - 4) / 2) << right << " |\n";
+    cout << string(larguraTotal, '=') << "\n";
+
+    // Cabeçalho
+    cout << left
+        << "| " << setw(4) << "ID"
+        << "| " << setw(28) << "Nome"
+        << "| " << setw(15) << "Telefone"
+        << "| " << setw(30) << "Morada"
+        << "|\n";
+
+    cout << string(larguraTotal, '-') << "\n";
+
+    if (clientesOrdenados.empty()) {
+        cout << "| " << setw(larguraTotal - 4) << left << "Nenhum cliente cadastrado." << " |\n";
     }
+    else {
+        for (const auto& c : clientesOrdenados) {
+            cout << left
+                << "| " << setw(4) << c.getIdCliente()
+                << "| " << setw(28) << c.getNome()
+                << "| " << setw(15) << c.getTelefone()
+                << "| " << setw(30) << c.getMorada()
+                << "|\n";
+        }
+    }
+
+    cout << string(larguraTotal, '=') << "\n";
 }
+
 
 bool Loja::criarCarteiraClientes(const string& carteiraClientes) const 
 {
@@ -310,6 +376,7 @@ void Loja::efetuarVenda(int idCliente)
 
     if (!clienteEncontrado)
     {
+        cout << "Cliente nao encontrado.\n";
         return;
     }
 
@@ -328,6 +395,7 @@ void Loja::efetuarVenda(int idCliente)
             if (p.getId() == idProduto)
             {
                 produtoSelecionado = &p;
+                
             }
         }
 
@@ -336,6 +404,13 @@ void Loja::efetuarVenda(int idCliente)
             cout << "Produto inexistente ou stock insuficiente.\n";
             continue;
         }
+
+        novaVenda.adicionarItem(
+            produtoSelecionado->getNome(),
+            quantidade,
+            produtoSelecionado->getPrecoVenda(),
+            produtoSelecionado->getPrecoCusto()
+        );
 
         produtoSelecionado->removerStock(quantidade);
 
@@ -347,14 +422,59 @@ void Loja::efetuarVenda(int idCliente)
     cout << fixed << setprecision(2);
     cout << "\nTotal a pagar: " << totalVenda << "€\n";
 
+    //Sorteio do talão grátis (10% de chance)
+    srand(static_cast<unsigned>(time(0)));
+    bool ganhouTalãoGratis = (rand() % 10 == 0); 
+
+    double valorFinal = ganhouTalãoGratis ? 0.0 : totalVenda;
+
+    if (ganhouTalãoGratis) {
+        cout << GREEN << "PARABENS! Voce ganhou o talao gratis!\n" << RESET;
+    }
+
+    double valorEntregue = ganhouTalãoGratis ? 0.0 : lerFloatPositivo("Valor entregue pelo cliente: ");
+
     novaVenda.finalizarVenda(valorEntregue);
+   
+    mostrarResumoVenda(novaVenda);
     novaVenda.imprimirTalao();
 
 
+    if (!ganhouTalãoGratis)
     clienteEncontrado->adicionarCompra(totalVenda);
 
     vendas[proximaPosicaoVenda] = novaVenda;
     proximaPosicaoVenda = (proximaPosicaoVenda + 1) % MAX_VENDAS;
+}
+
+void Loja::mostrarResumoVenda(const Venda& venda) const {
+    cout << "\n========== RESUMO DA VENDA ==========\n";
+    cout << "ID: " << venda.getIdCliente() << "\n\n";
+
+    cout << left << setw(20) << "Produto"
+        << setw(10) << "Qtd"
+        << setw(15) << "Preco (s/IVA)"
+        << setw(15) << "Preco (c/IVA)"
+        << setw(15) << "Total Item" << "\n";
+
+    cout << string(70, '-') << "\n";
+
+    for (const auto& item : venda.getItens()) {
+        double precoSemIVA = item.precoUnitario;
+        double precoComIVA = precoSemIVA * 1.23;
+        double totalItem = precoComIVA * item.quantidade;
+
+        cout << left << setw(20) << item.nomeProduto
+            << setw(10) << item.quantidade
+            << setw(15) << fixed << setprecision(2) << precoSemIVA
+            << setw(15) << precoComIVA
+            << setw(15) << totalItem << "\n";
+    }
+
+    cout << string(70, '-') << "\n";
+    cout << right << setw(60) << "Total da venda (com IVA): "
+        << fixed << setprecision(2) << venda.getTotalComIVA() << "\n";
+    cout << "=====================================\n\n";
 }
 
 bool Loja::salvarDados(const string& diretorio) {
@@ -366,6 +486,7 @@ bool Loja::salvarDados(const string& diretorio) {
     sucesso &= salvarVendas(diretorio + "/vendas.txt");
 
     if (sucesso) {
+        cout << GREEN << "Dados salvos com sucesso no diretorio '" << diretorio << "'" << RESET << endl;
     }
     else {
         cout << RED << "Erro ao salvar alguns dados." << RESET << endl;
@@ -381,8 +502,10 @@ bool Loja::carregarDados(const string& diretorio) {
     sucesso &= carregarVendas(diretorio + "/vendas.txt");
 
     if (sucesso) {
+        cout << GREEN << "Dados carregados com sucesso do diretorio '" << diretorio << "'" << RESET << endl;
     }
     else {
+        cout << YELLOW << "Aviso: Alguns dados nao puderam ser carregados." << RESET << endl;
     }
 
     return sucesso;
@@ -557,6 +680,7 @@ bool Loja::carregarVendas(const string& caminho) {
     vendas.resize(MAX_VENDAS);
     proximaPosicaoVenda = 0;
 
+
     string primeiraLinha;
     if (getline(arquivo, primeiraLinha)) {
         try {
@@ -583,7 +707,7 @@ bool Loja::carregarVendas(const string& caminho) {
                 double total = stod(totalStr);
                 double troco = stod(trocoStr);
 
-                Venda venda(idCliente);
+                                Venda venda(idCliente);
                 venda.finalizarVenda(total + troco);
 
                 vector<string> itensVenda;
@@ -603,7 +727,6 @@ bool Loja::carregarVendas(const string& caminho) {
                         double precoUnit = stod(precoStr);
                         double precoCusto = precoUnit / 1.3;
 
-                        venda.adicionarItem(nome, qtd, precoUnit);
                         venda.adicionarItem(nome, qtd, precoUnit, precoCusto);
                     }
                 }
