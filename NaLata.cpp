@@ -22,9 +22,11 @@
 using namespace std;
 
 int main() {
+    // Garante que o console está em UTF-8 (acentos e símbolos)
     system("chcp 65001 > nul");
     SetConsoleOutputCP(CP_UTF8);
-    setlocale(LC_ALL, "");
+    // Locale para português e UTF-8
+    setlocale(LC_ALL, "pt_PT.UTF-8"); // Força acentuação correta
     setlocale(LC_NUMERIC, "C");
 
     Menu menu;

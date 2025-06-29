@@ -1,0 +1,54 @@
+Resumo de Melhorias e Correções - Projeto Small Business
+=======================================================
+
+1. Configuração de Locale e UTF-8
+---------------------------------
+- Adicionado no início do main (NaLata.cpp):
+  - system("chcp 65001 > nul");
+  - SetConsoleOutputCP(CP_UTF8);
+  - setlocale(LC_ALL, "pt_PT.UTF-8");
+  - setlocale(LC_NUMERIC, "C");
+- Garantia de acentuação correta e compatibilidade com terminais modernos.
+
+2. Menu Principal e Menus
+-------------------------
+- Corrigido vetor de opções para mostrar "Relatórios" completo.
+- Corrigido prompt para "Escolha uma opcao:" (sem acento) para evitar corte.
+- Implementada função para remover pontuação/acentos das opções do menu.
+- Garantido alinhamento dos pipes e largura suficiente para não cortar palavras.
+
+3. Relatórios e Tabelas
+-----------------------
+- Corrigido cálculo do lucro no relatório detalhado por produto:
+  - Lucro = (precoUnitario * quantidade) - custoTotal
+- Padronizada a impressão dos valores monetários para alinhar "EUR" junto ao valor.
+- Mantido campo "Custo Total" na tabela.
+- Corrigido alinhamento dos pipes (|) em todas as colunas.
+
+4. Leitura e Escrita de Arquivos
+--------------------------------
+- Corrigido bug na leitura de vendas do arquivo:
+  - precoUnitario agora é calculado como precoSemIVA / quantidade.
+- Garantido que novas vendas são salvas e lidas corretamente.
+
+5. Funções Auxiliares
+---------------------
+- Centralizadas funções de impressão de linhas internas e horizontais em Auxiliar.cpp/h.
+- Criada função para remover pontuação/acentos de strings.
+
+6. Outras Correções e Melhorias
+-------------------------------
+- Corrigido excesso de espaços entre valores e "EUR".
+- Corrigido corte de palavras em menus e tabelas.
+- Garantido que todos os menus e relatórios fiquem visualmente consistentes.
+
+7. Padronização de Centralização de Títulos em Relatórios
+--------------------------------------------------------
+- Todos os relatórios agora utilizam a função auxiliar imprimirTituloCentralizado para centralizar e imprimir títulos com bordas.
+- Removidas funções duplicadas de centralização de título (ex: desenharMolduraTitulo).
+- Garantida padronização visual e facilidade de manutenção para futuros relatórios e menus.
+
+Observações Finais
+------------------
+- Se ainda houver problemas de acentuação, verifique se todos os arquivos .cpp/.h/.txt estão salvos como UTF-8.
+- Recomenda-se sempre usar terminais modernos (Windows Terminal, PowerShell) para melhor compatibilidade visual. 

@@ -1,3 +1,4 @@
+#define NOMINMAX
 #include "Loja.h"
 #include "auxiliar.h"
 #include <windows.h>
@@ -96,37 +97,22 @@ void Loja::eliminarProduto()
 
 void Loja::listarProdutos() const
 {
-    const int larguraTotal = 86;
-    cout << "\n" << string(larguraTotal, '=') << "\n";
-    cout << "| " << setw((larguraTotal - 4) / 2) << left << "PRODUTOS DISPONIVEIS"
-        << setw((larguraTotal - 4) / 2) << right << " |" << "\n";
-    cout << string(larguraTotal, '=') << "\n";
-
-    // Cabeçalho da tabela
-    cout << left
-        << "| " << setw(4) << "ID"
-        << "| " << setw(28) << "Nome"
-        << "| " << setw(8) << "Qtd"
-        << "| " << setw(15) << "Preco Custo"
-        << "| " << setw(15) << "Preco Venda"
-        << "|\n";
-
-    cout << string(larguraTotal, '-') << "\n";
-
-    // Conteúdo da tabela
-    cout << fixed << setprecision(2);
-    for (const auto& p : produtos)
-    {
-        cout << left
-            << "| " << setw(4) << p.getId()
-            << "| " << setw(28) << p.getNome()
-            << "| " << setw(8) << p.getQuantidade()
-            << "| " << setw(15) << p.getPrecoCusto()
-            << "| " << setw(15) << p.getPrecoVenda()
-            << "|\n";
+    const string margem = "    ";
+    std::vector<std::string> cabecalho = {"ID", "Nome", "Qtd", "Preco Custo", "Preco Venda"};
+    std::vector<int> larguras = {4, 28, 8, 13, 13};
+    cout << margem << "\n";
+    imprimirLinhaTabela(cabecalho, larguras);
+    cout << margem << "+" << string(4 + 28 + 8 + 13 + 13 + 6 * 3, '-') << "+" << endl;
+    for (const auto& p : produtos) {
+        std::vector<std::string> linha = {
+            to_string(p.getId()),
+            p.getNome(),
+            to_string(p.getQuantidade()),
+            (ostringstream{} << fixed << setprecision(2) << p.getPrecoCusto() << " EUR").str(),
+            (ostringstream{} << fixed << setprecision(2) << p.getPrecoVenda() << " EUR").str()
+        };
+        imprimirLinhaTabela(linha, larguras);
     }
-
-    cout << string(larguraTotal, '=') << "\n";
 }
 
 
@@ -282,10 +268,7 @@ void Loja::listarClientes() const {
 
     const int larguraTotal = 86;
 
-    cout << "\n" << string(larguraTotal, '=') << "\n";
-    cout << "| " << setw((larguraTotal - 4) / 2) << left << "LISTA DE CLIENTES"
-        << setw((larguraTotal - 4) / 2) << right << " |\n";
-    cout << string(larguraTotal, '=') << "\n";
+    imprimirTituloCentralizado("LISTA DE CLIENTES", larguraTotal);
 
     // Cabeçalho
     cout << left
@@ -311,7 +294,7 @@ void Loja::listarClientes() const {
         }
     }
 
-    cout << string(larguraTotal, '=') << "\n";
+    cout << "+" << string(larguraTotal - 2, '=') << "+" << endl;
 }
 
 
@@ -416,65 +399,117 @@ void Loja::efetuarVenda(int idCliente)
 
         cout << "Adicionar mais produtos? (s/n): ";
         cin >> mais;
+        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Limpa o buffer
     } while (mais == 's' || mais == 'S');
 
     double totalVenda = novaVenda.getValorTotal();
     cout << fixed << setprecision(2);
     cout << "\nTotal a pagar: " << totalVenda << "€\n";
 
-    //Sorteio do talão grátis (10% de chance)
+    //Sorteio do talao gratis (10% de chance)
     srand(static_cast<unsigned>(time(0)));
-    bool ganhouTalãoGratis = (rand() % 10 == 0); 
+    bool ganhouTalaoGratis = (rand() % 10 == 0); 
 
-    double valorFinal = ganhouTalãoGratis ? 0.0 : totalVenda;
+    double valorFinal = ganhouTalaoGratis ? 0.0 : totalVenda;
 
-    if (ganhouTalãoGratis) {
+    if (ganhouTalaoGratis) {
         cout << GREEN << "PARABENS! Voce ganhou o talao gratis!\n" << RESET;
     }
 
-    double valorEntregue = ganhouTalãoGratis ? 0.0 : lerFloatPositivo("Valor entregue pelo cliente: ");
+    double valorEntregue = 0.0;
+    if (ganhouTalaoGratis) {
+        valorEntregue = 0.0;
+    } else {
+        bool valorValido = false;
+        while (!valorValido) {
+            bool primeiraTentativa = true;
+            while (true) {
+                if (!primeiraTentativa) {
+                    cout << RED << "Entrada inválida. Digite um número válido (>= 0)." << RESET << endl;
+                }
+                cout << "Valor entregue pelo cliente: ";
+                string input;
+                getline(cin, input);
+                replace(input.begin(), input.end(), ',', '.');
+                istringstream iss(input);
+                if (iss >> valorEntregue && valorEntregue >= 0.0) {
+                    char extra;
+                    if (!(iss >> extra)) break;
+                }
+                primeiraTentativa = false;
+            }
+            try {
+                novaVenda.finalizarVenda(valorEntregue);
+                valorValido = true;
+            } catch (const std::invalid_argument& e) {
+                cout << RED << e.what() << RESET << endl;
+                // Repete o loop para pedir o valor novamente
+            }
+        }
+    }
 
-    novaVenda.finalizarVenda(valorEntregue);
-   
     mostrarResumoVenda(novaVenda);
+    cout << "\nPressione Enter para ver o talão...";
+    limparBuffer();
+    cin.get();
+    system("cls");
     novaVenda.imprimirTalao();
+    cout << "\nPressione Enter para voltar...";
+    cin.get();
+    system("cls");
 
-
-    if (!ganhouTalãoGratis)
-    clienteEncontrado->adicionarCompra(totalVenda);
+    if (!ganhouTalaoGratis)
+        clienteEncontrado->adicionarCompra(totalVenda);
 
     vendas[proximaPosicaoVenda] = novaVenda;
     proximaPosicaoVenda = (proximaPosicaoVenda + 1) % MAX_VENDAS;
+    salvarVendas("dados_loja/vendas.txt");
 }
 
 void Loja::mostrarResumoVenda(const Venda& venda) const {
-    cout << "\n========== RESUMO DA VENDA ==========\n";
-    cout << "ID: " << venda.getIdCliente() << "\n\n";
+    const int largura = 76;
+    const string margem = "    "; // 4 espaços
+    string titulo = "RESUMO DA VENDA";
+    int espaco = largura - 4 - titulo.length();
+    int esq = espaco / 2;
+    int dir = espaco - esq;
+    cout << margem << "+" << string(largura - 2, '=') << "+" << endl;
+    cout << margem << "|" << string(esq, ' ') << titulo << string(dir, ' ') << "|" << endl;
+    cout << margem << "+" << string(largura - 2, '=') << "+" << endl;
 
-    cout << left << setw(20) << "Produto"
-        << setw(10) << "Qtd"
-        << setw(15) << "Preco (s/IVA)"
-        << setw(15) << "Preco (c/IVA)"
-        << setw(15) << "Total Item" << "\n";
+    ostringstream ossId;
+    ossId << "ID do cliente: " << venda.getIdCliente();
+    cout << margem << "| " << left << setw(largura - 4) << ossId.str() << " |" << endl;
+    cout << margem << "+" << string(largura - 2, '-') << "+" << endl;
 
-    cout << string(70, '-') << "\n";
+    cout << left
+        << "| " << setw(3) << "#"
+        << "| " << setw(22) << "Produto"
+        << "| " << setw(6) << "Qtd"
+        << "| " << setw(13) << "Preco (s/IVA)"
+        << "| " << setw(13) << "Preco (c/IVA)"
+        << "| " << setw(13) << "Total Item" << "|" << endl;
+    cout << margem << "+" << string(largura - 2, '-') << "+" << endl;
 
+    int idx = 1;
     for (const auto& item : venda.getItens()) {
         double precoSemIVA = item.precoUnitario;
         double precoComIVA = precoSemIVA * 1.23;
         double totalItem = precoComIVA * item.quantidade;
-
-        cout << left << setw(20) << item.nomeProduto
-            << setw(10) << item.quantidade
-            << setw(15) << fixed << setprecision(2) << precoSemIVA
-            << setw(15) << precoComIVA
-            << setw(15) << totalItem << "\n";
+        cout << margem << left
+            << "| " << setw(3) << idx
+            << "| " << setw(22) << item.nomeProduto
+            << "| " << setw(6) << item.quantidade
+            << "| " << setw(13) << fixed << setprecision(2) << precoSemIVA
+            << "| " << setw(13) << precoComIVA
+            << "| " << setw(13) << totalItem << "|" << endl;
+        idx++;
     }
-
-    cout << string(70, '-') << "\n";
-    cout << right << setw(60) << "Total da venda (com IVA): "
-        << fixed << setprecision(2) << venda.getTotalComIVA() << "\n";
-    cout << "=====================================\n\n";
+    cout << margem << "+" << string(largura - 2, '-') << "+" << endl;
+    ostringstream ossTotal;
+    ossTotal << "Total da venda (com IVA): " << fixed << setprecision(2) << venda.getTotalComIVA();
+    cout << margem << "|" << right << setw(largura - 3) << ossTotal.str() << " |" << endl;
+    cout << margem << "+" << string(largura - 2, '=') << "+" << endl;
 }
 
 bool Loja::salvarDados(const string& diretorio) {
@@ -483,7 +518,6 @@ bool Loja::salvarDados(const string& diretorio) {
     bool sucesso = true;
     sucesso &= salvarClientes(diretorio + "/clientes.txt");
     sucesso &= salvarProdutos(diretorio + "/produtos.txt");
-    sucesso &= salvarVendas(diretorio + "/vendas.txt");
 
     if (sucesso) {
         cout << GREEN << "Dados salvos com sucesso no diretorio '" << diretorio << "'" << RESET << endl;
@@ -568,13 +602,9 @@ bool Loja::salvarVendas(const string& caminho) {
 
     arquivo << proximaPosicaoVenda << "\n";
 
-    for (int i = 0; i < MAX_VENDAS; i++) {
-        int pos = (proximaPosicaoVenda + i) % MAX_VENDAS;
-        const Venda& venda = vendas[pos];
-
-        if (venda.getNumeroFatura().empty()) {
-            continue;
-        }
+    for (const auto& venda : vendas) {
+        if (venda.getNumeroFatura().empty() || venda.getIdCliente() == 0)
+            continue; // Só grava vendas reais
 
         arquivo << venda.getNumeroFatura() << ";"
             << venda.getIdCliente() << ";"
@@ -724,7 +754,8 @@ bool Loja::carregarVendas(const string& caminho) {
                         getline(itemIss, totalItemStr)) {
 
                         int qtd = stoi(qtdStr);
-                        double precoUnit = stod(precoStr);
+                        double precoSemIVA = stod(precoStr);
+                        double precoUnit = precoSemIVA / qtd;
                         double precoCusto = precoUnit / 1.3;
 
                         venda.adicionarItem(nome, qtd, precoUnit, precoCusto);
@@ -745,88 +776,98 @@ bool Loja::carregarVendas(const string& caminho) {
 }
 
 void Loja::listarHistoricoVendas() const {
-    const int largura = 60;
-    cout << "\n" << string(largura, '=') << "\n";
-    cout << "| " << setw((largura - 4) / 2) << left << "HISTORICO DE VENDAS"
-        << setw((largura - 4) / 2) << right << " |\n";
-    cout << string(largura, '=') << "\n";
+    const int largura = 86;
+    const string margem = "    "; // 4 espaços
+    string titulo = "HISTORICO DE VENDAS";
+    int espaco = largura - 4 - titulo.length();
+    int esq = espaco / 2;
+    int dir = espaco - esq;
+    cout << margem << "+" << string(largura - 2, '=') << "+" << endl;
+    cout << margem << "|" << string(esq, ' ') << titulo << string(dir, ' ') << "|" << endl;
+    cout << margem << "+" << string(largura - 2, '=') << "+" << endl;
 
     bool encontrouVendas = false;
+
+    // Definição de larguras das colunas
+    const int wFat = 15, wFatVal = 8, wCli = 12, wCliVal = 4, wTotal = 16, wTotalVal = 12;
+    const int wProd = 30, wQtd = 8, wTotCIVA = 15;
 
     for (int i = MAX_VENDAS - 1; i >= 0; i--) {
         int pos = (proximaPosicaoVenda + i) % MAX_VENDAS;
         const Venda& venda = vendas[pos];
 
-        if (venda.getNumeroFatura().empty()) {
+        if (venda.getNumeroFatura().empty() || venda.getIdCliente() == 0) {
             continue;
         }
 
         encontrouVendas = true;
 
-        cout << "\n" << string(largura, '-') << "\n";
-        cout << "Fatura Nº: " << venda.getNumeroFatura()
-            << " | Cliente ID: " << venda.getIdCliente() << "\n";
-        cout << "Total da Venda: " << fixed << setprecision(2)
-            << venda.getValorTotal() << "€\n";
+        // Linha Fatura e Cliente
+        ostringstream ossFat;
+        ossFat << "| " << left << setw(wFat) << "Fatura Nº:" << setw(wFatVal) << venda.getNumeroFatura()
+               << "| " << left << setw(wCli) << "Cliente ID:" << setw(wCliVal) << venda.getIdCliente() << "|";
+        cout << margem << ossFat.str() << endl;
 
-        cout << string(largura, '-') << "\n";
-        cout << left << setw(25) << "Produto"
-            << setw(10) << "Qtd"
-            << setw(15) << "Total c/IVA" << "\n";
-        cout << string(largura, '-') << "\n";
+        // Linha Total da Venda
+        ostringstream ossTot;
+        ossTot << "| " << left << setw(wTotal) << "Total da Venda:"
+               << right << setw(wTotalVal) << fixed << setprecision(2) << venda.getValorTotal() << " €";
+        int espacos = largura - 3 - wTotal - wTotalVal - 2; // 3 pipes, 2 para ' €'
+        ossTot << string(espacos, ' ') << "|";
+        cout << margem << ossTot.str() << endl;
 
+        cout << margem << "+" << string(largura - 2, '-') << "+" << endl;
+
+        // Cabeçalho dos itens
+        ostringstream ossCab;
+        ossCab << "| " << left << setw(wProd) << "Produto"
+               << "| " << setw(wQtd) << "Qtd"
+               << "| " << setw(wTotCIVA) << "Total c/IVA" << "|";
+        cout << margem << ossCab.str() << endl;
+        cout << margem << "+" << string(largura - 2, '-') << "+" << endl;
+
+        // Itens
         for (const ItemVenda& item : venda.getItens()) {
-            cout << left << setw(25) << item.nomeProduto
-                << setw(10) << item.quantidade
-                << fixed << setprecision(2) << item.totalComIVA << "€\n";
+            ostringstream ossItem;
+            ossItem << "| " << left << setw(wProd) << item.nomeProduto
+                    << "| " << setw(wQtd) << item.quantidade
+                    << "| " << setw(wTotCIVA - 2) << fixed << setprecision(2) << item.totalComIVA << " €" << " |";
+            cout << margem << ossItem.str() << endl;
         }
+        cout << margem << "+" << string(largura - 2, '-') << "+" << endl;
     }
 
     if (!encontrouVendas) {
-        cout << "Nenhuma venda registrada.\n";
+        cout << margem << "| Nenhuma venda registrada." << setw(largura - 27) << right << "|" << endl;
     }
+
+    cout << margem << "+" << string(largura - 2, '=') << "+" << endl;
 }
 
 void Loja::relatorioStock() const {
-    const int largura = 60;
-    cout << "\n" << string(largura, '=') << "\n";
-        cout << "| " << setw((largura - 4) / 2) << left 
-            << "RELATORIO DE STOCK"
-        << setw((largura - 4) / 2) << right << "|\n";
-        cout << string(largura, '=') << "\n";
-
-        if (produtos.empty()) {
-            cout << "Nenhum produto encontrado.\n";
-            return;
-        }
-
-    cout << left << setw(25) << "Produto" << "Quantidade\n";
-    cout << string(45, '-') << "\n";
-
+    const int largura = 86;
+    const string margem = "    "; // 4 espaços
+    imprimirTituloCentralizado("RELATORIO DE STOCK", largura, margem);
+    cout << margem << left << setw(25) << "Produto" << "| " << setw(8) << "Quantidade" << "|" << endl;
+    cout << margem << "+" << string(largura - 2, '-') << "+" << endl;
     for (const auto& p : produtos) {
-        cout << left << setw(25) << p.getNome() << p.getQuantidade() << "\n";
+        cout << margem << left << setw(25) << p.getNome() << "| " << setw(8) << p.getQuantidade() << "|" << endl;
     }
-
-    cout << string(45, '=') << "\n";
+    cout << margem << "+" << string(largura - 2, '=') << "+" << endl;
 }
 
 
 void Loja::relatorioVendasPorProduto(const string& nomeProduto) const {
-    const int largura = 78;
-    cout << "\n" << string(largura, '=') << "\n";
-    cout << "| " << setw((largura - 4) / 2) << left
-        << "DETALHAMENTO DE VENDAS - PRODUTO: " + nomeProduto
-        << setw((largura - 4) / 2) << right << " |\n";
-    cout << string(largura, '=') << "\n";
+    const int largura = 86;
+    const string margem = "    "; // 4 espaços
+    string titulo = "DETALHAMENTO DE VENDAS - PRODUTO: " + nomeProduto;
+    imprimirTituloCentralizado(titulo, largura, margem);
 
-    cout << left
-        << "| " << setw(12) << "Fatura Nº"
-        << "| " << setw(6) << "Qtd"
-        << "| " << setw(12) << "Preço Unit."
-        << "| " << setw(12) << "Total c/IVA"
-        << "| " << setw(12) << "Custo"
-        << "| " << setw(12) << "Lucro" << "|\n";
-    cout << string(largura, '-') << "\n";
+    // Definição das larguras das colunas
+    std::vector<std::string> cabecalho = {"Fatura Nº", "Qtd", "Preço Unit.", "Total c/IVA", "Custo", "Lucro"};
+    std::vector<int> larguras = {10, 5, 13, 13, 10, 10};
+    imprimirLinhaTabela(cabecalho, larguras);
+    cout << margem << "+" << string(largura - 2, '-') << "+" << endl;
 
     bool encontrado = false;
     int totalQtd = 0;
@@ -837,49 +878,53 @@ void Loja::relatorioVendasPorProduto(const string& nomeProduto) const {
             if (item.nomeProduto == nomeProduto) {
                 encontrado = true;
 
-                double precoUnitario = item.precoSemIVA / item.quantidade;
-                double custoTotal = item.precoCusto * item.quantidade;
-                double lucro = item.totalComIVA - custoTotal;
+                double precoUnitario = item.precoUnitario;
+                double custoUnitario = item.precoCusto;
+                int quantidade = item.quantidade;
+                double totalComIVAItem = item.totalComIVA;
+                double custoTotal = custoUnitario * quantidade;
+                double lucroTotal = (precoUnitario * quantidade) - custoTotal;
 
-                cout << left
-                    << "| " << setw(12) << venda.getNumeroFatura()
-                    << "| " << setw(6) << item.quantidade
-                    << "| " << setw(12) << fixed << setprecision(2) << precoUnitario
-                    << "| " << setw(12) << item.totalComIVA
-                    << "| " << setw(12) << custoTotal
-                    << "| " << setw(12) << lucro << "|\n";
+                std::vector<std::string> linha = {
+                    venda.getNumeroFatura(),
+                    std::to_string(quantidade),
+                    (ostringstream{} << fixed << setprecision(2) << precoUnitario << " EUR").str(),
+                    (ostringstream{} << fixed << setprecision(2) << totalComIVAItem << " EUR").str(),
+                    (ostringstream{} << fixed << setprecision(2) << custoTotal << " EUR").str(),
+                    (ostringstream{} << fixed << setprecision(2) << lucroTotal << " EUR").str()
+                };
+                imprimirLinhaTabela(linha, larguras);
 
-                totalQtd += item.quantidade;
+                totalQtd += quantidade;
                 totalCusto += custoTotal;
-                totalLucro += lucro;
-                totalComIVA += item.totalComIVA;
+                totalComIVA += totalComIVAItem;
+                totalLucro += lucroTotal;
             }
         }
     }
 
     if (!encontrado) {
-        cout << "| Nenhuma venda encontrada para este produto.                      |\n";
+        cout << margem << "| Nenhuma venda encontrada para este produto." << setw(largura - 38) << right << "|" << endl;
     }
     else {
-        cout << string(largura, '-') << "\n";
-        cout << left
-            << "| " << setw(12) << "TOTAL"
-            << "| " << setw(6) << totalQtd
-            << "| " << setw(12) << "-"
-            << "| " << setw(12) << totalComIVA
-            << "| " << setw(12) << totalCusto
-            << "| " << setw(12) << totalLucro << "|\n";
+        cout << margem << "+" << string(largura - 2, '-') << "+" << endl;
+        std::vector<std::string> linhaTotal = {
+            "TOTAL",
+            std::to_string(totalQtd),
+            "-",
+            (ostringstream{} << fixed << setprecision(2) << totalComIVA << " EUR").str(),
+            (ostringstream{} << fixed << setprecision(2) << totalCusto << " EUR").str(),
+            (ostringstream{} << fixed << setprecision(2) << totalLucro << " EUR").str()
+        };
+        imprimirLinhaTabela(linhaTotal, larguras);
     }
-
-    cout << string(largura, '=') << "\n";
+    cout << margem << "+" << string(largura - 2, '=') << "+" << endl;
 }
 
 void Loja::relatorioTotalVendas() const {
     const int largura = 86;
-    cout << "\n" << string(largura, '=') << "\n";
-    cout << "| " << setw((largura - 4) / 2) << left << "RELATORIO TOTAL DE VENDAS"
-        << setw((largura - 4) / 2) << right << " |\n";
-    cout << string(largura, '=') << "\n";
+    const string margem = "    "; // 4 espaços
+    imprimirTituloCentralizado("RELATORIO TOTAL DE VENDAS", largura, margem);
 
     double total = 0.0;
     map<string, int> vendasPorProduto;
@@ -894,7 +939,7 @@ void Loja::relatorioTotalVendas() const {
     }
 
     if (vendas.empty()) {
-        cout << "Nenhuma venda registrada.\n";
+        cout << margem << "Nenhuma venda registrada.\n" << RESET;
         return;
     }
 
@@ -934,30 +979,37 @@ void Loja::relatorioTotalVendas() const {
         }
     }
 
-    cout << fixed << setprecision(2);
-    cout << "→ Total vendido: €" << total << "\n";
-    cout << "→ Produto mais vendido: " << maisVendido << " (" << maxQtd << " unidades)\n";
-    cout << "→ Produto menos vendido: " << menosVendido << " (" << minQtd << " unidades)\n";
-    cout << "→ Lucro do mais vendido: €" << lucroMaisVendido << "\n";
-    cout << "→ Cliente que mais comprou (ID): " << idTopCliente << " com €" << maiorCompra << "\n";
-    cout << string(58, '=') << "\n";
+    cout << margem << fixed << setprecision(2);
+    cout << "-> Total vendido: €" << total << "\n";
+    cout << "-> Produto mais vendido: " << maisVendido << " (" << maxQtd << " unidades)\n";
+    cout << "-> Produto menos vendido: " << menosVendido << " (" << minQtd << " unidades)\n";
+    cout << "-> Lucro do mais vendido: €" << lucroMaisVendido << "\n";
+    cout << "-> Cliente que mais comprou (ID): " << idTopCliente << " com €" << maiorCompra << "\n";
+
+    cout << margem << "+" << string(largura - 2, '=') << "+" << endl;
 }
 
 
 void Loja::relatorioGraficoVendas() const {
-    desenharCaixaTitulo("GRÁFICO DE VENDAS POR PRODUTO", 30);
+    const int largura = 86;
+    const string margem = "    "; // 4 espaços
+    imprimirTituloCentralizado("GRAFICO DE VENDAS POR PRODUTO", largura, margem);
 
     // Mapeia vendas por produto
-    map<string, double> totalPorProduto;
+    map<string, int> vendasPorProduto;
+    map<int, double> totalPorCliente;
+    double total = 0.0;
     for (const auto& venda : vendas) {
+        total += venda.getValorTotal();
+        totalPorCliente[venda.getIdCliente()] += venda.getValorTotal();
         for (const auto& item : venda.getItens()) {
-            totalPorProduto[item.nomeProduto] += item.totalComIVA;
+            vendasPorProduto[item.nomeProduto] += item.quantidade;
         }
     }
 
     // Nada para exibir
-    if (totalPorProduto.empty()) {
-        cout << RED << "Nenhuma venda registrada.\n" << RESET;
+    if (vendasPorProduto.empty()) {
+        cout << margem << RED << "Nenhuma venda registrada.\n" << RESET;
         return;
     }
 
@@ -997,18 +1049,22 @@ void Loja::relatorioGraficoVendas() const {
         }
     }
 
-    cout << fixed << setprecision(2);
-    cout << "→ Total vendido: €" << total << "\n";
-    cout << "→ Produto mais vendido: " << maisVendido << " (" << maxQtd << " unidades)\n";
-    cout << "→ Produto menos vendido: " << menosVendido << " (" << minQtd << " unidades)\n";
-    cout << "→ Lucro do mais vendido: €" << lucroMaisVendido << "\n";
-    cout << "→ Cliente que mais comprou (ID): " << idTopCliente << " com €" << maiorCompra << "\n";
-    cout << string(58, '=') << "\n";
+    cout << margem << fixed << setprecision(2);
+    cout << "-> Total vendido: €" << total << "\n";
+    cout << "-> Produto mais vendido: " << maisVendido << " (" << maxQtd << " unidades)\n";
+    cout << "-> Produto menos vendido: " << menosVendido << " (" << minQtd << " unidades)\n";
+    cout << "-> Lucro do mais vendido: €" << lucroMaisVendido << "\n";
+    cout << "-> Cliente que mais comprou (ID): " << idTopCliente << " com €" << maiorCompra << "\n";
+    cout << margem << string(58, '=') << "\n";
+
+    cout << margem << "+" << string(largura - 2, '=') << "+" << endl;
 }
 
 
 void Loja::relatorioVendasDetalhadoPorProduto() const {
     const int largura = 86;
+    const string margem = "    "; // 4 espaços
+    imprimirTituloCentralizado("RELATORIO DETALHADO POR PRODUTO", largura, margem);
 
     map<string, int> quantidadePorProduto;
     map<string, double> receitaPorProduto;
@@ -1024,23 +1080,23 @@ void Loja::relatorioVendasDetalhadoPorProduto() const {
     }
 
     if (quantidadePorProduto.empty()) {
-        cout << "\nNenhuma venda registrada.\n";
+        cout << margem << "\nNenhuma venda registrada.\n";
         return;
     }
 
-    cout << "\n" << string(largura, '=') << "\n";
-    cout << "| " << setw((largura - 4) / 2) << left << "RELATORIO DETALHADO POR PRODUTO"
+    cout << margem << "\n" << string(largura, '=') << "\n";
+    cout << margem << "| " << setw((largura - 4) / 2) << left << "RELATORIO DETALHADO POR PRODUTO"
         << setw((largura - 4) / 2) << right << " |\n";
-    cout << string(largura, '=') << "\n";
+    cout << margem << string(largura, '=') << "\n";
 
-    cout << left
+    cout << margem << left
         << "| " << setw(25) << "Produto"
         << "| " << setw(6) << "Qtd"
-        << "| " << setw(10) << "Preço"
-        << "| " << setw(12) << "Receita"
-        << "| " << setw(12) << "Custo"
-        << "| " << setw(12) << "Lucro" << "|\n";
-    cout << string(largura, '-') << "\n";
+        << "| " << setw(14) << "Preço"
+        << "| " << setw(14) << "Receita"
+        << "| " << setw(14) << "Custo"
+        << "| " << setw(14) << "Lucro" << "|" << endl;
+    cout << margem << "+" << string(largura - 2, '-') << "+" << endl;
 
     double totalLucro = 0.0;
 
@@ -1053,21 +1109,18 @@ void Loja::relatorioVendasDetalhadoPorProduto() const {
         double lucro = receita - custo;
         totalLucro += lucro;
 
-        cout << left
+        cout << margem << left
             << "| " << setw(25) << nome
             << "| " << setw(6) << qtd
-            << "| " << setw(10) << fixed << setprecision(2) << preco
-            << "| " << setw(12) << receita
-            << "| " << setw(12) << custo
-            << "| " << setw(12) << lucro << "|\n";
+            << "| " << setw(11) << fixed << setprecision(2) << preco << " € "
+            << "| " << setw(11) << receita << " € "
+            << "| " << setw(11) << custo << " € "
+            << "| " << setw(11) << lucro << " € "
+            << "|" << endl;
     }
 
-    cout << string(largura, '=') << "\n";
-    cout << "| " << setw(70) << left << "Lucro total estimado:"
-        << "€ " << fixed << setprecision(2) << totalLucro << " |\n";
-    cout << string(largura, '=') << "\n";
-}
-void Loja::relatorioGraficoVendas() const {
-    // Implemente a lógica aqui, ou apenas coloque algo provisório:
-    cout << "Relatorio grafico de vendas ainda nao implementado.\n";
+    cout << margem << "+" << string(largura - 2, '=') << "+" << endl;
+    cout << margem << "| " << setw(70) << left << "Lucro total estimado:"
+        << "€ " << fixed << setprecision(2) << totalLucro << " |" << endl;
+    cout << margem << "+" << string(largura - 2, '=') << "+" << endl;
 }

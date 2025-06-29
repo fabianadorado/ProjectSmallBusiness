@@ -8,6 +8,8 @@
 #include <cctype>
 #include <sys/stat.h>
 #include <windows.h>
+#include <locale>
+#include <codecvt>
 
 // Cores ANSI
 #define CYAN    "\033[36m"
@@ -51,10 +53,6 @@ double lerFloatPositivo(const string& mensagem) {
         } else {
             cout << "\033[31mEntrada inválida. Digite um número válido (>= 0).\033[0m\n";
         }
-<<<<<<< HEAD
-=======
-        cout << "\033[31mEntrada invalida. Digite um numero valido (>= 0).\033[0m\n";
->>>>>>> cb0a2d4c66515667b8f468156483aacf7c611b68
         cin.clear();
     }
 }
@@ -73,19 +71,21 @@ void limparBuffer() {
 }
 
 void desenharLinhaHorizontal(const string& inicio, const string& fim, size_t largura) {
+    const string margem = "    ";
     string linha_str;
     for (size_t i = 0; i < largura; ++i) {
         linha_str += "-";
     }
-    cout << BOLD << inicio << linha_str << fim << END_COLOR << endl;
+    cout << BOLD << margem << inicio << linha_str << fim << END_COLOR << endl;
 }
 
 void desenharLinhaHorizontalVenda(const string& inicio, const string& fim, size_t largura) {
+    const string margem = "    ";
     string linha_str;
     for (size_t i = 0; i < largura; ++i) {
         linha_str += "-";
     }
-    cout << BOLD << inicio << linha_str << fim << END_COLOR << endl;
+    cout << BOLD << margem << inicio << linha_str << fim << END_COLOR << endl;
 }
 
 string repetir(const string& s, size_t n) {
@@ -95,41 +95,49 @@ string repetir(const string& s, size_t n) {
 }
 
 void desenharCaixaTitulo(const string& titulo, size_t largura) {
-    string bordaTop = "+" + repetir("=", largura) + "+";
-    string bordaBottom = "+" + repetir("=", largura) + "+";
+    const string margem = "    ";
+    string bordaTop = margem + "+" + repetir("=", largura) + "+";
+    string bordaBottom = margem + "+" + repetir("=", largura) + "+";
     size_t espacoEsq = (largura - titulo.length()) / 2;
     size_t espacoDir = largura - titulo.length() - espacoEsq;
     cout << CYAN << "\n" << bordaTop << "\n";
-    cout << "|" << repetir(" ", espacoEsq) << BOLD << titulo << RESET << CYAN << repetir(" ", espacoDir) << "|\n";
+    cout << margem << "|" << repetir(" ", espacoEsq) << BOLD << titulo << RESET << CYAN << repetir(" ", espacoDir) << "|\n";
     cout << bordaBottom << "\n" << RESET;
 }
 
+// Função auxiliar para remover pontuação e acentos de uma string
+std::string removerPontuacao(const std::string& str) {
+    std::string resultado;
+    for (char c : str) {
+        if (isalnum(static_cast<unsigned char>(c)) || isspace(static_cast<unsigned char>(c))) {
+            resultado += c;
+        }
+    }
+    return resultado;
+}
+
 int mostrarMenu(const string& titulo, const vector<string>& opcoes) {
+    const string margem = "    "; // 4 espaços
     size_t largura = titulo.length();
     for (const auto& op : opcoes) {
         string linha = "X - " + op;
         if (linha.length() > largura) largura = linha.length();
     }
     largura += 4;
-    string bordaTop = "+" + repetir("=", largura) + "+";
-    string bordaMeio = "+" + repetir("=", largura) + "+";
-    string bordaBottom = "+" + repetir("=", largura) + "+";
+    string bordaTop = margem + "+" + repetir("=", largura) + "+";
+    string bordaMeio = margem + "+" + repetir("=", largura) + "+";
+    string bordaBottom = margem + "+" + repetir("=", largura) + "+";
     size_t espacoEsq = (largura - titulo.length()) / 2;
     size_t espacoDir = largura - titulo.length() - espacoEsq;
     cout << CYAN << bordaTop << "\n";
-    cout << "|" << repetir(" ", espacoEsq) << BOLD << titulo << RESET << CYAN << repetir(" ", espacoDir) << "|\n";
+    cout << margem << "|" << repetir(" ", espacoEsq) << BOLD << titulo << RESET << CYAN << repetir(" ", espacoDir) << "|\n";
     cout << bordaMeio << "\n" << CYAN;
     for (size_t i = 0; i < opcoes.size(); ++i) {
         string texto = to_string(i + 1) + " - " + opcoes[i];
-        cout << "| " << texto << repetir(" ", largura - texto.length() - 1) << "|\n";
+        cout << margem << "| " << texto << repetir(" ", largura - texto.length() - 1) << "|\n";
     }
     cout << CYAN << bordaBottom << "\n" << RESET;
-<<<<<<< HEAD
-    cout << YELLOW << "Escolha uma opção: " << RESET;
-=======
-    cout << YELLOW << "Escolha uma opcao: " << RESET;
-
->>>>>>> cb0a2d4c66515667b8f468156483aacf7c611b68
+    cout << margem << YELLOW << "Escolha uma opcao: " << RESET;
     int opcao;
     cin >> opcao;
     return opcao;
@@ -148,4 +156,35 @@ void criarDiretorioSeNaoExistir(const string& nomeDiretorio) {
         system(("mkdir -p " + nomeDiretorio).c_str());
         #endif
     }
+}
+
+void imprimirLinhaInterna(const std::string& margem, int largura, const std::string& conteudo, const std::string& corFundo, const std::string& corTexto, const std::string& reset) {
+    std::string conteudoAjustado = conteudo;
+    if (conteudoAjustado.length() > static_cast<size_t>(largura - 2)) {
+        conteudoAjustado = conteudoAjustado.substr(0, largura - 2);
+    }
+    int espacos = largura - 2 - conteudoAjustado.length();
+    if (espacos < 0) espacos = 0;
+    std::cout << margem << "|" << corFundo << corTexto << conteudoAjustado << std::string(espacos, ' ') << reset << "|" << std::endl;
+}
+
+void imprimirLinhaHorizontalBranca(const std::string& margem, int largura, const std::string& corFundo, const std::string& corTexto, const std::string& reset) {
+    std::cout << margem << "|" << corFundo << corTexto << std::string(largura - 2, '-') << reset << "|" << std::endl;
+}
+
+void imprimirLinhaTabela(const std::vector<std::string>& colunas, const std::vector<int>& larguras) {
+    std::cout << "|";
+    for (size_t i = 0; i < colunas.size(); ++i) {
+        std::cout << " " << std::left << std::setw(larguras[i]) << colunas[i] << " |";
+    }
+    std::cout << std::endl;
+}
+
+void imprimirTituloCentralizado(const std::string& titulo, int largura, const std::string& margem) {
+    std::cout << margem << "+" << std::string(largura - 2, '=') << "+" << std::endl;
+    int espaco = largura - 4 - static_cast<int>(titulo.length());
+    int esq = espaco / 2;
+    int dir = espaco - esq;
+    std::cout << margem << "|" << std::string(esq + 1, ' ') << titulo << std::string(dir + 1, ' ') << "|" << std::endl;
+    std::cout << margem << "+" << std::string(largura - 2, '=') << "+" << std::endl;
 }
