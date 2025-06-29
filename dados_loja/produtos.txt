@@ -1,0 +1,2 @@
+1;Monsters Punch;8;1.00
+2;Monsters Red;20;1.00
