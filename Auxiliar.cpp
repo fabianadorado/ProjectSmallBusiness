@@ -1,21 +1,22 @@
 ﻿#define NOMINMAX
 #include "Auxiliar.h"
 #include <iostream>
-#include <sstream>
-#include <limits>
-#include <cctype>
 #include <iomanip>
-#include <windows.h>
+#include <limits>
+#include <sstream>
 #include <algorithm>
+#include <cctype>
 #include <sys/stat.h>
-
+#include <windows.h>
 
 // Cores ANSI
 #define CYAN    "\033[36m"
 #define GREEN   "\033[32m"
 #define BOLD    "\033[1m"
 #define YELLOW  "\033[33m"
-#define RESET "\033[0m" 
+#define RESET   "\033[0m"
+#define END_COLOR "\033[0m"
+
 using namespace std;
 
 int lernumero(const string& mensagem) {
@@ -36,13 +37,21 @@ double lerFloatPositivo(const string& mensagem) {
     double valor;
     while (true) {
         cout << mensagem;
-        if (cin >> valor && valor >= 0.0f) {
-            cin.ignore(1000, '\n');
-            return valor;
+        string input;
+        getline(cin, input);
+        replace(input.begin(), input.end(), ',', '.');
+        istringstream iss(input);
+        if (iss >> valor && valor >= 0.0f) {
+            char extra;
+            if (iss >> extra) {
+                cout << "\033[31mEntrada inválida. Digite apenas números.\033[0m\n";
+            } else {
+                return valor;
+            }
+        } else {
+            cout << "\033[31mEntrada inválida. Digite um número válido (>= 0).\033[0m\n";
         }
-        cout << "\033[31mEntrada inválida. Digite um número válido (>= 0).\033[0m\n";
         cin.clear();
-        cin.ignore(1000, '\n');
     }
 }
 
@@ -56,76 +65,67 @@ string toLower(const string& str) {
 
 void limparBuffer() {
     cin.clear();
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 }
 
-void desenharLinhaHorizontal(const string& inicio, const string& fim, int largura)
-{
-    string linha_horizontal_char = "\u2500"; // Caractere de linha horizontal UTF-8 (U+2500)
-    std::string linha_str;
-    for (int i = 0; i < largura; ++i) 
-    {
-        linha_str += linha_horizontal_char;
-    }
-    cout << BOLD << inicio << linha_str << fim << END_COLOR << endl;
-}
-
-void desenharLinhaHorizontalVenda(const string& inicio, const string& fim, int largura) 
-{
-    string linha_char = "\u2500";
+void desenharLinhaHorizontal(const string& inicio, const string& fim, size_t largura) {
     string linha_str;
-    for (int i = 0; i < largura; ++i) {
-        linha_str += linha_char;
+    for (size_t i = 0; i < largura; ++i) {
+        linha_str += "-";
     }
     cout << BOLD << inicio << linha_str << fim << END_COLOR << endl;
 }
 
-string repetir(const string& s, int n) {
+void desenharLinhaHorizontalVenda(const string& inicio, const string& fim, size_t largura) {
+    string linha_str;
+    for (size_t i = 0; i < largura; ++i) {
+        linha_str += "-";
+    }
+    cout << BOLD << inicio << linha_str << fim << END_COLOR << endl;
+}
+
+string repetir(const string& s, size_t n) {
     string r;
-    for (int i = 0; i < n; ++i) r += s;
+    for (size_t i = 0; i < n; ++i) r += s;
     return r;
 }
 
+void desenharCaixaTitulo(const string& titulo, size_t largura) {
+    string bordaTop = "+" + repetir("=", largura) + "+";
+    string bordaBottom = "+" + repetir("=", largura) + "+";
+    size_t espacoEsq = (largura - titulo.length()) / 2;
+    size_t espacoDir = largura - titulo.length() - espacoEsq;
+    cout << CYAN << "\n" << bordaTop << "\n";
+    cout << "|" << repetir(" ", espacoEsq) << BOLD << titulo << RESET << CYAN << repetir(" ", espacoDir) << "|\n";
+    cout << bordaBottom << "\n" << RESET;
+}
+
 int mostrarMenu(const string& titulo, const vector<string>& opcoes) {
-    SetConsoleOutputCP(CP_UTF8);
-    SetConsoleCP(CP_UTF8);
-
-    // Calcula largura máxima entre título e opções
-    size_t largura = titulo.size();
+    size_t largura = titulo.length();
     for (const auto& op : opcoes) {
-        std::string linha = "X - " + op; // simulando "1 - Opção"
-        if (linha.size() > largura) largura = linha.size();
+        string linha = "X - " + op;
+        if (linha.length() > largura) largura = linha.length();
     }
-    largura += 4; // margem interna
-
-    // Bordas
-    string bordaTop = u8"╔" + repetir(u8"═", largura) + u8"╗";
-    string bordaMeio = u8"╠" + repetir(u8"═", largura) + u8"╣";
-    string bordaBottom = u8"╚" + repetir(u8"═", largura) + u8"╝";
-
-    // Centraliza título
-    int espacoEsq = (largura - titulo.size()) / 2;
-    int espacoDir = largura - titulo.size() - espacoEsq;
-
+    largura += 4;
+    string bordaTop = "+" + repetir("=", largura) + "+";
+    string bordaMeio = "+" + repetir("=", largura) + "+";
+    string bordaBottom = "+" + repetir("=", largura) + "+";
+    size_t espacoEsq = (largura - titulo.length()) / 2;
+    size_t espacoDir = largura - titulo.length() - espacoEsq;
     cout << CYAN << bordaTop << "\n";
-    cout << u8"║" << repetir(" ", espacoEsq) << BOLD << titulo
-        << RESET << CYAN << repetir(" ", espacoDir) << u8"║\n";
+    cout << "|" << repetir(" ", espacoEsq) << BOLD << titulo << RESET << CYAN << repetir(" ", espacoDir) << "|\n";
     cout << bordaMeio << "\n" << CYAN;
-
-    // Exibe as opções com largura fixa
     for (size_t i = 0; i < opcoes.size(); ++i) {
         string texto = to_string(i + 1) + " - " + opcoes[i];
-        cout << u8"║ " << texto
-            << repetir(" ", largura - texto.size() - 1) << u8"║\n";
+        cout << "| " << texto << repetir(" ", largura - texto.length() - 1) << "|\n";
     }
-
     cout << CYAN << bordaBottom << "\n" << RESET;
     cout << YELLOW << "Escolha uma opção: " << RESET;
-
     int opcao;
     cin >> opcao;
     return opcao;
 }
+
 bool arquivoExiste(const string& nomeArquivo) {
     struct stat buffer;
     return (stat(nomeArquivo.c_str(), &buffer) == 0);

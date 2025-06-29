@@ -17,9 +17,10 @@ string toLower(const string& str);
 #define YELLOW  "\033[33m"
 
 void limparBuffer();
-void desenharLinhaHorizontal(const string& inicio, const string& fim, int largura);
-void desenharLinhaHorizontalVenda(const string& inicio, const string& fim, int largura);
-string repetir(const string& s, int n);
+void desenharLinhaHorizontal(const string& inicio, const string& fim, size_t largura);
+void desenharLinhaHorizontalVenda(const string& inicio, const string& fim, size_t largura);
+string repetir(const string& s, size_t n);
+void desenharCaixaTitulo(const string& titulo, size_t largura);
 int mostrarMenu(const string& titulo, const vector<string>& opcoes);
 bool arquivoExiste(const string& nomeArquivo);
 void criarDiretorioSeNaoExistir(const string& nomeDiretorio);

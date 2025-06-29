@@ -1,2 +1,5 @@
-1;Monsters Punch;8;1.00
-2;Monsters Red;20;1.00
+1;Monsters Punch;10;1.55
+2;Monsters Red;20;1.99
+3;Monsters Pink;10;1.8
+4;Monsters Black;10;1.75
+5;Monsters White;10;1.99

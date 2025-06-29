@@ -22,11 +22,10 @@
 using namespace std;
 
 int main() {
-    // Configuração inicial do console
-    system("chcp 65001");
+    system("chcp 65001 > nul");
     SetConsoleOutputCP(CP_UTF8);
-    SetConsoleCP(CP_UTF8);
-    setlocale(LC_ALL, "pt_PT.utf8");
+    setlocale(LC_ALL, "");
+    setlocale(LC_NUMERIC, "C");
 
     Menu menu;
     Loja loja;
@@ -72,7 +71,7 @@ int main() {
                     cout << "Nome: ";
                     getline(cin, nome);
                     qtd = lernumero("Quantidade: ");
-                    preco = lerFloatPositivo("Preço de custo: ");
+                    preco = lerFloatPositivo("PreÃ§o de custo: ");
                     loja.criarProduto(nome, qtd, preco);
 
 
@@ -123,7 +122,7 @@ int main() {
                 case 5: // Voltar ao Menu Principal
                     break;
                 default:
-                    cout << RED << "\nOpção inválida!" << RESET;
+                    cout << RED << "\nOpÃ§Ã£o invÃ¡lida!" << RESET;
                     Sleep(1000);
                 }
             } while (sub_produtos != 5);
@@ -211,14 +210,14 @@ int main() {
                 case 6: // Voltar ao Menu Principal
                     break;
                 default:
-                    cout << RED << "\nOpção inválida!" << RESET;
+                    cout << RED << "\nOpÃ§Ã£o invÃ¡lida!" << RESET;
                     Sleep(1000);
                 }
             } while (sub_clientes != 6);
             break;
         }
         case 4:
-        { // Relatórios
+        { // RelatÃ³rios
             int sub_relatorios;
             do {
                 system("cls");
@@ -226,7 +225,7 @@ int main() {
 
                 switch (sub_relatorios)
                 {
-                case 1: // Relatório de Stock
+                case 1: // RelatÃ³rio de Stock
                     system("cls");
                     loja.relatorioStock();
                     cout << "\nPressione Enter para voltar...";
@@ -237,7 +236,7 @@ int main() {
                 { // Vendas por Produto
                     system("cls");
                     string nome;
-                    cout << "Relatório por Produto\n\n";
+                    cout << "RelatÃ³rio por Produto\n\n";
                     cout << "Nome do produto: ";
                     cin.ignore();
                     getline(cin, nome);
@@ -254,14 +253,14 @@ int main() {
                     limparBuffer();
                     cin.get();
                     break;
-                case 4: // Gráfico de Vendas
+                case 4: // GrÃ¡fico de Vendas
                     system("cls");
                     loja.relatorioGraficoVendas();
                     cout << "\nPressione Enter para voltar...";
                     limparBuffer();
                     cin.get();
                     break;
-                case 5: // Histórico de Vendas
+                case 5: // HistÃ³rico de Vendas
                     system("cls");
                     loja.listarHistoricoVendas();
                     cout << "\nPressione Enter para voltar...";
@@ -278,7 +277,7 @@ int main() {
                 case 7: // Voltar ao Menu Principal
                     break;
                 default:
-                    cout << RED << "\nOpção inválida!" << RESET;
+                    cout << RED << "\nOpÃ§Ã£o invÃ¡lida!" << RESET;
                     Sleep(1000);
                 }
             } while (sub_relatorios != 7);
@@ -289,7 +288,7 @@ int main() {
             cout << GREEN << "\nEncerrando sistema..." << RESET << endl;
             break;
         default:
-            cout << RED << "Opção inválida!" << RESET;
+            cout << RED << "OpÃ§Ã£o invÃ¡lida!" << RESET;
             Sleep(1000);
             system("cls");
         }

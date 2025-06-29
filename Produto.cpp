@@ -1,5 +1,7 @@
 ﻿#include "Produto.h"
 #include <iostream>
+#include <locale>
+#include <sstream>
 
 using namespace std;
 

@@ -1,5 +1,4 @@
-﻿
-// -*-coding: utf - 8 - *-
+﻿// -*-coding: utf - 8 - *-
 #include "Loja.h"
 #include "auxiliar.h"
 #include <windows.h>
@@ -190,7 +189,6 @@ void Loja::alterarNomeCliente(int idCliente, const string& novoNome)
 }
 bool Loja::carregarClientes(const string& caminho) {
     if (!arquivoExiste(caminho)) {
-        // Se arquivo não existe, limpa lista de IDs disponíveis
         idsClientesDisponiveis.clear();
         return false;
     }
@@ -455,11 +453,11 @@ bool Loja::salvarClientes(const string& caminho) {
 
 bool Loja::salvarProdutos(const string& caminho) {
     ofstream arquivo(caminho);
+    arquivo.imbue(locale("C"));
     if (!arquivo.is_open()) {
         return false;
     }
-    arquivo.imbue(locale::classic());
-    arquivo << fixed << setprecision(2);
+    
     for (const auto& produto : produtos) {
         arquivo << produto.getId() << ";"
             << produto.getNome() << ";"
@@ -522,18 +520,23 @@ bool Loja::salvarVendas(const string& caminho) {
 }
 
 bool Loja::carregarProdutos(const string& caminho) {
-    if (!arquivoExiste(caminho)) return false;
+    if (!arquivoExiste(caminho)) 
+        return false;
 
     ifstream arquivo(caminho);
+    arquivo.imbue(locale("C"));
     if (!arquivo.is_open()) {
         return false;
     }
-    arquivo.imbue(locale::classic());
-
+    
     produtos.clear();
     string linha;
+    
     while (getline(arquivo, linha)) {
         istringstream iss(linha);
+        // Configura o stringstream para usar locale C para números
+        iss.imbue(locale("C"));
+        
         string idStr, nome, qtdStr, precoStr;
 
         if (getline(iss, idStr, ';') &&
@@ -543,9 +546,11 @@ bool Loja::carregarProdutos(const string& caminho) {
 
            
             try {
-                // Limpeza de espaços e substituição de vírgula por ponto
+                // Remove espaços em branco
                 precoStr.erase(precoStr.find_last_not_of(" \n\r\t") + 1);
                 precoStr.erase(0, precoStr.find_first_not_of(" \n\r\t"));
+                
+                // Substitui vírgula por ponto se necessário
                 replace(precoStr.begin(), precoStr.end(), ',', '.');
 
                 int id = stoi(idStr);
@@ -558,7 +563,7 @@ bool Loja::carregarProdutos(const string& caminho) {
                     proximoIdProduto = id + 1;
                 }
             }
-            catch (...) {
+            catch (const exception& e) {
                 continue;
             }
         }
@@ -653,8 +658,7 @@ bool Loja::carregarVendas(const string& caminho) {
 }
 
 void Loja::listarHistoricoVendas() const {
-    cout << CYAN << "\n╔══════════════════════════════╗\n";
-    cout << BOLD << "       HISTÓRICO DE VENDAS" << RESET << CYAN << "\n╚══════════════════════════════╝\n" << RESET;
+    desenharCaixaTitulo("HISTÓRICO DE VENDAS", 30);
     const int largura = 60;
 
     bool encontrouVendas = false;
@@ -692,41 +696,9 @@ void Loja::listarHistoricoVendas() const {
         cout << "Nenhuma venda registrada.\n";
     }
 }
-//void Loja::listarHistoricoVendas() const {
-//    cout << CYAN << "\n╔══════════════════════════════╗\n";
-//    cout << BOLD << "       HISTÓRICO DE VENDAS" << RESET << CYAN << "\n╚══════════════════════════════╝\n" << RESET;
-//    const int largura = 60;
-//    if (vendas.empty()) {
-//        cout << "Nenhuma venda registrada.\n";
-//        return;
-//    }
-//
-//    for (const Venda& venda : vendas) {
-//        cout << "\n" << string(largura, '-') << "\n";
-//        cout << "Fatura Nº: " << venda.getNumeroFatura()
-//            << " | Cliente ID: " << venda.getIdCliente() << "\n";
-//        cout << "Total da Venda: " << fixed << setprecision(2)
-//            << venda.getValorTotal() << "€\n";
-//
-//        cout << string(largura, '-') << "\n";
-//        cout << left << setw(25) << "Produto"
-//            << setw(10) << "Qtd"
-//            << setw(15) << "Total c/IVA" << "\n";
-//        cout << string(largura, '-') << "\n";
-//
-//        for (const ItemVenda& item : venda.getItens()) {
-//            cout << left << setw(25) << item.nomeProduto
-//                << setw(10) << item.quantidade
-//                << fixed << setprecision(2) << item.totalComIVA << "€\n";
-//        }
-//    }
-//
-//}
-
 
 void Loja::relatorioStock() const {
-    cout << CYAN << "\n╔═════════════════════════════════════╗\n";
-    cout << BOLD << "     RELATÓRIO DE STOCK" << RESET << CYAN << "\n╚═════════════════════════════════════╝\n" << RESET;
+    desenharCaixaTitulo("RELATÓRIO DE STOCK", 35);
 
     if (produtos.empty()) {
         cout << RED << "Nenhum produto encontrado.\n" << RESET;
@@ -746,13 +718,8 @@ void Loja::relatorioVendasPorProduto(const string& nomeProduto) const {
 
     const int largura = 66;
     string titulo = "DETALHAMENTO DE VENDAS - PRODUTO: " + nomeProduto;
-    int espacoEsq = (largura - titulo.size()) / 2;
-    int espacoDir = largura - titulo.size() - espacoEsq;
-
-    cout << CYAN << "\n╔══════════════════════════════════════════════════════════════╗\n";
-    cout << "║" << string(espacoEsq, ' ') << BOLD << titulo << RESET << CYAN << string(espacoDir, ' ') << "║\n";
-        cout << "\n╚══════════════════════════════════════════════════════════════╝\n" << RESET;
-        
+    
+    desenharCaixaTitulo(titulo, largura);
 
     cout << BOLD << left
         << setw(12) << "Fatura Nº"
@@ -815,8 +782,7 @@ void Loja::relatorioVendasPorProduto(const string& nomeProduto) const {
 
 
 void Loja::relatorioTotalVendas() const {
-    cout << CYAN << "\n╔══════════════════════════════════════════╗\n";
-    cout << BOLD << "      RELATÓRIO TOTAL DE VENDAS" << RESET << CYAN << "\n╚══════════════════════════════════════════╝\n" << RESET;
+    desenharCaixaTitulo("RELATÓRIO TOTAL DE VENDAS", 38);
 
     double total = 0.0f;
     map<string, int> vendasPorProduto;
@@ -878,8 +844,7 @@ void Loja::relatorioTotalVendas() const {
 
 
 void Loja::relatorioGraficoVendas() const {
-    cout << CYAN << "\n╔══════════════════════════════╗\n";
-    cout << BOLD << "  GRÁFICO DE VENDAS POR PRODUTO" << RESET << CYAN << "\n╚══════════════════════════════╝\n" << RESET;
+    desenharCaixaTitulo("GRÁFICO DE VENDAS POR PRODUTO", 30);
 
     // Mapeia vendas por produto
     map<string, double> totalPorProduto;
@@ -938,9 +903,7 @@ void Loja::relatorioVendasDetalhadoPorProduto() const {
     }
 
     // Cabeçalho
-    cout << CYAN << "\n╔══════════════════════════════════════════════════════════════╗\n";
-    cout << BOLD << "                  RELATÓRIO DETALHADO POR PRODUTO" << RESET << CYAN 
-        << "\n╚══════════════════════════════════════════════════════════════╝\n" << RESET;
+    desenharCaixaTitulo("RELATÓRIO DETALHADO POR PRODUTO", 66);
 
     cout << BOLD;
     cout << left << setw(20) << "Produto"
