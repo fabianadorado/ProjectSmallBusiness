@@ -33,6 +33,7 @@ private:
     double valorEntregue;
     double troco;
     bool gratis = false;
+    string nomeCliente;
 
 public:
     Venda();
@@ -50,7 +51,6 @@ public:
     double getTroco() const;
     double getTotalComIVA() const;
 
-
     bool isGratis() const
     {
         return gratis;
@@ -60,5 +60,11 @@ public:
     {
         return itens;
     }
+
+    void removerItemPorLinha(int numeroLinha);
+    void cancelarVenda();
+
+    void setNomeCliente(const string& nome) { nomeCliente = nome; }
+    string getNomeCliente() const { return nomeCliente; }
 
 };

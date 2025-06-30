@@ -227,3 +227,19 @@ string centro(const string& texto, int largura) {
     int dir = espacos - esq;
     return string(esq, ' ') + t + string(dir, ' ');
 }
+
+bool confirmarAcao(const std::string& mensagem) {
+    char opcao;
+    while (true) {
+        std::cout << mensagem << " (s/n): ";
+        std::cin >> opcao;
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        if (opcao == 's' || opcao == 'S') {
+            return true;
+        } else if (opcao == 'n' || opcao == 'N') {
+            return false;
+        } else {
+            std::cout << "Entrada invalida. Digite 's' para sim ou 'n' para nao." << std::endl;
+        }
+    }
+}

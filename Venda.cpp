@@ -123,6 +123,9 @@ int Venda::getIdCliente() const
 }
 
 void Venda::imprimirTalao() const {
+    // Definição das larguras das colunas (igual à tabela do talão)
+    const int wId = 3, wProd = 22, wQtd = 6, wPSemIVA = 13, wPComIVA = 13, wTotal = 13;
+
     // Configurações de cores ANSI
     const string FUNDO_BRANCO = "\033[47m";
     const string TEXTO_PRETO = "\033[30m";
@@ -161,17 +164,23 @@ void Venda::imprimirTalao() const {
     linhaTexto("TALAO DE COMPRA", true);
     linhaBranca('=');
 
-    // Dados
-    linhaTexto("Data: " + data);
-    linhaTexto("Fatura: " + numeroFatura);
-    linhaTexto("Cliente ID: " + to_string(idCliente));
+    // Dados centralizados
+    linhaTexto(centro("Data: " + data, LARGURA - 2), true);
+    linhaTexto(centro("Fatura: " + numeroFatura, LARGURA - 2), true);
+    linhaTexto(centro("Cliente ID: " + to_string(idCliente), LARGURA - 2), true);
+    // Adicionar nome do cliente se disponível
+    string nomeCliente = getNomeCliente();
+    if (!nomeCliente.empty()) {
+        linhaTexto(centro("Bem-vindo!", LARGURA - 2), true);
+        linhaTexto(centro("Nome: " + nomeCliente, LARGURA - 2), true);
+    }
     linhaBranca('-');
 
     // Cabeçalho
-    linhaTexto("ITENS COMPRADOS", true);
+    linhaTexto(centro("ITENS COMPRADOS", LARGURA - 2), true);
     linhaBranca('-');
 
-    // Itens
+    // Itens com margem interna
     for (const auto& item : itens) {
         ostringstream oss;
         string nome = toUpper(item.nomeProduto);
@@ -183,6 +192,8 @@ void Venda::imprimirTalao() const {
         oss << " = ";
         oss << right << setw(7) << fixed << setprecision(2) << item.precoSemIVA;
         string linha = oss.str();
+        // Adiciona margem interna
+        linha = " " + linha + " ";
         if (linha.length() > static_cast<size_t>(LARGURA - 2))
             linha = linha.substr(0, LARGURA - 2);
         else if (linha.length() < static_cast<size_t>(LARGURA - 2))
@@ -195,27 +206,69 @@ void Venda::imprimirTalao() const {
     double semIVA = total / 1.23;
     double iva = total - semIVA;
 
-    auto linhaValor = [&](const string& label, double valor) {
+    // Função para alinhar totais igual à linha do item, sem pipes intermediários
+    auto linhaTotalSemPipes = [&](const string& label, double valor) {
         ostringstream oss;
+        oss << left << setw(2) << ""; // espaço do número
         oss << left << setw(20) << label;
-        ostringstream valorStream;
-        valorStream << right << fixed << setprecision(2) << valor;
-        string valorStr = valorStream.str();
-        string conteudo = oss.str() + string(LARGURA - 2 - oss.str().length() - valorStr.length(), ' ') + valorStr;
-        if (conteudo.length() > (size_t)LARGURA - 2)
-            conteudo = conteudo.substr(0, LARGURA - 2);
-        else if (conteudo.length() < (size_t)LARGURA - 2)
-            conteudo += string(LARGURA - 2 - conteudo.length(), ' ');
-        cout << margem << FUNDO_BRANCO << TEXTO_PRETO << conteudo << RESET << endl;
+        oss << left << setw(3) << ""; // espaço da quantidade
+        oss << left << setw(4) << ""; // espaço do 'x'
+        oss << left << setw(6) << ""; // espaço do preço unitário
+        oss << left << setw(3) << ""; // espaço do '='
+        oss << right << setw(7) << fixed << setprecision(2) << valor;
+        string linha = oss.str();
+        if (linha.length() < LARGURA - 2)
+            linha += string(LARGURA - 2 - linha.length(), ' ');
+        cout << margem << FUNDO_BRANCO << TEXTO_PRETO << linha << RESET << endl;
     };
 
-    linhaValor("Subtotal:", semIVA);
-    linhaValor("IVA (23%):", iva);
-    linhaValor("TOTAL:", total);
+    linhaTotalSemPipes("Subtotal:", semIVA);
+    linhaTotalSemPipes("IVA (23%):", iva);
+    linhaTotalSemPipes("TOTAL:", total);
     linhaBranca('-');
-    linhaValor("Valor pago:", valorEntregue);
-    linhaValor("Troco:", troco);
+    linhaTotalSemPipes("Valor pago:", valorEntregue);
+    linhaTotalSemPipes("Troco:", troco);
     linhaBranca('-');
-    linhaTexto("Obrigado pela sua preferencia!");
+    // Frase final centralizada
+    linhaTexto(centro("Obrigado pela sua preferencia!", LARGURA - 2), true);
     linhaBranca('=');
+}
+
+void Venda::removerItemPorLinha(int numeroLinha) {
+    if (itens.empty()) {
+        std::cout << "Nao ha itens para remover.\n";
+        return;
+    }
+    auto it = std::find_if(itens.begin(), itens.end(), [numeroLinha](const ItemVenda& item) {
+        return item.numeroLinha == numeroLinha;
+    });
+    if (it == itens.end()) {
+        std::cout << "Item nao encontrado.\n";
+        return;
+    }
+    if (!confirmarAcao("Tem certeza que deseja remover o item da linha " + std::to_string(numeroLinha) + "?")) {
+        std::cout << "Operacao cancelada.\n";
+        return;
+    }
+    itens.erase(it);
+    // Atualiza os numeros das linhas restantes
+    for (size_t i = 0; i < itens.size(); ++i) {
+        itens[i].numeroLinha = i + 1;
+    }
+    std::cout << "Item removido.\n";
+}
+
+void Venda::cancelarVenda() {
+    if (itens.empty()) {
+        std::cout << "Nao ha venda em andamento para cancelar.\n";
+        return;
+    }
+    if (!confirmarAcao("Tem certeza que deseja cancelar toda a venda?")) {
+        std::cout << "Operacao cancelada.\n";
+        return;
+    }
+    itens.clear();
+    valorEntregue = 0.0;
+    troco = 0.0;
+    std::cout << "Venda cancelada.\n";
 }

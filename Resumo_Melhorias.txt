@@ -140,6 +140,19 @@ Resumo de Melhorias e Correções - Projeto Small Business
 - Removidos todos os prints de depuração (DEBUG) do código para deixar o sistema pronto para produção.
 - Garantida robustez e clareza em todos os fluxos de venda, cadastro e impressão de talão.
 
+### 12. Bloqueio de Venda para Produtos sem Estoque
+- Agora, ao tentar vender um produto com estoque 0, o sistema exibe a mensagem "Produto sem estoque. Escolha outro produto." e volta a pedir o ID do produto, sem entrar no loop de quantidade.
+- Isso evita loops infinitos e torna o fluxo de venda mais intuitivo e profissional.
+
+[Melhoria] Integração de padrões do checkout alternativo:
+- Busca do nome do cliente no vetor clientes para exibição no resumo da venda, caso não esteja disponível na venda.
+- Validação reforçada na adição de produtos: só permite adicionar produtos existentes e com estoque suficiente.
+- Garante que o fluxo da venda só prossegue se pelo menos um item válido for adicionado.
+- Todas as funcionalidades anteriores foram mantidas, sem perda de recursos ou visual.
+
+[Melhoria] Alinhamento profissional dos totais no talão:
+- As linhas de Subtotal, IVA, TOTAL, Valor pago e Troco agora ficam alinhadas à coluna do número do item (à esquerda) e os valores à coluna do valor total do item (à direita), garantindo visual padronizado e profissional no talão.
+
 Observações Finais
 ------------------
 - Se ainda houver problemas de acentuação, verifique se todos os arquivos .cpp/.h/.txt estão salvos como UTF-8.

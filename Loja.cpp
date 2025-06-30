@@ -107,14 +107,16 @@ void Loja::adicionarStock(int idProduto, int quantidade)
 
 void Loja::eliminarProduto(int idProduto)
 {
-    
-    for (size_t i = 0; i < produtos.size(); i++) 
+    for (size_t i = 0; i < produtos.size(); i++)
     {
-        if (produtos[i].getId() == idProduto) 
+        if (produtos[i].getId() == idProduto)
         {
+            if (!confirmarAcao("Tem certeza que deseja remover este produto?")) {
+                cout << "Operacao cancelada.\n";
+                return;
+            }
             produtos.erase(produtos.begin() + i);
             cout << "Produto removido.\n";
-            
             return;
         }
     }
@@ -132,9 +134,10 @@ void Loja::eliminarProduto()
 void Loja::listarProdutos() const
 {
     const string margem = "    ";
-    vector<string> cabecalho = {"ID", "NOME", "QTD", "PRECO CUSTO", "PRECO VENDA"};
-    vector<int> larguras = {4, 28, 8, 13, 13};
-    const int larguraTabela = 4 + 28 + 8 + 13 + 13 + 5; // 5 pipes
+    // Definição das larguras das colunas
+    const int wId = 4, wNome = 28, wQtd = 8, wCusto = 13, wVenda = 13;
+    const int nPipes = 6; // 5 separadores + 1 de início
+    const int larguraTabela = wId + wNome + wQtd + wCusto + wVenda + nPipes;
 
     // Título
     cout << margem << "+" << string(larguraTabela - 2, '=') << "+" << endl;
@@ -143,17 +146,12 @@ void Loja::listarProdutos() const
 
     // Cabeçalho
     cout << margem
-        << "|" << centro("ID", 4) << "|"
-        << centro("NOME", 28) << "|"
-        << centro("QTD", 8) << "|"
-        << centro("PRECO CUSTO", 13) << "|"
-        << centro("PRECO VENDA", 13) << "|" << endl;
-    cout << margem
-        << "+" << string(4, '-') << "+"
-        << string(28, '-') << "+"
-        << string(8, '-') << "+"
-        << string(13, '-') << "+"
-        << string(13, '-') << "+" << endl;
+        << "|" << centro("ID", wId) << "|"
+        << centro("NOME", wNome) << "|"
+        << centro("QTD", wQtd) << "|"
+        << centro("PRECO CUSTO", wCusto) << "|"
+        << centro("PRECO VENDA", wVenda) << "|" << endl;
+    cout << margem << "+" << string(wId, '-') << "+" << string(wNome, '-') << "+" << string(wQtd, '-') << "+" << string(wCusto, '-') << "+" << string(wVenda, '-') << "+" << endl;
 
     if (produtos.empty()) {
         cout << margem << "|" << centro("Nenhum produto cadastrado.", larguraTabela - 2) << "|\n";
@@ -166,14 +164,15 @@ void Loja::listarProdutos() const
             ossCusto << fixed << setprecision(2) << p.getPrecoCusto() << " EUR";
             ossVenda << fixed << setprecision(2) << p.getPrecoVenda() << " EUR";
             cout << margem
-                << "|" << centro(idStr, 4) << "|"
-                << centro(nomeStr, 28) << "|"
-                << centro(qtdStr, 8) << "|"
-                << centro(ossCusto.str(), 13) << "|"
-                << centro(ossVenda.str(), 13) << "|" << endl;
+                << "|" << centro(idStr, wId)
+                << "|" << centro(nomeStr, wNome)
+                << "|" << centro(qtdStr, wQtd)
+                << "|" << centro(ossCusto.str(), wCusto)
+                << "|" << centro(ossVenda.str(), wVenda)
+                << "|" << endl;
         }
     }
-    cout << margem << "+" << string(4, '=') << "+" << string(28, '=') << "+" << string(8, '=') << "+" << string(13, '=') << "+" << string(13, '=') << "+" << endl;
+    cout << margem << "+" << string(wId, '=') << "+" << string(wNome, '=') << "+" << string(wQtd, '=') << "+" << string(wCusto, '=') << "+" << string(wVenda, '=') << "+" << endl;
 }
 
 
@@ -224,6 +223,10 @@ void Loja::eliminarCliente(int idCliente)
     {
         if (clientes[i].getIdCliente() == idCliente) 
         {
+            if (!confirmarAcao("Tem certeza que deseja remover este cliente?")) {
+                cout << "Operacao cancelada.\n";
+                return;
+            }
             idsClientesDisponiveis.push_back(idCliente);
             sort(idsClientesDisponiveis.begin(), idsClientesDisponiveis.end());
             clientes.erase(clientes.begin() + i);
@@ -391,44 +394,53 @@ void Loja::listarClientes() const {
 void Loja::efetuarVenda(int idCliente)
 {
     Cliente* clienteEncontrado = nullptr;
-    for (auto& c : clientes)
-    {
-        if (c.getIdCliente() == idCliente)
+    while (true) {
+        clienteEncontrado = nullptr;
+        for (auto& c : clientes)
         {
-            clienteEncontrado = &c;
-            break;
-        }
-    }
-
-    if (!clienteEncontrado)
-    {
-        cout << "Cliente nao encontrado.\n";
-        return;
-    }
-
-    Venda novaVenda(idCliente);
-    listarProdutos();
-
-    char mais;
-    do
-    {
-        int idProduto = lernumero("ID do produto: ");
-        Produto* produtoSelecionado = nullptr;
-        for (auto& p : produtos)
-        {
-            if (p.getId() == idProduto)
+            if (c.getIdCliente() == idCliente)
             {
-                produtoSelecionado = &p;
+                clienteEncontrado = &c;
                 break;
             }
         }
-        if (!produtoSelecionado) {
-            cout << "Produto inexistente.\n";
+        if (!clienteEncontrado) {
+            if (!confirmarAcao("Cliente nao encontrado. Deseja tentar outro ID?")) {
+                return;
+            }
+            idCliente = lernumero("ID do cliente: ");
             continue;
         }
-        if (produtoSelecionado->getQuantidade() == 0) {
-            cout << RED << "Produto sem estoque. Escolha outro produto." << RESET << endl;
-            continue;
+        break;
+    }
+
+    Venda novaVenda(idCliente);
+    novaVenda.setNomeCliente(clienteEncontrado->getNome());
+    listarProdutos();
+
+    char mais = 'n';
+    bool adicionouProduto = false;
+    do {
+        Produto* produtoSelecionado = nullptr;
+        int idProduto;
+        // Loop até encontrar um produto válido e com estoque
+        while (true) {
+            idProduto = lernumero("ID do produto: ");
+            for (auto& p : produtos) {
+                if (p.getId() == idProduto) {
+                    produtoSelecionado = &p;
+                    break;
+                }
+            }
+            if (!produtoSelecionado) {
+                cout << "Produto inexistente.\n";
+                continue;
+            }
+            if (produtoSelecionado->getQuantidade() == 0) {
+                cout << RED << "Produto sem estoque. Escolha outro produto." << RESET << endl;
+                continue;
+            }
+            break; // Produto válido encontrado
         }
         int quantidade;
         while (true) {
@@ -446,6 +458,7 @@ void Loja::efetuarVenda(int idCliente)
             produtoSelecionado->getPrecoCusto()
         );
         produtoSelecionado->removerStock(quantidade);
+        adicionouProduto = true;
         while (true) {
             cout << "Adicionar mais produtos? (s/n): ";
             cin >> mais;
@@ -458,6 +471,11 @@ void Loja::efetuarVenda(int idCliente)
         }
     } while (mais == 's' || mais == 'S');
 
+    if (!adicionouProduto) {
+        cout << RED << "Nenhum produto foi adicionado à venda. Operação cancelada." << RESET << endl;
+        return;
+    }
+
     //Sorteio do talao gratis (10% de chance)
     srand(static_cast<unsigned>(time(0)));
     bool ganhouTalaoGratis = (rand() % 10 == 0); 
@@ -469,11 +487,54 @@ void Loja::efetuarVenda(int idCliente)
     }
 
     // Mostrar resumo da venda antes do pagamento
-    mostrarResumoVenda(novaVenda);
+    while (true) {
+        mostrarResumoVenda(novaVenda);
+        cout << endl;
+        cout << "O que deseja fazer?\n";
+        cout << "1 - Prosseguir para pagamento\n";
+        cout << "2 - Remover um item\n";
+        cout << "3 - Cancelar toda a venda\n";
+        cout << "Opção: ";
+        int op;
+        cin >> op;
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        if (op == 1) {
+            break;
+        } else if (op == 2) {
+            if (novaVenda.getItens().empty()) {
+                cout << RED << "Não há itens para remover!" << RESET << endl;
+                continue;
+            }
+            int linha;
+            cout << "Digite o número do item a remover: ";
+            cin >> linha;
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            // Antes de remover, repor estoque do item
+            const auto& itensVenda = novaVenda.getItens();
+            auto it = std::find_if(itensVenda.begin(), itensVenda.end(), [linha](const ItemVenda& item) {
+                return item.numeroLinha == linha;
+            });
+            if (it != itensVenda.end()) {
+                reporEstoqueItem(*it);
+            }
+            novaVenda.removerItemPorLinha(linha);
+            if (novaVenda.getItens().empty()) {
+                cout << RED << "Todos os itens foram removidos. Venda cancelada automaticamente." << RESET << endl;
+                return;
+            }
+        } else if (op == 3) {
+            // Antes de cancelar, repor estoque de todos os itens
+            reporEstoqueVenda(novaVenda);
+            novaVenda.cancelarVenda();
+            return;
+        } else {
+            cout << RED << "Opção inválida!" << RESET << endl;
+        }
+    }
 
     // Mostrar valor a pagar antes de pedir valor entregue
     cout << fixed << setprecision(2);
-    cout << "\nValor a pagar: " << valorFinal << " EUR\n";
+    cout << "\nValor a pagar: " << (ganhouTalaoGratis ? 0.0 : novaVenda.getValorTotal()) << " EUR\n";
 
     double valorEntregue = 0.0;
     if (ganhouTalaoGratis) {
@@ -507,7 +568,7 @@ void Loja::efetuarVenda(int idCliente)
         }
     }
 
-    cout << endl << "Pressione Enter para ver o talão..." << endl;
+    cout << endl << "Pressione Enter para ver o talao..." << endl;
     limparBuffer();
     cin.get();
     system("cls"); // Limpa a tela antes de mostrar o talão
@@ -525,8 +586,21 @@ void Loja::efetuarVenda(int idCliente)
 }
 
 void Loja::mostrarResumoVenda(const Venda& venda) const {
+    // Buscar nome do cliente se não estiver disponível na venda
+    string nomeCliente = venda.getNomeCliente();
+    if (nomeCliente.empty() || nomeCliente == "Desconhecido") {
+        for (const auto& c : clientes) {
+            if (c.getIdCliente() == venda.getIdCliente()) {
+                nomeCliente = c.getNome();
+                break;
+            }
+        }
+    }
+    // Exibir nome do cliente no resumo
+    // Definição das larguras das colunas
     const int wId = 3, wProd = 22, wQtd = 6, wPSemIVA = 13, wPComIVA = 13, wTotal = 13;
-    const int larguraTabela = 4 + wId + wProd + wQtd + wPSemIVA + wPComIVA + wTotal; // 6 pipes + colunas
+    const int nPipes = 7; // 6 separadores + 1 de início
+    const int larguraTabela = wId + wProd + wQtd + wPSemIVA + wPComIVA + wTotal + nPipes;
     const string margem = "    ";
     string titulo = "RESUMO DA VENDA";
     cout << margem << "+" << string(larguraTabela - 2, '=') << "+" << endl;
@@ -538,42 +612,32 @@ void Loja::mostrarResumoVenda(const Venda& venda) const {
     cout << margem << "|" << centro(ossId.str(), larguraTabela - 2) << "|" << endl;
     cout << margem << "+" << string(larguraTabela - 2, '-') << "+" << endl;
 
-    // Cabeçalho centralizado
+    // Cabeçalho
     cout << margem
-        << "|" << centro("#", wId) << "|"
-        << centro("PRODUTO", wProd) << "|"
-        << centro("QTD", wQtd) << "|"
-        << centro("PRECO S/IVA", wPSemIVA) << "|"
-        << centro("PRECO C/IVA", wPComIVA) << "|"
-        << centro("TOTAL ITEM", wTotal) << "|" << endl;
-    cout << margem
-        << "+" << string(wId, '-') << "+"
-        << string(wProd, '-') << "+"
-        << string(wQtd, '-') << "+"
-        << string(wPSemIVA, '-') << "+"
-        << string(wPComIVA, '-') << "+"
-        << string(wTotal, '-') << "+" << endl;
+        << "|" << centro("#", wId)
+        << "|" << centro("PRODUTO", wProd)
+        << "|" << centro("QTD", wQtd)
+        << "|" << centro("PRECO S/IVA", wPSemIVA)
+        << "|" << centro("PRECO C/IVA", wPComIVA)
+        << "|" << centro("TOTAL ITEM", wTotal)
+        << "|" << endl;
+    cout << margem << "+" << string(wId, '-') << "+" << string(wProd, '-') << "+" << string(wQtd, '-') << "+" << string(wPSemIVA, '-') << "+" << string(wPComIVA, '-') << "+" << string(wTotal, '-') << "+" << endl;
 
     int idx = 1;
     for (const auto& item : venda.getItens()) {
         string prod = toUpper(item.nomeProduto);
         if ((int)prod.length() > wProd) prod = prod.substr(0, wProd);
         cout << margem
-            << "|" << centro(to_string(idx), wId) << "|"
-            << centro(prod, wProd) << "|"
-            << centro(to_string(item.quantidade), wQtd) << "|"
-            << centro((ostringstream{} << fixed << setprecision(2) << item.precoUnitario).str(), wPSemIVA) << "|"
-            << centro((ostringstream{} << fixed << setprecision(2) << item.precoUnitario * 1.23).str(), wPComIVA) << "|"
-            << centro((ostringstream{} << fixed << setprecision(2) << item.precoUnitario * 1.23 * item.quantidade).str(), wTotal) << "|" << endl;
+            << "|" << centro(to_string(idx), wId)
+            << "|" << centro(prod, wProd)
+            << "|" << centro(to_string(item.quantidade), wQtd)
+            << "|" << centro((ostringstream{} << fixed << setprecision(2) << item.precoUnitario).str(), wPSemIVA)
+            << "|" << centro((ostringstream{} << fixed << setprecision(2) << item.precoUnitario * 1.23).str(), wPComIVA)
+            << "|" << centro((ostringstream{} << fixed << setprecision(2) << item.precoUnitario * 1.23 * item.quantidade).str(), wTotal)
+            << "|" << endl;
         idx++;
     }
-    cout << margem
-        << "+" << string(wId, '=') << "+"
-        << string(wProd, '=') << "+"
-        << string(wQtd, '=') << "+"
-        << string(wPSemIVA, '=') << "+"
-        << string(wPComIVA, '=') << "+"
-        << string(wTotal, '=') << "+" << endl;
+    cout << margem << "+" << string(wId, '=') << "+" << string(wProd, '=') << "+" << string(wQtd, '=') << "+" << string(wPSemIVA, '=') << "+" << string(wPComIVA, '=') << "+" << string(wTotal, '=') << "+" << endl;
     ostringstream ossTotal;
     ossTotal << "TOTAL DA VENDA (COM IVA): " << fixed << setprecision(2) << venda.getTotalComIVA();
     cout << margem << "|" << centro(ossTotal.str(), larguraTabela - 2) << "|" << endl;
@@ -1193,4 +1257,21 @@ Produto* Loja::encontrarProdutoPorNome(const string& nome) {
         }
     }
     return nullptr;
+}
+
+// Adicionar função auxiliar em Loja para repor estoque de um item removido da venda
+void Loja::reporEstoqueItem(const ItemVenda& item) {
+    for (auto& p : produtos) {
+        if (toUpper(p.getNome()) == toUpper(item.nomeProduto)) {
+            p.adicionarStock(item.quantidade);
+            break;
+        }
+    }
+}
+
+// Adicionar função auxiliar para repor estoque de todos os itens de uma venda
+void Loja::reporEstoqueVenda(const Venda& venda) {
+    for (const auto& item : venda.getItens()) {
+        reporEstoqueItem(item);
+    }
 }

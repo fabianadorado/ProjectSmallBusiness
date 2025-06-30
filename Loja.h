@@ -72,4 +72,8 @@ public:
     const vector<Produto>& getProdutos() const { return produtos; }
 
     Produto* encontrarProdutoPorNome(const string& nome);
+
+    // Repor estoque ao remover item ou cancelar venda
+    void reporEstoqueItem(const ItemVenda& item);
+    void reporEstoqueVenda(const Venda& venda);
 };

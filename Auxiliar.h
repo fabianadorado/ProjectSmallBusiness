@@ -38,3 +38,5 @@ string lerTelefone(const string& mensagem);
 string formatarTelefone(const string& telefone);
 
 string centro(const string& texto, int largura);
+
+bool confirmarAcao(const std::string& mensagem);
