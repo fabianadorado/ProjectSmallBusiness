@@ -78,7 +78,7 @@ void Loja::criarProduto()
             existente->adicionarStock(qnt);
             cout << GREEN << "Quantidade adicionada com sucesso!" << RESET << endl;
         } else {
-            cout << BLUE << "Operacao cancelada." << RESET << endl;
+            cout << RED << "Operacao cancelada." << RESET << endl;
         }
         return;
     }
