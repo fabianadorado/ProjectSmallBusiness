@@ -111,6 +111,38 @@ Resumo de Melhorias e Correções - Projeto Small Business
 - O alinhamento dos pipes (|) finais foi corrigido, garantindo que todas as bordas e colunas estejam perfeitamente alinhadas.
 - O visual ficou limpo, padronizado e profissional.
 
+## Atualizações e Melhorias Recentes (JUN/2024)
+
+### 1. Fluxo de Leitura do ID do Cliente
+- Corrigido o problema de pular o prompt do ID do cliente após entrada inválida.
+- Adicionado `cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');` antes de ler o ID do cliente para garantir buffer limpo.
+- Agora o usuário pode digitar normalmente após erro, sem travar o fluxo.
+
+### 2. Exibição do Valor a Pagar
+- O valor total a pagar é exibido claramente antes de pedir o valor entregue pelo cliente.
+- Garante que o usuário saiba exatamente quanto deve pagar antes de digitar o valor.
+
+### 3. Resumo da Venda Antes do Pagamento
+- O resumo da venda (tabela dos itens comprados) é exibido imediatamente antes do pagamento.
+- O usuário pode conferir todos os itens, quantidades e valores antes de efetuar o pagamento.
+- O resumo aparece apenas uma vez, no momento correto do fluxo.
+
+### 4. Estoque Insuficiente e Repetição do Prompt
+- Ao tentar adicionar mais do que o estoque disponível, o sistema exibe:
+  `Stock insuficiente. Disponível: X unidades.`
+- O prompt de quantidade é repetido até o usuário digitar um valor válido, sem precisar digitar o ID novamente.
+- Se o produto não existir, exibe "Produto inexistente." e volta para o ID.
+
+### 5. Padronização Visual do Talão
+- O método `imprimirTalao` foi refatorado para usar as funções auxiliares de formatação (`centro`, `imprimirLinhaInterna`, `imprimirLinhaHorizontalBranca`).
+- Título, cabeçalhos, itens, totais e mensagem final são centralizados, truncados e alinhados automaticamente.
+- O talão mantém as cores ANSI (fundo branco, texto preto) e o padrão visual das demais tabelas do sistema.
+- Mensagem final "Obrigado pela sua preferencia!" sempre alinhada.
+
+### 6. Manutenção do Padrão Profissional
+- Todas as melhorias garantem robustez, clareza e experiência de uso profissional.
+- O código segue o padrão de centralização, truncamento e alinhamento em todas as tabelas e relatórios.
+
 Observações Finais
 ------------------
 - Se ainda houver problemas de acentuação, verifique se todos os arquivos .cpp/.h/.txt estão salvos como UTF-8.

@@ -404,7 +404,8 @@ void Loja::efetuarVenda(int idCliente)
         while (true) {
             quantidade = lernumero("Quantidade: ");
             if (produtoSelecionado->getQuantidade() < quantidade) {
-                cout << RED << "Stock insuficiente. Disponível: " << produtoSelecionado->getQuantidade() << " unidades." << RESET << endl;
+                cout << RED << "Stock insuficiente." << RESET << endl;
+                cout << RED << "Disponivel: " << produtoSelecionado->getQuantidade() << " unidades." << RESET << endl;
             } else {
                 break;
             }
@@ -416,9 +417,16 @@ void Loja::efetuarVenda(int idCliente)
             produtoSelecionado->getPrecoCusto()
         );
         produtoSelecionado->removerStock(quantidade);
-        cout << "Adicionar mais produtos? (s/n): ";
-        cin >> mais;
-        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Limpa o buffer
+        while (true) {
+            cout << "Adicionar mais produtos? (s/n): ";
+            cin >> mais;
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            if (mais == 's' || mais == 'S' || mais == 'n' || mais == 'N') {
+                break;
+            } else {
+                cout << RED << "Entrada invalida. Digite 's' para sim ou 'n' para nao." << RESET << endl;
+            }
+        }
     } while (mais == 's' || mais == 'S');
 
     //Sorteio do talao gratis (10% de chance)
@@ -473,11 +481,9 @@ void Loja::efetuarVenda(int idCliente)
     cout << "\nPressione Enter para ver o talão...";
     limparBuffer();
     cin.get();
-    system("cls");
     novaVenda.imprimirTalao();
     cout << "\nPressione Enter para voltar...";
     cin.get();
-    system("cls");
 
     if (!ganhouTalaoGratis)
         clienteEncontrado->adicionarCompra(valorFinal);

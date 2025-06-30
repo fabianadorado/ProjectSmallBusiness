@@ -145,29 +145,31 @@ void Venda::imprimirTalao() const {
 
     // Primeira borda (externa)
     cout << margem << "+" << string(LARGURA - 2, '-') << "+" << endl;
-    {
-        string titulo = "TALÃO DE COMPRA";
-        int espaco = LARGURA - titulo.length();
-        int esq = espaco / 2;
-        int dir = espaco - esq;
-        imprimirLinhaInterna(margem, LARGURA, string(esq, ' ') + titulo + string(dir, ' '), FUNDO_BRANCO, TEXTO_PRETO, RESET);
-    }
+    imprimirLinhaInterna(margem, LARGURA, centro("TALAO DE COMPRA", LARGURA - 2), FUNDO_BRANCO, TEXTO_PRETO, RESET);
     imprimirLinhaHorizontalBranca(margem, LARGURA, FUNDO_BRANCO, TEXTO_PRETO, RESET);
 
     // Informações da venda
-    imprimirLinhaInterna(margem, LARGURA, "Data: " + data, FUNDO_BRANCO, TEXTO_PRETO, RESET);
-    imprimirLinhaInterna(margem, LARGURA, "Fatura Nº: " + numeroFatura, FUNDO_BRANCO, TEXTO_PRETO, RESET);
-    imprimirLinhaInterna(margem, LARGURA, "Cliente ID: " + to_string(idCliente), FUNDO_BRANCO, TEXTO_PRETO, RESET);
+    auto linhaAjustada = [&](const string& texto) {
+        string linha = centro(texto, LARGURA - 2);
+        if (linha.length() < LARGURA - 2)
+            linha += string(LARGURA - 2 - linha.length(), ' ');
+        else if (linha.length() > LARGURA - 2)
+            linha = linha.substr(0, LARGURA - 2);
+        return linha;
+    };
+    imprimirLinhaInterna(margem, LARGURA, linhaAjustada("Data: " + data), FUNDO_BRANCO, TEXTO_PRETO, RESET);
+    imprimirLinhaInterna(margem, LARGURA, linhaAjustada("Fatura Nº: " + numeroFatura), FUNDO_BRANCO, TEXTO_PRETO, RESET);
+    imprimirLinhaInterna(margem, LARGURA, linhaAjustada("Cliente ID: " + to_string(idCliente)), FUNDO_BRANCO, TEXTO_PRETO, RESET);
     imprimirLinhaHorizontalBranca(margem, LARGURA, FUNDO_BRANCO, TEXTO_PRETO, RESET);
 
     // Cabeçalho dos itens
-    imprimirLinhaInterna(margem, LARGURA, "ITENS COMPRADOS", FUNDO_BRANCO, TEXTO_PRETO, RESET);
+    imprimirLinhaInterna(margem, LARGURA, centro("ITENS COMPRADOS", LARGURA - 2), FUNDO_BRANCO, TEXTO_PRETO, RESET);
     imprimirLinhaHorizontalBranca(margem, LARGURA, FUNDO_BRANCO, TEXTO_PRETO, RESET);
 
     // Lista de itens (alinhamento fixo)
     for (const auto& item : itens) {
         ostringstream oss;
-        string nome = item.nomeProduto;
+        string nome = toUpper(item.nomeProduto);
         if (nome.length() > 20) nome = nome.substr(0, 20);
         oss << right << setw(2) << item.numeroLinha << ". ";
         oss << left << setw(20) << nome;
@@ -190,31 +192,16 @@ void Venda::imprimirTalao() const {
 
     // Alinhar labels à esquerda e valores à direita, igual ao valor do item vendido, com afastamento automático do pipe direito
     auto formatarLinhaValor = [&](const string& label, double valor) {
-        int posValor = 39; // posição onde começa o valor do item vendido
-        int larguraInterna = LARGURA - 2;
-        int espacosAntesPipe = 20; // número de espaços desejados antes do pipe direito
-
         ostringstream oss;
-        string labelAjustado = label;
-        if ((int)labelAjustado.length() > posValor) labelAjustado = labelAjustado.substr(0, posValor);
-        oss << left << setw(posValor) << labelAjustado;
-
-        // Valor formatado
+        oss << left << setw(20) << label;
         ostringstream valorStream;
         valorStream << right << fixed << setprecision(2) << valor << " €";
         string valorStr = valorStream.str();
-
-        // Monta a linha automaticamente
-        int espacos = larguraInterna - posValor - valorStr.length() - espacosAntesPipe;
-        if (espacos < 0) espacos = 0;
-        string conteudo = oss.str() + string(espacos, ' ') + valorStr + string(espacosAntesPipe, ' ');
-
-        // Garante o tamanho exato
-        if (conteudo.length() > (size_t)larguraInterna)
-            conteudo = conteudo.substr(0, larguraInterna);
-        else if (conteudo.length() < (size_t)larguraInterna)
-            conteudo += string(larguraInterna - conteudo.length(), ' ');
-
+        string conteudo = oss.str() + string(LARGURA - 2 - oss.str().length() - valorStr.length(), ' ') + valorStr;
+        if (conteudo.length() > (size_t)LARGURA - 2)
+            conteudo = conteudo.substr(0, LARGURA - 2);
+        else if (conteudo.length() < (size_t)LARGURA - 2)
+            conteudo += string(LARGURA - 2 - conteudo.length(), ' ');
         imprimirLinhaInterna(margem, LARGURA, conteudo, FUNDO_BRANCO, TEXTO_PRETO, RESET);
     };
 
@@ -225,7 +212,12 @@ void Venda::imprimirTalao() const {
     formatarLinhaValor("Valor pago:", valorEntregue);
     formatarLinhaValor("Troco:", troco);
     imprimirLinhaHorizontalBranca(margem, LARGURA, FUNDO_BRANCO, TEXTO_PRETO, RESET);
-    imprimirLinhaInterna(margem, LARGURA, "Obrigado pela sua preferência!", FUNDO_BRANCO, TEXTO_PRETO, RESET);
+    string msg = "Obrigado pela sua preferencia!";
+    if (msg.length() > static_cast<size_t>(LARGURA - 2))
+        msg = msg.substr(0, LARGURA - 2);
+    else if (msg.length() < static_cast<size_t>(LARGURA - 2))
+        msg += string(LARGURA - 2 - msg.length(), ' ');
+    imprimirLinhaInterna(margem, LARGURA, msg, FUNDO_BRANCO, TEXTO_PRETO, RESET);
     // Última borda (externa)
     cout << margem << "+" << string(LARGURA - 2, '-') << "+" << endl;
 }
