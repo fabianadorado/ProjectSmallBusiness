@@ -134,6 +134,12 @@ Resumo de Melhorias e Correções - Projeto Small Business
 - No fluxo interativo, a variável local `preco` representa o preço de custo inserido pelo usuário e é passada para `precoCusto` na função lógica.
 - Essa nomeação evita ambiguidades e melhora a clareza e manutenção do código.
 
+### 11. Correções Finais e Padrão Visual do Talão
+- Corrigido o problema do número da fatura não aparecer: removido o caractere 'º' e usado 'Fatura: ' para evitar problemas de encoding, garantindo que o número sempre seja exibido corretamente.
+- Novo padrão visual do talão: fundo branco, texto preto, apenas linhas horizontais para separar seções, sem pipes laterais, visual limpo e moderno.
+- Removidos todos os prints de depuração (DEBUG) do código para deixar o sistema pronto para produção.
+- Garantida robustez e clareza em todos os fluxos de venda, cadastro e impressão de talão.
+
 Observações Finais
 ------------------
 - Se ainda houver problemas de acentuação, verifique se todos os arquivos .cpp/.h/.txt estão salvos como UTF-8.

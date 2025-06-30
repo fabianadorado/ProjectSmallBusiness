@@ -163,7 +163,7 @@ void Venda::imprimirTalao() const {
 
     // Dados
     linhaTexto("Data: " + data);
-    linhaTexto("Fatura Nº: " + numeroFatura);
+    linhaTexto("Fatura: " + numeroFatura);
     linhaTexto("Cliente ID: " + to_string(idCliente));
     linhaBranca('-');
 
