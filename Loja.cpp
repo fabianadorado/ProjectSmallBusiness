@@ -420,13 +420,12 @@ void Loja::efetuarVenda(int idCliente)
     } while (mais == 's' || mais == 'S');
 
     mostrarResumoVenda(novaVenda);
-}
 
     //Sorteio do talao gratis (10% de chance)
     srand(static_cast<unsigned>(time(0)));
     bool ganhouTalaoGratis = (rand() % 10 == 0); 
 
-    double valorFinal = ganhouTalaoGratis ? 0.0 : totalVenda;
+    double valorFinal = ganhouTalaoGratis ? 0.0 : novaVenda.getValorTotal();
 
     if (ganhouTalaoGratis) {
         cout << GREEN << "PARABENS! Voce ganhou o talao gratis!\n" << RESET;
@@ -475,7 +474,7 @@ void Loja::efetuarVenda(int idCliente)
     system("cls");
 
     if (!ganhouTalaoGratis)
-        clienteEncontrado->adicionarCompra(totalVenda);
+        clienteEncontrado->adicionarCompra(valorFinal);
 
     vendas[proximaPosicaoVenda] = novaVenda;
     proximaPosicaoVenda = (proximaPosicaoVenda + 1) % MAX_VENDAS;
