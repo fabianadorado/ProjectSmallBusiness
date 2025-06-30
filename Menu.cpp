@@ -44,7 +44,6 @@ int Menu::menuGerirClientes() {
         "Eliminar Cliente",
         "Listar Cliente",
         "Alterar Dados Cliente",
-        "Carregar Carteira",
         "Voltar ao Menu Principal"
     };
     return mostrarMenu("GERIR CLIENTES", opcoes);

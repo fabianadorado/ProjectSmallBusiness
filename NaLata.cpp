@@ -1,4 +1,4 @@
-#define NOMINMAX
+﻿#define NOMINMAX
 #include <iomanip>
 #include <string>
 #include <ctime>
@@ -8,8 +8,8 @@
 #include <windows.h>
 #include <locale>
 #include "Loja.h"
-#include "menu.h"
-#include "auxiliar.h"
+#include "Menu.h"
+#include "Auxiliar.h"
 
 
 #define RESET   "\033[0m"
@@ -69,10 +69,18 @@ int main() {
                     int qtd;
                     double preco;
                     cout << "ADICIONAR NOVO PRODUTO\n\n";
-                    cin.ignore();
-                    cout << "Nome: ";
-                    getline(cin, nome);
+                    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                    while (true) {
+                        cout << "Nome: ";
+                        getline(cin, nome);
+                        nome = toUpper(nome);
+                        if (!(nome.empty() || nome.find_first_not_of(' ') == string::npos)) {
+                            break;
+                        }
+                        cout << RED << "Nome do produto nao pode ser vazio!" << RESET << endl;
+                    }
                     qtd = lernumero("Quantidade: ");
+                    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                     preco = lerFloatPositivo("Preço de custo: ");
                     loja.criarProduto(nome, qtd, preco);
 
@@ -147,10 +155,12 @@ int main() {
                     cin.ignore();
                     cout << "Nome: ";
                     getline(cin, nome);
+                    nome = toUpper(nome);
                     cout << "Telefone: ";
-                    getline(cin, tel);
+                    tel = lerTelefone("");
                     cout << "Morada: ";
                     getline(cin, morada);
+                    morada = toUpper(morada);
                     loja.criarCliente(nome, tel, morada);
 
                     cout << GREEN << "\nCliente cadastrado com sucesso!" << RESET;
@@ -192,6 +202,7 @@ int main() {
                     cout << "Novo nome: ";
                     cin.ignore();
                     getline(cin, novoNome);
+                    novoNome = toUpper(novoNome);
                     loja.alterarNomeCliente(id, novoNome);
 
                     cout << GREEN << "\nNome alterado com sucesso!" << RESET;
@@ -200,22 +211,13 @@ int main() {
                     cin.get();
                     break;
                 }
-                case 5:
-                { // Carregar Carteira
-                    system("cls");
-                    loja.carregarCarteiraClientes();
-                    cout << "\nPressione Enter para continuar...";
-                    limparBuffer();
-                    cin.get();
-                    break;
-                }
-                case 6: // Voltar ao Menu Principal
+                case 5: // Voltar ao Menu Principal
                     break;
                 default:
                     cout << RED << "\nOpção inválida!" << RESET;
                     Sleep(1000);
                 }
-            } while (sub_clientes != 6);
+            } while (sub_clientes != 5);
             break;
         }
         case 4:
@@ -242,6 +244,7 @@ int main() {
                     cout << "Nome do produto: ";
                     cin.ignore();
                     getline(cin, nome);
+                    nome = toUpper(nome);
                     loja.relatorioVendasPorProduto(nome);
                     cout << "\nPressione Enter para voltar...";
                     limparBuffer();

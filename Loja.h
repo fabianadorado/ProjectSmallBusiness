@@ -1,9 +1,9 @@
 ﻿#pragma once
 #include <vector>
 #include <string>
-#include "produto.h"
-#include "cliente.h"
-#include "venda.h"
+#include "Produto.h"
+#include "Cliente.h"
+#include "Venda.h"
 #include <map>
 
 using namespace std;
@@ -24,12 +24,12 @@ private:
     const int MAX_VENDAS = 100;
 
     // Métodos de persistência privados
-    bool salvarClientes(const std::string& caminho);
-    bool salvarProdutos(const std::string& caminho);
-    bool salvarVendas(const std::string& caminho);
-    bool carregarClientes(const std::string& caminho);
-    bool carregarProdutos(const std::string& caminho);
-    bool carregarVendas(const std::string& caminho);
+    bool salvarClientes(const string& caminho);
+    bool salvarProdutos(const string& caminho);
+    bool salvarVendas(const string& caminho);
+    bool carregarClientes(const string& caminho);
+    bool carregarProdutos(const string& caminho);
+    bool carregarVendas(const string& caminho);
 
 public:
     Loja();
@@ -48,10 +48,6 @@ public:
     void alterarNomeCliente(int idCliente, const string& novoNome);
     void listarClientes() const;
     
-
-    // Carteira de clientes
-    bool criarCarteiraClientes(const string& carteiraClientes = "clientes.txt") const;
-    bool carregarCarteiraClientes(const string& carteiraClientes = "clientes.txt");
 
     // Vendas
     void efetuarVenda(int idCliente);

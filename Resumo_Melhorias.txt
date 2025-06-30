@@ -16,6 +16,11 @@ Resumo de Melhorias e Correções - Projeto Small Business
 - Corrigido prompt para "Escolha uma opcao:" (sem acento) para evitar corte.
 - Implementada função para remover pontuação/acentos das opções do menu.
 - Garantido alinhamento dos pipes e largura suficiente para não cortar palavras.
+- Menus agora utilizam estética ASCII elegante e colorida:
+  - Bordas e título em ciano e negrito (CYAN + BOLD)
+  - Opções em amarelo (YELLOW)
+  - Layout centralizado e alinhado
+  - Todas as telas de menu usam automaticamente esse novo padrão visual.
 
 3. Relatórios e Tabelas
 -----------------------
@@ -47,6 +52,64 @@ Resumo de Melhorias e Correções - Projeto Small Business
 - Todos os relatórios agora utilizam a função auxiliar imprimirTituloCentralizado para centralizar e imprimir títulos com bordas.
 - Removidas funções duplicadas de centralização de título (ex: desenharMolduraTitulo).
 - Garantida padronização visual e facilidade de manutenção para futuros relatórios e menus.
+
+8. Compatibilidade e Estética dos Menus (Resumo da Conversa de Hoje)
+-------------------------------------------------------------------
+- Identificado problema de exibição de caracteres especiais (bordas UTF-8 e acentos) no console do Windows.
+- Testadas várias abordagens: configuração de code page (chcp 65001), uso de SetConsoleOutputCP, ajuste de locale e fontes.
+- Simplificação dos menus: remoção de acentos para máxima compatibilidade.
+- Implementado fallback para bordas ASCII, mantendo visual limpo mesmo sem suporte a UTF-8.
+- Decisão final: menus usam apenas caracteres ASCII, mas com estética elegante (bordas =, -, +, |) e cores ANSI (bordas/título em ciano negrito, opções em amarelo).
+- Todas as funções de menu centralizam e alinham o texto automaticamente.
+- Orientação: para melhor visual, usar Windows Terminal, PowerShell ou CMD com fonte "Consolas" ou "Cascadia Mono" e suporte a ANSI.
+- Todos os menus do sistema agora seguem esse padrão, facilitando manutenção e garantindo compatibilidade máxima.
+
+9. Remoção da funcionalidade 'Carregar Carteira'
+-----------------------------------------------
+- Removida a opção 'Carregar Carteira' do menu Gerir Clientes.
+- Removidos os métodos criarCarteiraClientes e carregarCarteiraClientes da classe Loja.
+- Removido o case correspondente do fluxo do menu de clientes.
+- Motivo: funcionalidade não tinha utilidade prática no programa.
+
+10. Padronização automática de dados em maiúsculas
+-------------------------------------------------
+- Criada função auxiliar toUpper em Auxiliar.cpp/h.
+- Todos os dados de texto inseridos (nome de cliente, morada, nome de produto, etc.) agora são automaticamente convertidos e armazenados em letras maiúsculas.
+- Isso garante padronização, facilita buscas e evita inconsistências de capitalização.
+
+11. Validação rigorosa de campos numéricos
+-----------------------------------------
+- Funções lernumero (inteiros) e lerFloatPositivo (reais) garantem que apenas números válidos sejam aceitos.
+- Entradas com letras, símbolos ou caracteres inválidos são rejeitadas e o usuário recebe mensagem de erro.
+- O buffer de entrada é limpo automaticamente para evitar loops de erro.
+- Isso previne dados inconsistentes e melhora a experiência do usuário.
+
+12. Validação e formatação do campo telefone
+-------------------------------------------
+- Agora o telefone só é aceito se tiver exatamente 9 dígitos numéricos (regex ^\d{9}$).
+- Qualquer caractere não numérico ou quantidade diferente de 9 é rejeitada.
+- Antes de ser salvo no arquivo, o telefone é automaticamente formatado para xxxxx-xxxx.
+- Exemplo: usuário digita 123456789, é salvo como 12345-6789.
+
+13. Padronização do uso de 'using namespace std'
+-----------------------------------------------
+- Todos os arquivos do projeto agora utilizam 'using namespace std' de forma consistente.
+- Prefixos std:: só aparecem onde realmente necessário (ex: ambiguidades ou tipos específicos).
+- O código ficou mais limpo, legível e padronizado.
+
+14. Uso da biblioteca <regex> no C++
+-----------------------------------
+- A biblioteca <regex> faz parte do padrão C++11 e fornece suporte para expressões regulares (regex), que são padrões usados para buscar, validar ou manipular textos.
+- Com <regex>, é possível verificar se uma string segue um formato específico, como números, datas, e-mails, etc.
+- No projeto, <regex> foi utilizada para validar o campo telefone, garantindo que apenas números sejam aceitos.
+- O método regex_match compara a string digitada com o padrão desejado (ex: ^\d+$ para apenas números).
+- Isso torna a validação de entrada mais robusta, flexível e fácil de manter.
+
+15. Alinhamento visual, maiúsculas e pipes perfeitos na tabela de clientes
+-----------------------------------------------------------------------
+- Todos os campos da tabela de clientes (nome, morada) agora são exibidos em maiúsculas, independentemente do conteúdo do arquivo.
+- O alinhamento dos pipes (|) finais foi corrigido, garantindo que todas as bordas e colunas estejam perfeitamente alinhadas.
+- O visual ficou limpo, padronizado e profissional.
 
 Observações Finais
 ------------------

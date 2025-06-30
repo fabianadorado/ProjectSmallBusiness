@@ -2,6 +2,7 @@
 #include <iostream>
 #include <locale>
 #include <sstream>
+#include "Auxiliar.h"
 
 using namespace std;
 
@@ -19,7 +20,7 @@ Produto::Produto() {
 // Construtor com parâmetros
 Produto::Produto(int id, string nome, int quantidade, double precoCusto) {
     this->id = id;
-    this->nome = nome;
+    this->nome = toUpper(nome);
     this->quantidade = quantidade;
     this->precoCusto = precoCusto;
     if (id >= proximoId) {
