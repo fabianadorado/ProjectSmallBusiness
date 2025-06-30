@@ -57,6 +57,8 @@ Venda::Venda(int idCliente)
 void Venda::adicionarItem(const string& nomeProduto, int quantidade, double precoUnit, double precoCusto)
 {
     // Validações essenciais
+   
+
     if (quantidade <= 0)
     {
         throw invalid_argument("Quantidade deve ser maior que zero");

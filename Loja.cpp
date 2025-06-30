@@ -395,7 +395,7 @@ void Loja::efetuarVenda(int idCliente)
             if (p.getId() == idProduto)
             {
                 produtoSelecionado = &p;
-                
+                break;
             }
         }
 
@@ -419,9 +419,8 @@ void Loja::efetuarVenda(int idCliente)
         cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Limpa o buffer
     } while (mais == 's' || mais == 'S');
 
-    double totalVenda = novaVenda.getValorTotal();
-    cout << fixed << setprecision(2);
-    cout << "\nTotal a pagar: " << totalVenda << "€\n";
+    mostrarResumoVenda(novaVenda);
+}
 
     //Sorteio do talao gratis (10% de chance)
     srand(static_cast<unsigned>(time(0)));

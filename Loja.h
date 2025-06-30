@@ -51,7 +51,7 @@ public:
 
     // Vendas
     void efetuarVenda(int idCliente);
-    void mostrarResumoVenda(const Venda& venda) const;
+    void mostrarResumoVenda(Venda& venda);
     
     // Relatorios
     void relatorioStock() const;
