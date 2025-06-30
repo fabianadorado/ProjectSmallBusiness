@@ -46,6 +46,7 @@ int main() {
         case 1:
         { // Efetuar Vendas
             system("cls");
+            cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             int id = lernumero("ID do cliente: ");
             loja.efetuarVenda(id);
             cout << "\nPressione Enter para voltar...";

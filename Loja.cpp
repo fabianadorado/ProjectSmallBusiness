@@ -387,8 +387,6 @@ void Loja::efetuarVenda(int idCliente)
     do
     {
         int idProduto = lernumero("ID do produto: ");
-        int quantidade = lernumero("Quantidade: ");
-
         Produto* produtoSelecionado = nullptr;
         for (auto& p : produtos)
         {
@@ -398,28 +396,30 @@ void Loja::efetuarVenda(int idCliente)
                 break;
             }
         }
-
-        if (!produtoSelecionado || produtoSelecionado->getQuantidade() < quantidade)
-        {
-            cout << "Produto inexistente ou stock insuficiente.\n";
+        if (!produtoSelecionado) {
+            cout << "Produto inexistente.\n";
             continue;
         }
-
+        int quantidade;
+        while (true) {
+            quantidade = lernumero("Quantidade: ");
+            if (produtoSelecionado->getQuantidade() < quantidade) {
+                cout << RED << "Stock insuficiente. Disponível: " << produtoSelecionado->getQuantidade() << " unidades." << RESET << endl;
+            } else {
+                break;
+            }
+        }
         novaVenda.adicionarItem(
             produtoSelecionado->getNome(),
             quantidade,
             produtoSelecionado->getPrecoVenda(),
             produtoSelecionado->getPrecoCusto()
         );
-
         produtoSelecionado->removerStock(quantidade);
-
         cout << "Adicionar mais produtos? (s/n): ";
         cin >> mais;
         cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Limpa o buffer
     } while (mais == 's' || mais == 'S');
-
-    mostrarResumoVenda(novaVenda);
 
     //Sorteio do talao gratis (10% de chance)
     srand(static_cast<unsigned>(time(0)));
@@ -430,6 +430,13 @@ void Loja::efetuarVenda(int idCliente)
     if (ganhouTalaoGratis) {
         cout << GREEN << "PARABENS! Voce ganhou o talao gratis!\n" << RESET;
     }
+
+    // Mostrar resumo da venda antes do pagamento
+    mostrarResumoVenda(novaVenda);
+
+    // Mostrar valor a pagar antes de pedir valor entregue
+    cout << fixed << setprecision(2);
+    cout << "\nValor a pagar: " << valorFinal << " EUR\n";
 
     double valorEntregue = 0.0;
     if (ganhouTalaoGratis) {
@@ -463,7 +470,6 @@ void Loja::efetuarVenda(int idCliente)
         }
     }
 
-    mostrarResumoVenda(novaVenda);
     cout << "\nPressione Enter para ver o talão...";
     limparBuffer();
     cin.get();
@@ -482,48 +488,58 @@ void Loja::efetuarVenda(int idCliente)
 }
 
 void Loja::mostrarResumoVenda(const Venda& venda) const {
-    const int largura = 76;
-    const string margem = "    "; // 4 espaços
+    const int wId = 3, wProd = 22, wQtd = 6, wPSemIVA = 13, wPComIVA = 13, wTotal = 13;
+    const int largura = 4 + wId + wProd + wQtd + wPSemIVA + wPComIVA + wTotal; // pipes + colunas
+    const string margem = "    ";
     string titulo = "RESUMO DA VENDA";
-    int espaco = largura - 4 - titulo.length();
-    int esq = espaco / 2;
-    int dir = espaco - esq;
     cout << margem << "+" << string(largura - 2, '=') << "+" << endl;
-    cout << margem << "|" << string(esq, ' ') << titulo << string(dir, ' ') << "|" << endl;
+    cout << margem << "|" << centro(titulo, largura - 2) << "|" << endl;
     cout << margem << "+" << string(largura - 2, '=') << "+" << endl;
 
     ostringstream ossId;
-    ossId << "ID do cliente: " << venda.getIdCliente();
-    cout << margem << "| " << left << setw(largura - 4) << ossId.str() << " |" << endl;
+    ossId << "ID DO CLIENTE: " << venda.getIdCliente();
+    cout << margem << "|" << centro(ossId.str(), largura - 2) << "|" << endl;
     cout << margem << "+" << string(largura - 2, '-') << "+" << endl;
 
-    cout << left
-        << "| " << setw(3) << "#"
-        << "| " << setw(22) << "Produto"
-        << "| " << setw(6) << "Qtd"
-        << "| " << setw(13) << "Preco (s/IVA)"
-        << "| " << setw(13) << "Preco (c/IVA)"
-        << "| " << setw(13) << "Total Item" << "|" << endl;
-    cout << margem << "+" << string(largura - 2, '-') << "+" << endl;
+    // Cabeçalho centralizado
+    cout << margem
+        << "|" << centro("#", wId) << "|"
+        << centro("PRODUTO", wProd) << "|"
+        << centro("QTD", wQtd) << "|"
+        << centro("PRECO S/IVA", wPSemIVA) << "|"
+        << centro("PRECO C/IVA", wPComIVA) << "|"
+        << centro("TOTAL ITEM", wTotal) << "|" << endl;
+    cout << margem
+        << "+" << string(wId, '-') << "+"
+        << string(wProd, '-') << "+"
+        << string(wQtd, '-') << "+"
+        << string(wPSemIVA, '-') << "+"
+        << string(wPComIVA, '-') << "+"
+        << string(wTotal, '-') << "+" << endl;
 
     int idx = 1;
     for (const auto& item : venda.getItens()) {
-        double precoSemIVA = item.precoUnitario;
-        double precoComIVA = precoSemIVA * 1.23;
-        double totalItem = precoComIVA * item.quantidade;
-        cout << margem << left
-            << "| " << setw(3) << idx
-            << "| " << setw(22) << item.nomeProduto
-            << "| " << setw(6) << item.quantidade
-            << "| " << setw(13) << fixed << setprecision(2) << precoSemIVA
-            << "| " << setw(13) << precoComIVA
-            << "| " << setw(13) << totalItem << "|" << endl;
+        string prod = toUpper(item.nomeProduto);
+        if ((int)prod.length() > wProd) prod = prod.substr(0, wProd);
+        cout << margem
+            << "|" << centro(to_string(idx), wId) << "|"
+            << centro(prod, wProd) << "|"
+            << centro(to_string(item.quantidade), wQtd) << "|"
+            << centro((ostringstream{} << fixed << setprecision(2) << item.precoUnitario).str(), wPSemIVA) << "|"
+            << centro((ostringstream{} << fixed << setprecision(2) << item.precoUnitario * 1.23).str(), wPComIVA) << "|"
+            << centro((ostringstream{} << fixed << setprecision(2) << item.precoUnitario * 1.23 * item.quantidade).str(), wTotal) << "|" << endl;
         idx++;
     }
-    cout << margem << "+" << string(largura - 2, '-') << "+" << endl;
+    cout << margem
+        << "+" << string(wId, '=') << "+"
+        << string(wProd, '=') << "+"
+        << string(wQtd, '=') << "+"
+        << string(wPSemIVA, '=') << "+"
+        << string(wPComIVA, '=') << "+"
+        << string(wTotal, '=') << "+" << endl;
     ostringstream ossTotal;
-    ossTotal << "Total da venda (com IVA): " << fixed << setprecision(2) << venda.getTotalComIVA();
-    cout << margem << "|" << right << setw(largura - 3) << ossTotal.str() << " |" << endl;
+    ossTotal << "TOTAL DA VENDA (COM IVA): " << fixed << setprecision(2) << venda.getTotalComIVA();
+    cout << margem << "|" << centro(ossTotal.str(), largura - 2) << "|" << endl;
     cout << margem << "+" << string(largura - 2, '=') << "+" << endl;
 }
 
