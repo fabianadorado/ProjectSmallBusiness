@@ -494,7 +494,7 @@ void Loja::efetuarVenda(int idCliente)
         cout << "1 - Prosseguir para pagamento\n";
         cout << "2 - Remover um item\n";
         cout << "3 - Cancelar toda a venda\n";
-        cout << "Opção: ";
+        cout << "Opcao: ";
         int op;
         cin >> op;
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
@@ -502,11 +502,11 @@ void Loja::efetuarVenda(int idCliente)
             break;
         } else if (op == 2) {
             if (novaVenda.getItens().empty()) {
-                cout << RED << "Não há itens para remover!" << RESET << endl;
+                cout << RED << "Nao ha itens para remover!" << RESET << endl;
                 continue;
             }
             int linha;
-            cout << "Digite o número do item a remover: ";
+            cout << "Digite o numero do item a remover: ";
             cin >> linha;
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
             // Antes de remover, repor estoque do item
