@@ -19,10 +19,10 @@ int Menu::menuPrincipal() {
         "Efetuar Vendas",
         "Gerir Produtos",
         "Gerir Clientes",
-        "Relatórios",
+        "Relatorios",
         "Sair"
     };
-    return mostrarMenu(" MENU PRINCIPAL ", opcoes);
+    return mostrarMenu("MENU PRINCIPAL", opcoes);
 }
 
 int Menu::menuGerirProdutos() {
@@ -53,14 +53,14 @@ int Menu::menuGerirClientes() {
 int Menu::menuRelatorios() {
     system("cls");
     vector< string> opcoes = {
-        "Relatório de Stock",
+        "Relatorio de Stock",
         "Vendas por Produto",
         "Total de Vendas",
-        "Gráfico de Vendas",
-        "Histórico de Vendas",
+        "Grafico de Vendas",
+        "Historico de Vendas",
         "Vendas por Produto Detalhado",
         "Voltar ao Menu Principal"
     };
-    return mostrarMenu("RELATÓRIOS", opcoes);
+    return mostrarMenu("RELATORIOS", opcoes);
 }
 

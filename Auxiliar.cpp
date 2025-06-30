@@ -124,20 +124,20 @@ int mostrarMenu(const string& titulo, const vector<string>& opcoes) {
         if (linha.length() > largura) largura = linha.length();
     }
     largura += 4;
-    string bordaTop = margem + "+" + repetir("=", largura) + "+";
-    string bordaMeio = margem + "+" + repetir("=", largura) + "+";
-    string bordaBottom = margem + "+" + repetir("=", largura) + "+";
+    string bordaTop = margem + "+" + repetir("-", largura) + "+";
+    string bordaMeio = margem + "+" + repetir("-", largura) + "+";
+    string bordaBottom = margem + "+" + repetir("-", largura) + "+";
     size_t espacoEsq = (largura - titulo.length()) / 2;
     size_t espacoDir = largura - titulo.length() - espacoEsq;
-    cout << CYAN << bordaTop << "\n";
-    cout << margem << "|" << repetir(" ", espacoEsq) << BOLD << titulo << RESET << CYAN << repetir(" ", espacoDir) << "|\n";
-    cout << bordaMeio << "\n" << CYAN;
+    cout << bordaTop << "\n";
+    cout << margem << "|" << repetir(" ", espacoEsq) << titulo << repetir(" ", espacoDir) << "|\n";
+    cout << bordaMeio << "\n";
     for (size_t i = 0; i < opcoes.size(); ++i) {
         string texto = to_string(i + 1) + " - " + opcoes[i];
         cout << margem << "| " << texto << repetir(" ", largura - texto.length() - 1) << "|\n";
     }
-    cout << CYAN << bordaBottom << "\n" << RESET;
-    cout << margem << YELLOW << "Escolha uma opcao: " << RESET;
+    cout << bordaBottom << "\n";
+    cout << margem << "Escolha uma opcao: ";
     int opcao;
     cin >> opcao;
     return opcao;
