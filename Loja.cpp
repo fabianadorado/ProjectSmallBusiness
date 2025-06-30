@@ -57,10 +57,36 @@ void Loja::criarProduto()
         cout << RED << "Nome do produto nao pode ser vazio!" << RESET << endl;
     }
 
+    // Verifica se o produto já existe
+    Produto* existente = encontrarProdutoPorNome(nome);
+    if (existente != nullptr) {
+        cout << YELLOW << "Produto ja existe no estoque com " << existente->getQuantidade() << " unidades." << RESET << endl;
+        cout << "Deseja adicionar mais quantidade? (S/N): ";
+        char opcao;
+        cin >> opcao;
+        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        opcao = toupper(opcao);
+        if (opcao == 'S') {
+            int qnt;
+            cout << "Quantidade a adicionar: ";
+            while (!(cin >> qnt) || qnt <= 0) {
+                cout << endl << RED << "Atencao, apenas pode inserir numeros e tem de ser maior que 0.\n" << RESET;
+                cout << "Quantidade: ";
+                cin.clear();
+                cin.ignore(1000, '\n');
+            }
+            existente->adicionarStock(qnt);
+            cout << GREEN << "Quantidade adicionada com sucesso!" << RESET << endl;
+        } else {
+            cout << BLUE << "Operacao cancelada." << RESET << endl;
+        }
+        return;
+    }
+
+    // Se o produto não existir, continua o cadastro normal
     quantidade = lernumero("Quantidade: ");
     cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     preco = lerFloatPositivo("Preco de custo: ");
-
     criarProduto(nome, quantidade, preco);  // Chama a versão já implementada
 }
 
@@ -455,7 +481,7 @@ void Loja::efetuarVenda(int idCliente)
             bool primeiraTentativa = true;
             while (true) {
                 if (!primeiraTentativa) {
-                    cout << RED << "Entrada inválida. Digite um número válido (>= 0)." << RESET << endl;
+                    cout << endl << RED << "Entrada inválida. Digite um número válido (>= 0)." << RESET << endl;
                 }
                 cout << "Valor entregue pelo cliente: ";
                 string input;
@@ -472,18 +498,20 @@ void Loja::efetuarVenda(int idCliente)
                 novaVenda.finalizarVenda(valorEntregue);
                 valorValido = true;
             } catch (const std::invalid_argument& e) {
-                cout << RED << e.what() << RESET << endl;
+                cout << endl << RED << "Erro: " << e.what() << RESET << endl;
                 // Repete o loop para pedir o valor novamente
             }
         }
     }
 
-    cout << "\nPressione Enter para ver o talão...";
+    cout << endl << "Pressione Enter para ver o talão..." << endl;
     limparBuffer();
     cin.get();
+    system("cls"); // Limpa a tela antes de mostrar o talão
     novaVenda.imprimirTalao();
     cout << "\nPressione Enter para voltar...";
     cin.get();
+    system("cls");
 
     if (!ganhouTalaoGratis)
         clienteEncontrado->adicionarCompra(valorFinal);
@@ -495,17 +523,17 @@ void Loja::efetuarVenda(int idCliente)
 
 void Loja::mostrarResumoVenda(const Venda& venda) const {
     const int wId = 3, wProd = 22, wQtd = 6, wPSemIVA = 13, wPComIVA = 13, wTotal = 13;
-    const int largura = 4 + wId + wProd + wQtd + wPSemIVA + wPComIVA + wTotal; // pipes + colunas
+    const int larguraTabela = 4 + wId + wProd + wQtd + wPSemIVA + wPComIVA + wTotal; // 6 pipes + colunas
     const string margem = "    ";
     string titulo = "RESUMO DA VENDA";
-    cout << margem << "+" << string(largura - 2, '=') << "+" << endl;
-    cout << margem << "|" << centro(titulo, largura - 2) << "|" << endl;
-    cout << margem << "+" << string(largura - 2, '=') << "+" << endl;
+    cout << margem << "+" << string(larguraTabela - 2, '=') << "+" << endl;
+    cout << margem << "|" << centro(titulo, larguraTabela - 2) << "|" << endl;
+    cout << margem << "+" << string(larguraTabela - 2, '=') << "+" << endl;
 
     ostringstream ossId;
     ossId << "ID DO CLIENTE: " << venda.getIdCliente();
-    cout << margem << "|" << centro(ossId.str(), largura - 2) << "|" << endl;
-    cout << margem << "+" << string(largura - 2, '-') << "+" << endl;
+    cout << margem << "|" << centro(ossId.str(), larguraTabela - 2) << "|" << endl;
+    cout << margem << "+" << string(larguraTabela - 2, '-') << "+" << endl;
 
     // Cabeçalho centralizado
     cout << margem
@@ -545,8 +573,8 @@ void Loja::mostrarResumoVenda(const Venda& venda) const {
         << string(wTotal, '=') << "+" << endl;
     ostringstream ossTotal;
     ossTotal << "TOTAL DA VENDA (COM IVA): " << fixed << setprecision(2) << venda.getTotalComIVA();
-    cout << margem << "|" << centro(ossTotal.str(), largura - 2) << "|" << endl;
-    cout << margem << "+" << string(largura - 2, '=') << "+" << endl;
+    cout << margem << "|" << centro(ossTotal.str(), larguraTabela - 2) << "|" << endl;
+    cout << margem << "+" << string(larguraTabela - 2, '=') << "+" << endl;
 }
 
 bool Loja::salvarDados(const string& diretorio) {
@@ -1152,4 +1180,14 @@ void Loja::relatorioVendasDetalhadoPorProduto() const {
     cout << margem << "| " << setw(70) << left << "Lucro total estimado:"
         << "€ " << fixed << setprecision(2) << totalLucro << " |" << endl;
     cout << margem << "+" << string(largura - 2, '=') << "+" << endl;
+}
+
+Produto* Loja::encontrarProdutoPorNome(const string& nome) {
+    string nomeMaiusculo = toUpper(nome);
+    for (auto& produto : produtos) {
+        if (toUpper(produto.getNome()) == nomeMaiusculo) {
+            return &produto;
+        }
+    }
+    return nullptr;
 }

@@ -70,4 +70,6 @@ public:
 
     // Getters
     const vector<Produto>& getProdutos() const { return produtos; }
+
+    Produto* encontrarProdutoPorNome(const string& nome);
 };
