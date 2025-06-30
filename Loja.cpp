@@ -426,12 +426,15 @@ void Loja::efetuarVenda(int idCliente)
             cout << "Produto inexistente.\n";
             continue;
         }
+        if (produtoSelecionado->getQuantidade() == 0) {
+            cout << RED << "Produto sem estoque. Escolha outro produto." << RESET << endl;
+            continue;
+        }
         int quantidade;
         while (true) {
             quantidade = lernumero("Quantidade: ");
             if (produtoSelecionado->getQuantidade() < quantidade) {
-                cout << RED << "Stock insuficiente." << RESET << endl;
-                cout << RED << "Disponivel: " << produtoSelecionado->getQuantidade() << " unidades." << RESET << endl;
+                cout << RED << "Stock insuficiente. Disponivel: " << produtoSelecionado->getQuantidade() << " unidades." << RESET << endl;
             } else {
                 break;
             }
