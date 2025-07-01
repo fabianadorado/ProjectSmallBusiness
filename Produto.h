@@ -21,8 +21,8 @@ public:
     string getNome() const;
     int getQuantidade() const;
     double getPrecoCusto() const;
-    double getPrecoVenda() const;           // Preço com margem
-    double getPrecoVendaComIVA() const;     // Preço com margem + IVA
+    double getPrecoVenda() const;           // Preco com margem
+    double getPrecoVendaComIVA() const;     // Preco com margem + IVA
 
     void adicionarStock(int qtd);
     void removerStock(int qtd);

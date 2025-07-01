@@ -423,9 +423,22 @@ void Loja::efetuarVenda(int idCliente)
     do {
         Produto* produtoSelecionado = nullptr;
         int idProduto;
+        bool desistiu = false;
         // Loop até encontrar um produto válido e com estoque
         while (true) {
-            idProduto = lernumero("ID do produto: ");
+            cout << "ID do produto: ";
+            string input;
+            getline(cin, input);
+            istringstream iss(input);
+            if (!(iss >> idProduto) || idProduto < 0) {
+                cout << RED << "Entrada invalida. Digite um numero inteiro maior ou igual a 0." << RESET << endl;
+                continue;
+            }
+            // Permitir desistência apenas após erro de estoque
+            if (produtoSelecionado == nullptr && idProduto == 0) {
+                desistiu = true;
+                break;
+            }
             for (auto& p : produtos) {
                 if (p.getId() == idProduto) {
                     produtoSelecionado = &p;
@@ -437,11 +450,13 @@ void Loja::efetuarVenda(int idCliente)
                 continue;
             }
             if (produtoSelecionado->getQuantidade() == 0) {
-                cout << RED << "Produto sem estoque. Escolha outro produto." << RESET << endl;
+                cout << RED << "Produto sem estoque. Escolha outro produto ou digite 0 para desistir." << RESET << endl;
+                produtoSelecionado = nullptr; // Resetar para permitir 0 na próxima iteração
                 continue;
             }
             break; // Produto válido encontrado
         }
+        if (desistiu) break;
         int quantidade;
         while (true) {
             quantidade = lernumero("Quantidade: ");
@@ -472,23 +487,18 @@ void Loja::efetuarVenda(int idCliente)
     } while (mais == 's' || mais == 'S');
 
     if (!adicionouProduto) {
-        cout << RED << "Nenhum produto foi adicionado à venda. Operação cancelada." << RESET << endl;
+        cout << RED << "Nenhum produto foi adicionado a venda. Operação cancelada." << RESET << endl;
         return;
     }
 
-    //Sorteio do talao gratis (10% de chance)
-    srand(static_cast<unsigned>(time(0)));
-    bool ganhouTalaoGratis = (rand() % 10 == 0); 
-
-    double valorFinal = ganhouTalaoGratis ? 0.0 : novaVenda.getValorTotal();
-
-    if (ganhouTalaoGratis) {
-        cout << GREEN << "PARABENS! Voce ganhou o talao gratis!\n" << RESET;
-    }
-
-    // Mostrar resumo da venda antes do pagamento
+    // Limpa a tela e mostra o resumo da venda antes do menu de opções
+    system("cls");
+    mostrarResumoVenda(novaVenda);
+    cout << endl << "Pressione Enter para continuar..." << endl;
+    cin.get();
+    // Agora exibe o menu de opções logo abaixo do resumo
     while (true) {
-        mostrarResumoVenda(novaVenda);
+        // Não limpa a tela novamente, mantém o resumo visível
         cout << endl;
         cout << "O que deseja fazer?\n";
         cout << "1 - Prosseguir para pagamento\n";
@@ -528,8 +538,16 @@ void Loja::efetuarVenda(int idCliente)
             novaVenda.cancelarVenda();
             return;
         } else {
-            cout << RED << "Opção inválida!" << RESET << endl;
+            cout << RED << "Opção invalida!" << RESET << endl;
         }
+    }
+
+    // Sorteio do talao gratis (10% de chance) e mensagem de parabéns só agora
+    srand(static_cast<unsigned>(time(0)));
+    bool ganhouTalaoGratis = (rand() % 10 == 0);
+    double valorFinal = ganhouTalaoGratis ? 0.0 : novaVenda.getValorTotal();
+    if (ganhouTalaoGratis) {
+        cout << GREEN << "PARABENS! Voce ganhou o talao gratis!\n" << RESET;
     }
 
     // Mostrar valor a pagar antes de pedir valor entregue
@@ -569,7 +587,6 @@ void Loja::efetuarVenda(int idCliente)
     }
 
     cout << endl << "Pressione Enter para ver o talao..." << endl;
-    limparBuffer();
     cin.get();
     system("cls"); // Limpa a tela antes de mostrar o talão
     novaVenda.imprimirTalao();

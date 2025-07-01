@@ -25,7 +25,7 @@ struct ItemVenda {
 class Venda {
 private:
     static mt19937 gerador;  // Gerador Mersenne Twister
-    static uniform_int_distribution<int> distribuidor;  // Distribuição
+    static uniform_int_distribution<int> distribuidor;  // Distribuicao
 
     int idCliente;
     string numeroFatura;
@@ -37,7 +37,7 @@ private:
 
 public:
     Venda();
-    //explicit Venda(int idCliente);  // explicit previne conversões implícitas
+    //explicit Venda(int idCliente);  // explicit previne conversoes implicitas
     Venda(int idCliente);
 
     void adicionarItem(const string& nomeProduto, int quantidade, double precoUnit, double precoCusto);

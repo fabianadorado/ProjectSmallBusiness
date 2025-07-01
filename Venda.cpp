@@ -1,7 +1,7 @@
 ﻿// -*-coding: utf - 8 - *-
 // Venda.cpp
 #include "Venda.h"
-#include <iomanip>   // para usar manipuladores de entrada e saida para controlar a formatação dos dados
+#include <iomanip>   // para usar manipuladores de entrada e saida para controlar a formatacao dos dados
 #include <ctime>     // para adicionar horas e datas (talao)
 #include <sstream>   // para poder usar setprecision em strings || deixa-me usar manipulador de strings
 #include <iostream>
@@ -10,7 +10,7 @@
 #include <chrono>     // Para geração de sementes aleatórias
 #include "Auxiliar.h"
 
-#define END_COLOR "\033[0m"  // Define a cor de texto para padrão
+#define END_COLOR "\033[0m"  // Define a cor de texto para padrao
 #define RED "\033[31m"   // Define a cor de texto para vermelho
 #define GREEN "\033[32m" // Define a cor de texto para verde
 
@@ -66,7 +66,7 @@ void Venda::adicionarItem(const string& nomeProduto, int quantidade, double prec
 
     if (precoUnit < 0)
     {
-        throw invalid_argument("Preço unitário não pode ser negativo");
+        throw invalid_argument("Preco unitario nao pode ser negativo");
     }
     int linha = itens.size() + 1;
     ItemVenda item(linha, nomeProduto, quantidade, precoUnit, precoCusto);
@@ -79,7 +79,7 @@ void Venda::finalizarVenda(double valorEntregue)
     double total = getValorTotal();
     if (arred2(valorEntregue) < arred2(total))
     {
-        throw invalid_argument("Valor entregue é inferior ao valor total da compra!");
+        throw invalid_argument("Valor entregue e inferior ao valor total da compra!");
     }
     this->valorEntregue = valorEntregue;
 

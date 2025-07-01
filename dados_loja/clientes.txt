@@ -1,6 +1,6 @@
 #IDs_DISPONIVEIS:
 1;Joao Silva;910520630;Rua A;27.26
-2;Maria Jose;925478963;Rua B;67.72
-3;Pedro Maia;910258741;Rua C;57.37
+2;Maria Jose;925478963;Rua B;80.11
+3;Pedro Maia;910258741;Rua C;62.97
 4;Antonio Ribeiro;927556631;Rua Bonança,159;0.00
 5;Filomena Santos;987987987;Av Sorriso,654;45.63

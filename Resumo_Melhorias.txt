@@ -156,4 +156,10 @@ Resumo de Melhorias e Correções - Projeto Small Business
 Observações Finais
 ------------------
 - Se ainda houver problemas de acentuação, verifique se todos os arquivos .cpp/.h/.txt estão salvos como UTF-8.
-- Recomenda-se sempre usar terminais modernos (Windows Terminal, PowerShell) para melhor compatibilidade visual. 
+- Recomenda-se sempre usar terminais modernos (Windows Terminal, PowerShell) para melhor compatibilidade visual.
+
+- Implementada opção de desistir da seleção de produtos ao tentar adicionar um produto sem estoque, aceitando o ID 0 apenas nesse contexto.
+
+- Ajustado o fluxo de leitura de Enter entre telas para evitar a necessidade de pressionar Enter múltiplas vezes, tornando a navegação mais fluida.
+
+- Removido o espaço extra entre a quantidade e o preco de custo ao adicionar novo produto, deixando a interface mais limpa. 

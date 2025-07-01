@@ -22,12 +22,9 @@
 using namespace std;
 
 int main() {
-    // Garante que o console está em UTF-8 (acentos e símbolos)
-    system("chcp 65001 > nul");
-    SetConsoleOutputCP(CP_UTF8);
-    // Locale para português e UTF-8
-    setlocale(LC_ALL, "pt_PT.UTF-8"); // Força acentuação correta
-    setlocale(LC_NUMERIC, "C");
+    // Locale para portugues e UTF-8
+    // setlocale(LC_ALL, "pt_PT.UTF-8"); // Força acentuação correta
+    // setlocale(LC_NUMERIC, "C");
 
     Menu menu;
     Loja loja;
@@ -50,7 +47,6 @@ int main() {
             int id = lernumero("ID do cliente: ");
             loja.efetuarVenda(id);
             cout << "\nPressione Enter para voltar...";
-            limparBuffer();
             cin.get();
             system("cls");
             break;
@@ -81,8 +77,7 @@ int main() {
                         cout << RED << "Nome do produto nao pode ser vazio!" << RESET << endl;
                     }
                     qtd = lernumero("Quantidade: ");
-                    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                    preco = lerFloatPositivo("Preço de custo: ");
+                    preco = lerFloatPositivo("Preco de custo: ");
                     loja.criarProduto(nome, qtd, preco);
 
 
@@ -133,7 +128,7 @@ int main() {
                 case 5: // Voltar ao Menu Principal
                     break;
                 default:
-                    cout << RED << "\nOpção inválida!" << RESET;
+                    cout << RED << "\nOpcao invalida!" << RESET;
                     Sleep(1000);
                 }
             } while (sub_produtos != 5);
@@ -215,7 +210,7 @@ int main() {
                 case 5: // Voltar ao Menu Principal
                     break;
                 default:
-                    cout << RED << "\nOpção inválida!" << RESET;
+                    cout << RED << "\nOpcao invalida!" << RESET;
                     Sleep(1000);
                 }
             } while (sub_clientes != 5);
@@ -241,7 +236,7 @@ int main() {
                 { // Vendas por Produto
                     system("cls");
                     string nome;
-                    cout << "Relatório por Produto\n\n";
+                    cout << "Relatorio por Produto\n\n";
                     cout << "Nome do produto: ";
                     cin.ignore();
                     getline(cin, nome);
@@ -283,7 +278,7 @@ int main() {
                 case 7: // Voltar ao Menu Principal
                     break;
                 default:
-                    cout << RED << "\nOpção inválida!" << RESET;
+                    cout << RED << "\nOpcao invalida!" << RESET;
                     Sleep(1000);
                 }
             } while (sub_relatorios != 7);
@@ -294,7 +289,7 @@ int main() {
             cout << GREEN << "\nEncerrando sistema..." << RESET << endl;
             break;
         default:
-            cout << RED << "Opção inválida!" << RESET;
+            cout << RED << "Opcao invalida!" << RESET;
             Sleep(1000);
             system("cls");
         }

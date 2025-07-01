@@ -6,10 +6,10 @@
 
 using namespace std;
 
-// Inicialização do ID estático
+// Inicializacao do ID estatico
 int Produto::proximoId = 1;
 
-// Construtor padrão
+// Construtor padrao
 Produto::Produto() {
     id = proximoId++;
     nome = "";
@@ -17,7 +17,7 @@ Produto::Produto() {
     precoCusto = 0.0;
 }
 
-// Construtor com parâmetros
+// Construtor com parametros
 Produto::Produto(int id, string nome, int quantidade, double precoCusto) {
     this->id = id;
     this->nome = toUpper(nome);
@@ -45,12 +45,12 @@ double Produto::getPrecoCusto() const {
     return precoCusto;
 }
 
-// Preço de venda com margem (exemplo: 30% de lucro)
+// Preco de venda com margem (exemplo: 30% de lucro)
 double Produto::getPrecoVenda() const {
     return precoCusto * 1.3;
 }
 
-// Preço de venda com IVA (23% aplicado sobre o preço de venda)
+// Preco de venda com IVA (23% aplicado sobre o preco de venda)
 double Produto::getPrecoVendaComIVA() const {
     double precoVenda = getPrecoVenda();
     return precoVenda * 1.23;
