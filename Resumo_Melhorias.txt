@@ -153,6 +153,23 @@ Resumo de Melhorias e Correções - Projeto Small Business
 [Melhoria] Alinhamento profissional dos totais no talão:
 - As linhas de Subtotal, IVA, TOTAL, Valor pago e Troco agora ficam alinhadas à coluna do número do item (à esquerda) e os valores à coluna do valor total do item (à direita), garantindo visual padronizado e profissional no talão.
 
+### 13. Limpeza de tela inteligente ao repetir operações
+- Nos fluxos de adicionar produto, adicionar cliente, adicionar estoque e eliminar produto, a tela agora é limpa (system("cls")) apenas nas repetições, e não na primeira vez.
+- Isso foi implementado com uma flag `primeiraVez` em cada fluxo, garantindo que o usuário veja a lista e o prompt sem "piscar" na primeira entrada, mas com tela limpa a cada repetição.
+- O resultado é uma experiência mais fluida, profissional e consistente ao realizar múltiplas operações em sequência.
+
+### 14. Reorganização automática de IDs dos produtos após exclusão
+- Agora, ao eliminar um produto pelo programa, todos os produtos restantes têm seus IDs reorganizados sequencialmente a partir de 1, eliminando buracos na numeração.
+- O próximo produto criado recebe o próximo ID correto, mantendo a lista sempre contínua e organizada.
+- Foi adicionado o método setId(int) à classe Produto para permitir essa reorganização.
+
+### 15. Orientações para alimentação manual dos arquivos de produtos e clientes
+- Se os arquivos produtos.txt ou clientes.txt forem editados manualmente:
+  - Não repita IDs, pois o sistema não detecta duplicatas automaticamente.
+  - Se houver buracos na sequência de IDs, o próximo item criado pelo programa terá ID igual ao maior ID existente + 1.
+  - Após uma exclusão de produto pelo programa, os IDs dos produtos serão reorganizados sequencialmente, eliminando buracos.
+- O sistema é robusto para continuar a sequência, mas não preenche buracos automaticamente ao adicionar (apenas ao excluir pelo programa).
+
 Observações Finais
 ------------------
 - Se ainda houver problemas de acentuação, verifique se todos os arquivos .cpp/.h/.txt estão salvos como UTF-8.

@@ -26,4 +26,5 @@ public:
 
     void adicionarStock(int qtd);
     void removerStock(int qtd);
+    void setId(int novoId) { id = novoId; }
 };

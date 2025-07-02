@@ -69,11 +69,17 @@ void Loja::criarProduto()
         if (opcao == 'S') {
             int qnt;
             cout << "Quantidade a adicionar: ";
-            while (!(cin >> qnt) || qnt <= 0) {
-                cout << endl << RED << "Atencao, apenas pode inserir numeros e tem de ser maior que 0.\n" << RESET;
+            bool primeiraTentativa = true;
+            while (true) {
+                if (!primeiraTentativa) {
+                    cout << RED << "Entrada invalida. Digite um numero inteiro maior que 0." << RESET << endl;
+                }
                 cout << "Quantidade: ";
-                cin.clear();
-                cin.ignore(1000, '\n');
+                string input;
+                getline(cin, input);
+                istringstream iss(input);
+                if ((iss >> qnt) && qnt > 0) break;
+                primeiraTentativa = false;
             }
             existente->adicionarStock(qnt);
             cout << GREEN << "Quantidade adicionada com sucesso!" << RESET << endl;
@@ -84,7 +90,18 @@ void Loja::criarProduto()
     }
 
     // Se o produto não existir, continua o cadastro normal
-    quantidade = lernumero("Quantidade: ");
+    bool primeiraTentativa = true;
+    while (true) {
+        if (!primeiraTentativa) {
+            cout << RED << "Entrada invalida. Digite um numero inteiro maior que 0." << RESET << endl;
+        }
+        cout << "Quantidade: ";
+        string input;
+        getline(cin, input);
+        istringstream iss(input);
+        if ((iss >> quantidade) && quantidade > 0) break;
+        primeiraTentativa = false;
+    }
     cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     preco = lerFloatPositivo("Preco de custo: ");
     criarProduto(nome, quantidade, preco);  // Chama a versão já implementada
@@ -116,6 +133,11 @@ void Loja::eliminarProduto(int idProduto)
                 return;
             }
             produtos.erase(produtos.begin() + i);
+            // Reorganizar IDs
+            for (size_t j = 0; j < produtos.size(); ++j) {
+                produtos[j].setId(j + 1);
+            }
+            proximoIdProduto = produtos.size() + 1;
             cout << "Produto removido.\n";
             return;
         }
@@ -417,54 +439,62 @@ void Loja::efetuarVenda(int idCliente)
     Venda novaVenda(idCliente);
     novaVenda.setNomeCliente(clienteEncontrado->getNome());
     listarProdutos();
-
+    cin.clear();
+    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     char mais = 'n';
     bool adicionouProduto = false;
     do {
         Produto* produtoSelecionado = nullptr;
         int idProduto;
+        bool erroInput = false;
         bool desistiu = false;
         // Loop até encontrar um produto válido e com estoque
         while (true) {
-            cout << "ID do produto: ";
+            if (erroInput) {
+                cout << RED << "Entrada invalida. Digite um numero inteiro maior ou igual a 0." << RESET << endl;
+            }
+            cout << "ID do Produto: ";
             string input;
             getline(cin, input);
             istringstream iss(input);
-            if (!(iss >> idProduto) || idProduto < 0) {
-                cout << RED << "Entrada invalida. Digite um numero inteiro maior ou igual a 0." << RESET << endl;
-                continue;
-            }
-            // Permitir desistência apenas após erro de estoque
-            if (produtoSelecionado == nullptr && idProduto == 0) {
-                desistiu = true;
-                break;
-            }
-            for (auto& p : produtos) {
-                if (p.getId() == idProduto) {
-                    produtoSelecionado = &p;
+            if ((iss >> idProduto) && idProduto >= 0) {
+                if (idProduto == 0) {
+                    desistiu = true;
                     break;
                 }
+                // Procura o produto
+                produtoSelecionado = nullptr;
+                for (auto& p : produtos) {
+                    if (p.getId() == idProduto) {
+                        produtoSelecionado = &p;
+                        break;
+                    }
+                }
+                if (!produtoSelecionado) {
+                    cout << RED << "Produto inexistente." << RESET << endl;
+                    continue;
+                }
+                if (produtoSelecionado->getQuantidade() == 0) {
+                    cout << RED << "Produto sem estoque. Escolha outro produto ou digite 0 para desistir." << RESET << endl;
+                    continue;
+                }
+                break; // Produto válido encontrado
             }
-            if (!produtoSelecionado) {
-                cout << "Produto inexistente.\n";
-                continue;
-            }
-            if (produtoSelecionado->getQuantidade() == 0) {
-                cout << RED << "Produto sem estoque. Escolha outro produto ou digite 0 para desistir." << RESET << endl;
-                produtoSelecionado = nullptr; // Resetar para permitir 0 na próxima iteração
-                continue;
-            }
-            break; // Produto válido encontrado
+            erroInput = true;
         }
         if (desistiu) break;
         int quantidade;
+        bool primeiraTentativaQuantidade = true;
         while (true) {
-            quantidade = lernumero("Quantidade: ");
-            if (produtoSelecionado->getQuantidade() < quantidade) {
-                cout << RED << "Stock insuficiente. Disponivel: " << produtoSelecionado->getQuantidade() << " unidades." << RESET << endl;
-            } else {
-                break;
+            if (!primeiraTentativaQuantidade) {
+                cout << RED << "Entrada invalida. Digite um numero inteiro maior que 0." << RESET << endl;
             }
+            cout << "Quantidade: ";
+            string input;
+            getline(cin, input);
+            istringstream iss(input);
+            if ((iss >> quantidade) && quantidade > 0) break;
+            primeiraTentativaQuantidade = false;
         }
         novaVenda.adicionarItem(
             produtoSelecionado->getNome(),

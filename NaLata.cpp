@@ -60,29 +60,44 @@ int main() {
 
                 switch (sub_produtos)
                 {
-                case 1: { // Criar Produto
+                case 1:
+                { // Adicionar Produto
                     system("cls");
-                    string nome;
-                    int qtd;
-                    double preco;
-                    cout << "ADICIONAR NOVO PRODUTO\n\n";
-                    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                    while (true) {
-                        cout << "Nome: ";
-                        getline(cin, nome);
-                        nome = toUpper(nome);
-                        if (!(nome.empty() || nome.find_first_not_of(' ') == string::npos)) {
-                            break;
+                    bool primeiraVez = true;
+                    do {
+                        if (!primeiraVez) system("cls");
+                        string nome;
+                        int qtd;
+                        double preco;
+                        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                        while (true) {
+                            cout << "Nome: ";
+                            getline(cin, nome);
+                            nome = toUpper(nome);
+                            if (!(nome.empty() || nome.find_first_not_of(' ') == string::npos)) {
+                                break;
+                            }
+                            cout << RED << "Nome do produto nao pode ser vazio!" << RESET << endl;
                         }
-                        cout << RED << "Nome do produto nao pode ser vazio!" << RESET << endl;
-                    }
-                    qtd = lernumero("Quantidade: ");
-                    preco = lerFloatPositivo("Preco de custo: ");
-                    loja.criarProduto(nome, qtd, preco);
+                        bool primeiraTentativa = true;
+                        while (true) {
+                            if (!primeiraTentativa) {
+                                cout << RED << "Entrada invalida. Digite um numero inteiro maior que 0." << RESET << endl;
+                            }
+                            cout << "Quantidade: ";
+                            string input;
+                            getline(cin, input);
+                            istringstream iss(input);
+                            if ((iss >> qtd) && qtd > 0) break;
+                            primeiraTentativa = false;
+                        }
+                        preco = lerFloatPositivo("Preco de custo: ");
+                        loja.criarProduto(nome, qtd, preco);
 
-
-                    cout << GREEN << "\nProduto criado com sucesso!" << RESET;
-                    cout << "\n\nPressione Enter para continuar...";
+                        cout << GREEN << "\nProduto criado com sucesso!" << RESET << endl;
+                        primeiraVez = false;
+                    } while (desejaContinuar("Deseja adicionar outro produto?"));
+                    cout << "\nPressione Enter para continuar...";
                     limparBuffer();
                     cin.get();
                     break;
@@ -90,14 +105,55 @@ int main() {
                 case 2:
                 { // Adicionar Stock
                     system("cls");
-                    loja.listarProdutos();
-                    cout << "\n";
-                    int id = lernumero("ID do Produto: ");
-                    int qtd = lernumero("Quantidade a adicionar: ");
-                    loja.adicionarStock(id, qtd);
+                    bool primeiraVez = true;
+                    do {
+                        if (!primeiraVez) system("cls");
+                        loja.listarProdutos();
+                        cout << "\n";
+                        cin.clear();
+                        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                        int id;
+                        bool primeiraTentativaId = true;
+                        while (true) {
+                            if (!primeiraTentativaId) {
+                                cout << RED << "ID invalido. Escolha um ID da lista acima." << RESET << endl;
+                            }
+                            cout << "ID do Produto: ";
+                            string input;
+                            getline(cin, input);
+                            istringstream iss(input);
+                            if ((iss >> id) && id > 0) {
+                                // Verifica se o ID existe na lista de produtos
+                                bool existe = false;
+                                for (const auto& p : loja.getProdutos()) {
+                                    if (p.getId() == id) {
+                                        existe = true;
+                                        break;
+                                    }
+                                }
+                                if (existe) break;
+                            }
+                            primeiraTentativaId = false;
+                        }
+                        int qtd;
+                        bool primeiraTentativa = true;
+                        while (true) {
+                            if (!primeiraTentativa) {
+                                cout << RED << "Entrada invalida. Digite um numero inteiro maior que 0." << RESET << endl;
+                            }
+                            cout << "Quantidade a adicionar: ";
+                            string input;
+                            getline(cin, input);
+                            istringstream iss(input);
+                            if ((iss >> qtd) && qtd > 0) break;
+                            primeiraTentativa = false;
+                        }
+                        loja.adicionarStock(id, qtd);
 
-                    cout << GREEN << "\nStock atualizado com sucesso!" << RESET;
-                    cout << "\n\nPressione Enter para continuar...";
+                        cout << GREEN << "\nStock atualizado com sucesso!" << RESET << endl;
+                        primeiraVez = false;
+                    } while (desejaContinuar("Deseja adicionar estoque para outro produto?"));
+                    cout << "\nPressione Enter para continuar...";
                     limparBuffer();
                     cin.get();
                     break;
@@ -105,12 +161,41 @@ int main() {
                 case 3:
                 { // Eliminar Produto
                     system("cls");
-                    loja.listarProdutos();
-                    cout << "\n";
-                    int id = lernumero("ID do Produto a eliminar: ");
-                    loja.eliminarProduto(id);
+                    bool primeiraVez = true;
+                    do {
+                        if (!primeiraVez) system("cls");
+                        loja.listarProdutos();
+                        cout << "\n";
+                        cin.clear();
+                        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                        int id;
+                        bool primeiraTentativaId = true;
+                        while (true) {
+                            if (!primeiraTentativaId) {
+                                cout << RED << "ID invalido. Escolha um ID da lista acima." << RESET << endl;
+                            }
+                            cout << "ID do Produto a eliminar: ";
+                            string input;
+                            getline(cin, input);
+                            istringstream iss(input);
+                            if ((iss >> id) && id > 0) {
+                                // Verifica se o ID existe na lista de produtos
+                                bool existe = false;
+                                for (const auto& p : loja.getProdutos()) {
+                                    if (p.getId() == id) {
+                                        existe = true;
+                                        break;
+                                    }
+                                }
+                                if (existe) break;
+                            }
+                            primeiraTentativaId = false;
+                        }
+                        loja.eliminarProduto(id);
 
-                    cout << GREEN << "\nProduto removido com sucesso!" << RESET;
+                        cout << GREEN << "\nProduto removido com sucesso!" << RESET << endl;
+                        primeiraVez = false;
+                    } while (desejaContinuar("Deseja eliminar outro produto?"));
                     cout << "\n\nPressione Enter para continuar...";
                     limparBuffer();
                     cin.get();
@@ -145,22 +230,26 @@ int main() {
                 {
                 case 1:
                 { // Criar Cliente
-                    system("cls");
-                    string nome, tel, morada;
-                    cout << "CADASTRO DE CLIENTE\n\n";
-                    cin.ignore();
-                    cout << "Nome: ";
-                    getline(cin, nome);
-                    nome = toUpper(nome);
-                    cout << "Telefone: ";
-                    tel = lerTelefone("");
-                    cout << "Morada: ";
-                    getline(cin, morada);
-                    morada = toUpper(morada);
-                    loja.criarCliente(nome, tel, morada);
+                    bool primeiraVez = true;
+                    do {
+                        if (!primeiraVez) system("cls");
+                        string nome, tel, morada;
+                        cout << "CADASTRO DE CLIENTE\n\n";
+                        cin.ignore();
+                        cout << "Nome: ";
+                        getline(cin, nome);
+                        nome = toUpper(nome);
+                        cout << "Telefone: ";
+                        tel = lerTelefone("");
+                        cout << "Morada: ";
+                        getline(cin, morada);
+                        morada = toUpper(morada);
+                        loja.criarCliente(nome, tel, morada);
 
-                    cout << GREEN << "\nCliente cadastrado com sucesso!" << RESET;
-                    cout << "\n\nPressione Enter para continuar...";
+                        cout << GREEN << "\nCliente cadastrado com sucesso!" << RESET;
+                        primeiraVez = false;
+                    } while (desejaContinuar("Deseja cadastrar outro cliente?"));
+                    cout << "\nPressione Enter para continuar...";
                     limparBuffer();
                     cin.get();
                     break;

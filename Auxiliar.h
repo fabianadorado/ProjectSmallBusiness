@@ -40,3 +40,5 @@ string formatarTelefone(const string& telefone);
 string centro(const string& texto, int largura);
 
 bool confirmarAcao(const std::string& mensagem);
+
+bool desejaContinuar(const std::string& mensagem = "Deseja realizar outra operacao?");
