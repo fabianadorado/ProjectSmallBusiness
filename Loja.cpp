@@ -37,7 +37,6 @@ void Loja::criarProduto(const string& nome, int quantidade, double precoCusto)
     string nomeMaiusculo = toUpper(nome);
     Produto novoProduto(proximoIdProduto, nomeMaiusculo, quantidade, precoCusto);
     produtos.push_back(novoProduto);
-    cout << "Produto criado com sucesso.\n";
     proximoIdProduto++;
 }
 
@@ -58,7 +57,7 @@ void Loja::criarProduto()
     }
 
     // Verifica se o produto já existe
-    Produto* existente = encontrarProdutoPorNome(nome);
+    Produto* existente = encontrarProdutoPorNome(nome, produtos);
     if (existente != nullptr) {
         cout << YELLOW << "Produto ja existe no estoque com " << existente->getQuantidade() << " unidades." << RESET << endl;
         cout << "Deseja adicionar mais quantidade? (S/N): ";
@@ -851,6 +850,9 @@ bool Loja::carregarProdutos(const string& caminho) {
                 int quantidade = stoi(qtdStr);
                 double precoCusto = stod(precoStr);
 
+                // Padronizar nome para maiúsculas
+                nome = toUpper(nome);
+
                 produtos.emplace_back(id, nome, quantidade, precoCusto);
 
                 if (id >= proximoIdProduto) {
@@ -1294,16 +1296,6 @@ void Loja::relatorioVendasDetalhadoPorProduto() const {
     cout << margem << "| " << setw(70) << left << "Lucro total estimado:"
         << "€ " << fixed << setprecision(2) << totalLucro << " |" << endl;
     cout << margem << "+" << string(largura - 2, '=') << "+" << endl;
-}
-
-Produto* Loja::encontrarProdutoPorNome(const string& nome) {
-    string nomeMaiusculo = toUpper(nome);
-    for (auto& produto : produtos) {
-        if (toUpper(produto.getNome()) == nomeMaiusculo) {
-            return &produto;
-        }
-    }
-    return nullptr;
 }
 
 // Adicionar função auxiliar em Loja para repor estoque de um item removido da venda

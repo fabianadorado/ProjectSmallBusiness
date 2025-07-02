@@ -67,34 +67,68 @@ int main() {
                     do {
                         if (!primeiraVez) system("cls");
                         string nome;
-                        int qtd;
-                        double preco;
+                        cin.clear();
                         cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                        while (true) {
-                            cout << "Nome: ";
-                            getline(cin, nome);
-                            nome = toUpper(nome);
-                            if (!(nome.empty() || nome.find_first_not_of(' ') == string::npos)) {
-                                break;
+                        cout << "Nome: ";
+                        getline(cin, nome);
+                        nome = toUpper(nome);
+                        // Verificar duplicidade de produto
+                        Produto* existente = encontrarProdutoPorNome(nome, loja.getProdutos());
+                        if (existente) {
+                            cout << YELLOW << "Produto ja existe." << RESET << endl;
+                            cout << "Quantidade atual: " << existente->getQuantidade() << endl;
+                            cout << "Preco de custo atual: " << fixed << setprecision(2) << existente->getPrecoCusto() << endl;
+                            char opcao;
+                            while (true) {
+                                cout << "Deseja atualizar a quantidade e o preco de custo? (s/n): ";
+                                cin >> opcao;
+                                cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                                if (opcao == 's' || opcao == 'S' || opcao == 'n' || opcao == 'N') break;
+                                cout << RED << "Entrada invalida. Digite 's' para sim ou 'n' para nao." << RESET << endl;
                             }
-                            cout << RED << "Nome do produto nao pode ser vazio!" << RESET << endl;
-                        }
-                        bool primeiraTentativa = true;
-                        while (true) {
-                            if (!primeiraTentativa) {
-                                cout << RED << "Entrada invalida. Digite um numero inteiro maior que 0." << RESET << endl;
+                            if (opcao == 's' || opcao == 'S') {
+                                int qtdNova;
+                                double precoNovo;
+                                bool primeiraTentativa = true;
+                                while (true) {
+                                    if (!primeiraTentativa) {
+                                        cout << RED << "Entrada invalida. Digite um numero inteiro maior que 0." << RESET << endl;
+                                    }
+                                    cout << "Nova quantidade a adicionar: ";
+                                    string input;
+                                    getline(cin, input);
+                                    istringstream iss(input);
+                                    if ((iss >> qtdNova) && qtdNova > 0) break;
+                                    primeiraTentativa = false;
+                                }
+                                precoNovo = lerFloatPositivo("Novo preco de custo: ");
+                                existente->adicionarStock(qtdNova);
+                                existente->setPrecoCusto(precoNovo);
+                                cout << GREEN << "\nEstoque e preco atualizados com sucesso!" << RESET << endl;
+                            } else {
+                                cout << YELLOW << "Operacao cancelada pelo usuario." << RESET << endl;
                             }
-                            cout << "Quantidade: ";
-                            string input;
-                            getline(cin, input);
-                            istringstream iss(input);
-                            if ((iss >> qtd) && qtd > 0) break;
-                            primeiraTentativa = false;
+                            primeiraVez = false;
+                            continue;
+                        } else {
+                            int qtd;
+                            double preco;
+                            bool primeiraTentativa = true;
+                            while (true) {
+                                if (!primeiraTentativa) {
+                                    cout << RED << "Entrada invalida. Digite um numero inteiro maior que 0." << RESET << endl;
+                                }
+                                cout << "Quantidade: ";
+                                string input;
+                                getline(cin, input);
+                                istringstream iss(input);
+                                if ((iss >> qtd) && qtd > 0) break;
+                                primeiraTentativa = false;
+                            }
+                            preco = lerFloatPositivo("Preco de custo: ");
+                            loja.criarProduto(nome, qtd, preco);
+                            cout << GREEN << "\nProduto criado com sucesso!" << RESET << endl;
                         }
-                        preco = lerFloatPositivo("Preco de custo: ");
-                        loja.criarProduto(nome, qtd, preco);
-
-                        cout << GREEN << "\nProduto criado com sucesso!" << RESET << endl;
                         primeiraVez = false;
                     } while (desejaContinuar("Deseja adicionar outro produto?"));
                     cout << "\nPressione Enter para continuar...";
@@ -230,23 +264,48 @@ int main() {
                 {
                 case 1:
                 { // Criar Cliente
+                    system("cls");
+                    cout << "CADASTRO DE CLIENTE\n\n";
                     bool primeiraVez = true;
                     do {
                         if (!primeiraVez) system("cls");
+                        cin.clear();
+                        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                         string nome, tel, morada;
-                        cout << "CADASTRO DE CLIENTE\n\n";
-                        cin.ignore();
-                        cout << "Nome: ";
-                        getline(cin, nome);
-                        nome = toUpper(nome);
-                        cout << "Telefone: ";
-                        tel = lerTelefone("");
-                        cout << "Morada: ";
-                        getline(cin, morada);
-                        morada = toUpper(morada);
+                        while (true) {
+                            cout << "Nome: ";
+                            getline(cin, nome);
+                            nome = toUpper(nome);
+                            if (!(nome.empty() || nome.find_first_not_of(' ') == string::npos)) {
+                                break;
+                            }
+                            cout << RED << "Nome do cliente nao pode ser vazio!" << RESET << endl;
+                        }
+                        // Verificar duplicidade de nome
+                        if (encontrarClientePorNome(nome, loja.getClientes())) {
+                            cout << RED << "Cliente com este nome ja existe!" << RESET << endl;
+                            continue;
+                        }
+                        // Garantir telefone válido
+                        while (true) {
+                            cout << "Telefone: ";
+                            tel = lerTelefone("");
+                            if (!tel.empty()) break;
+                            cout << RED << "Telefone nao pode ser vazio!" << RESET << endl;
+                        }
+                        // Garantir morada não vazia
+                        while (true) {
+                            cout << "Morada: ";
+                            getline(cin, morada);
+                            morada = toUpper(morada);
+                            if (!(morada.empty() || morada.find_first_not_of(' ') == string::npos)) {
+                                break;
+                            }
+                            cout << RED << "Morada nao pode ser vazia!" << RESET << endl;
+                        }
                         loja.criarCliente(nome, tel, morada);
 
-                        cout << GREEN << "\nCliente cadastrado com sucesso!" << RESET;
+                        cout << GREEN << "\nCliente cadastrado com sucesso!" << RESET << endl;
                         primeiraVez = false;
                     } while (desejaContinuar("Deseja cadastrar outro cliente?"));
                     cout << "\nPressione Enter para continuar...";

@@ -3,6 +3,8 @@
 #include <iostream>
 #include <iomanip>
 #include <vector>
+#include "Produto.h"
+#include "Cliente.h"
 
 using namespace std;
 
@@ -42,3 +44,8 @@ string centro(const string& texto, int largura);
 bool confirmarAcao(const std::string& mensagem);
 
 bool desejaContinuar(const std::string& mensagem = "Deseja realizar outra operacao?");
+
+Produto* encontrarProdutoPorNome(const std::string& nome, std::vector<Produto>& produtos);
+Cliente* encontrarClientePorNome(const std::string& nome, std::vector<Cliente>& clientes);
+
+std::string trim(const std::string& str);

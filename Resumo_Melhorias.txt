@@ -170,6 +170,20 @@ Resumo de Melhorias e Correções - Projeto Small Business
   - Após uma exclusão de produto pelo programa, os IDs dos produtos serão reorganizados sequencialmente, eliminando buracos.
 - O sistema é robusto para continuar a sequência, mas não preenche buracos automaticamente ao adicionar (apenas ao excluir pelo programa).
 
+### 16. Centralização da verificação de nomes duplicados para produtos e clientes
+- Criada a função template `encontrarPorNome` em Auxiliar.h, que permite buscar por nome (ignorando maiúsculas/minúsculas) em qualquer vetor de objetos com método getNome().
+- Agora, tanto o cadastro de produtos quanto de clientes utiliza essa função para impedir duplicidade de nomes.
+- Para produtos: se o nome já existir, o sistema oferece a opção de adicionar estoque ao produto existente.
+- Para clientes: se o nome já existir, o cadastro é impedido e uma mensagem de erro é exibida.
+- As funções auxiliares antigas de busca por nome foram removidas, evitando duplicidade de código e facilitando manutenção.
+
+### 17. Melhorias no fluxo de cadastro de cliente
+- O campo Nome agora não aceita valores vazios ou apenas espaços; o sistema exibe mensagem de erro e pede novamente até ser preenchido corretamente.
+- O campo Morada também não aceita vazio ou apenas espaços, com validação e mensagem de erro.
+- O prompt "Telefone:" é repetido sempre que o valor for inválido, garantindo clareza ao usuário.
+- O título "CADASTRO DE CLIENTE" aparece apenas uma vez, antes do início do cadastro, e não se repete a cada iteração.
+- Mensagens de sucesso e perguntas de repetição aparecem sempre em linhas separadas, melhorando a experiência visual.
+
 Observações Finais
 ------------------
 - Se ainda houver problemas de acentuação, verifique se todos os arquivos .cpp/.h/.txt estão salvos como UTF-8.

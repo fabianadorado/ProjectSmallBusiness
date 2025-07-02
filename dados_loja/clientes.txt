@@ -4,3 +4,4 @@
 3;Pedro Maia;910258741;Rua C;62.97
 4;Antonio Ribeiro;927556631;Rua Bonança,159;0.00
 5;Filomena Santos;987987987;Av Sorriso,654;54.26
+6;ISABEL LIMA;33333-5555;RUA DA VILA,321;0.00

@@ -1,5 +1,7 @@
 ﻿#define NOMINMAX
 #include "Auxiliar.h"
+#include "Produto.h"
+#include "Cliente.h"
 #include <iostream>
 #include <iomanip>
 #include <limits>
@@ -258,4 +260,27 @@ bool confirmarAcao(const std::string& mensagem) {
             std::cout << "Entrada invalida. Digite 's' para sim ou 'n' para nao." << std::endl;
         }
     }
+}
+
+Produto* encontrarProdutoPorNome(const std::string& nome, std::vector<Produto>& produtos) {
+    std::string nomePadrao = toUpper(trim(nome));
+    for (auto& p : produtos) {
+        if (toUpper(trim(p.getNome())) == nomePadrao) return &p;
+    }
+    return nullptr;
+}
+
+Cliente* encontrarClientePorNome(const std::string& nome, std::vector<Cliente>& clientes) {
+    std::string nomePadrao = toUpper(trim(nome));
+    for (auto& c : clientes) {
+        if (toUpper(trim(c.getNome())) == nomePadrao) return &c;
+    }
+    return nullptr;
+}
+
+std::string trim(const std::string& str) {
+    size_t first = str.find_first_not_of(" \t\n\r");
+    if (first == std::string::npos) return "";
+    size_t last = str.find_last_not_of(" \t\n\r");
+    return str.substr(first, (last - first + 1));
 }

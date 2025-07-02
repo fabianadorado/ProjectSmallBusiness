@@ -69,9 +69,8 @@ public:
     bool carregarDados(const string& diretorio = "dados_loja");
 
     // Getters
-    const vector<Produto>& getProdutos() const { return produtos; }
-
-    Produto* encontrarProdutoPorNome(const string& nome);
+    std::vector<Produto>& getProdutos() { return produtos; }
+    std::vector<Cliente>& getClientes() { return clientes; }
 
     // Repor estoque ao remover item ou cancelar venda
     void reporEstoqueItem(const ItemVenda& item);
