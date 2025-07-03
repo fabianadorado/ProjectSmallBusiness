@@ -404,44 +404,55 @@ int main() {
                     system("cls");
                     loja.relatorioStock();
                     cout << "\nPressione Enter para voltar...";
+                    cin.clear();
+                    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                     cin.get();
                     break;
                 case 2:
                 { // Vendas por Produto
-                    system("cls");
-                    string nome;
-                    cout << "Relatorio por Produto\n\n";
-                    cout << "Nome do produto: ";
-                    cin.ignore();
-                    getline(cin, nome);
-                    nome = toUpper(nome);
-                    loja.relatorioVendasPorProduto(nome);
-                    cout << "\nPressione Enter para voltar...";
-                    cin.get();
+                    do {
+                        system("cls");
+                        string nome;
+                        cout << "Relatorio por Produto\n\n";
+                        cout << "Nome do produto: ";
+                        cin.ignore();
+                        getline(cin, nome);
+                        nome = trim(toUpper(nome));
+                        loja.relatorioVendasPorProduto(nome);
+                        cout << "\n";
+                    } while (desejaContinuar("Deseja ver o relatorio de outro produto?"));
                     break;
                 }
                 case 3: // Total de Vendas
                     system("cls");
                     loja.relatorioTotalVendas();
                     cout << "\nPressione Enter para voltar...";
+                    cin.clear();
+                    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                     cin.get();
                     break;
                 case 4: // Gráfico de Vendas
                     system("cls");
                     loja.relatorioGraficoVendas();
                     cout << "\nPressione Enter para voltar...";
+                    cin.clear();
+                    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                     cin.get();
                     break;
                 case 5: // Histórico de Vendas
                     system("cls");
                     loja.listarHistoricoVendas();
                     cout << "\nPressione Enter para voltar...";
+                    cin.clear();
+                    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                     cin.get();
                     break;
                 case 6: // Vendas Detalhadas
                     system("cls");
                     loja.relatorioVendasDetalhadoPorProduto();
                     cout << "\nPressione Enter para voltar...";
+                    cin.clear();
+                    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                     cin.get();
                     break;
                 case 7: // Voltar ao Menu Principal
