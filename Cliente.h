@@ -19,7 +19,7 @@ private:
 
 public:
     Cliente();
-    Cliente(string nome, string telefone, string morada, double totalComprado = 0.0f);
+    Cliente(string nome, string telefone, string morada, double totalComprado = 0.0);
 
     // Getters
     int getIdCliente() const;
