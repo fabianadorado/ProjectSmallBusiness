@@ -12,12 +12,12 @@ vector<int> Cliente::idsDisponiveis;
 
 // Construtor padrão
 Cliente::Cliente()
-    : idCliente(proximoCliente++), nome(""), telefone(""), morada(""), totalComprado(0.0) {
+    : idCliente(proximoCliente++), nome(""), telefone(""), morada(""), dataNascimento(""), totalComprado(0.0) {
 }
 
 // Construtor com parâmetros
-Cliente::Cliente(string nome, string telefone, string morada, double totalComprado)
-    : idCliente(proximoCliente++), nome(nome), telefone(telefone), morada(morada), totalComprado(totalComprado) {
+Cliente::Cliente(string nome, string telefone, string morada, string dataNascimento, double totalComprado)
+    : idCliente(proximoCliente++), nome(nome), telefone(telefone), morada(morada), dataNascimento(dataNascimento), totalComprado(totalComprado) {
     // Verifica se há IDs disponíveis para reutilização
     if (!idsDisponiveis.empty()) {
         idCliente = idsDisponiveis.back();
@@ -30,6 +30,7 @@ Cliente::Cliente(string nome, string telefone, string morada, double totalCompra
     this->nome = nome;
     this->telefone = telefone;
     this->morada = morada;
+    this->dataNascimento = dataNascimento;
     this->totalComprado = totalComprado;
 }
 
@@ -48,6 +49,10 @@ string Cliente::getTelefone() const {
 
 string Cliente::getMorada() const {
     return morada;
+}
+
+string Cliente::getDataNascimento() const {
+    return dataNascimento;
 }
 
 double Cliente::getTotalComprado() const {
@@ -72,6 +77,10 @@ void Cliente::setTelefone(string telefone) {
 
 void Cliente::setMorada(string morada) {
     this->morada = morada;
+}
+
+void Cliente::setDataNascimento(const string& data) {
+    dataNascimento = data;
 }
 
 // Método para liberar ID quando cliente é removido

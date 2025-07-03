@@ -43,7 +43,7 @@ public:
     void listarProdutos() const;
 
     // Clientes
-    void criarCliente(const string& nome, const string& telefone, const string& morada);
+    void criarCliente(const string& nome, const string& telefone, const string& morada, const string& dataNascimento);
     void eliminarCliente(int idCliente);
     void alterarNomeCliente(int idCliente, const string& novoNome);
     void listarClientes() const;

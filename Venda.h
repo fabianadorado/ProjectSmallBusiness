@@ -34,6 +34,8 @@ private:
     double troco;
     bool gratis = false;
     string nomeCliente;
+    string dataNascimentoCliente;
+    int monstersPoints = 0;
 
 public:
     Venda();
@@ -66,5 +68,11 @@ public:
 
     void setNomeCliente(const string& nome) { nomeCliente = nome; }
     string getNomeCliente() const { return nomeCliente; }
+
+    void setDataNascimentoCliente(const string& data) { dataNascimentoCliente = data; }
+    string getDataNascimentoCliente() const { return dataNascimentoCliente; }
+
+    void setMonstersPoints(int pts) { monstersPoints = pts; }
+    int getMonstersPoints() const { return monstersPoints; }
 
 };

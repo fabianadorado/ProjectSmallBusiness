@@ -15,17 +15,19 @@ private:
     string nome;
     string telefone;
     string morada;
+    string dataNascimento;
     double totalComprado;
 
 public:
     Cliente();
-    Cliente(string nome, string telefone, string morada, double totalComprado = 0.0);
+    Cliente(string nome, string telefone, string morada, string dataNascimento, double totalComprado = 0.0);
 
     // Getters
     int getIdCliente() const;
     string getNome() const;
     string getTelefone() const;
     string getMorada() const;
+    string getDataNascimento() const;
     double getTotalComprado() const;
 
     // Setters
@@ -33,6 +35,7 @@ public:
     void setNome(string nome);
     void setTelefone(string telefone);
     void setMorada(string morada);
+    void setDataNascimento(const string& data);
 
     // Outros métodos
     void liberarId();

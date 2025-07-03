@@ -24,6 +24,8 @@
 
 using namespace std;
 
+const std::string MARGEM = "    ";
+
 int lernumero(const string& mensagem) {
     int valor;
     string input;
@@ -85,21 +87,19 @@ void limparBuffer() {
 }
 
 void desenharLinhaHorizontal(const string& inicio, const string& fim, size_t largura) {
-    const string margem = "    ";
     string linha_str;
     for (size_t i = 0; i < largura; ++i) {
         linha_str += "-";
     }
-    cout << BOLD << margem << inicio << linha_str << fim << END_COLOR << endl;
+    cout << BOLD << MARGEM << inicio << linha_str << fim << END_COLOR << endl;
 }
 
 void desenharLinhaHorizontalVenda(const string& inicio, const string& fim, size_t largura) {
-    const string margem = "    ";
     string linha_str;
     for (size_t i = 0; i < largura; ++i) {
         linha_str += "-";
     }
-    cout << BOLD << margem << inicio << linha_str << fim << END_COLOR << endl;
+    cout << BOLD << MARGEM << inicio << linha_str << fim << END_COLOR << endl;
 }
 
 string repetir(const string& s, size_t n) {
@@ -109,13 +109,12 @@ string repetir(const string& s, size_t n) {
 }
 
 void desenharCaixaTitulo(const string& titulo, size_t largura) {
-    const string margem = "    ";
-    string bordaTop = margem + "+" + repetir("=", largura) + "+";
-    string bordaBottom = margem + "+" + repetir("=", largura) + "+";
+    string bordaTop = MARGEM + "+" + repetir("=", largura) + "+";
+    string bordaBottom = MARGEM + "+" + repetir("=", largura) + "+";
     size_t espacoEsq = (largura - titulo.length()) / 2;
     size_t espacoDir = largura - titulo.length() - espacoEsq;
     cout << CYAN << "\n" << bordaTop << "\n";
-    cout << margem << "|" << repetir(" ", espacoEsq) << BOLD << titulo << RESET << CYAN << repetir(" ", espacoDir) << "|\n";
+    cout << MARGEM << "|" << repetir(" ", espacoEsq) << BOLD << titulo << RESET << CYAN << repetir(" ", espacoDir) << "|\n";
     cout << bordaBottom << "\n" << RESET;
 }
 
@@ -131,27 +130,34 @@ string removerPontuacao(const string& str) {
 }
 
 int mostrarMenu(const string& titulo, const vector<string>& opcoes) {
-    const string margem = "    "; // 4 espaços
-    size_t largura = titulo.length();
+    // Cores MS-DOS: fundo azul, texto branco
+    const string BLUE_BG_WHITE_TXT = "\033[44;37m";
+    const string RESET_COLOR = "\033[0m";
+    system("cls");
+    cout << BLUE_BG_WHITE_TXT;
+    // Calcula largura da caixa
+    size_t largura = max<size_t>(titulo.length(), 40);
     for (const auto& op : opcoes) {
         string linha = "X - " + op;
         if (linha.length() > largura) largura = linha.length();
     }
-    largura += 4;
-    string bordaTop = margem + CYAN + BOLD "+" + repetir("=", largura) + "+" + RESET;
-    string bordaMeio = margem + CYAN + BOLD "+" + repetir("-", largura) + "+" + RESET;
-    string bordaBottom = margem + CYAN + BOLD "+" + repetir("=", largura) + "+" + RESET;
+    largura += 8;
+    // Topo
+    cout << "\n" << MARGEM << "+" << string(largura, '-') << "+\n";
+    // Título centralizado
     size_t espacoEsq = (largura - titulo.length()) / 2;
     size_t espacoDir = largura - titulo.length() - espacoEsq;
-    cout << bordaTop << "\n";
-    cout << margem << CYAN << BOLD << "|" << repetir(" ", espacoEsq) << titulo << repetir(" ", espacoDir) << "|" << RESET << "\n";
-    cout << bordaMeio << "\n";
+    cout << MARGEM << "|" << string(espacoEsq, ' ') << titulo << string(espacoDir, ' ') << "|\n";
+    cout << MARGEM << "+" << string(largura, '-') << "+\n";
+    // Opções
     for (size_t i = 0; i < opcoes.size(); ++i) {
         string texto = to_string(i + 1) + " - " + opcoes[i];
-        cout << margem << "| " << YELLOW << texto << RESET << repetir(" ", largura - texto.length() - 1) << "|" << "\n";
+        size_t espaco = largura - texto.length();
+        cout << MARGEM << "| " << texto << string(espaco - 1, ' ') << "|\n";
     }
-    cout << bordaBottom << "\n";
-    cout << margem << "Escolha uma opcao: ";
+    cout << MARGEM << "+" << string(largura, '-') << "+\n";
+    cout << RESET_COLOR;
+    cout << "\n" << MARGEM << "Escolha uma opcao: ";
     int opcao;
     cin >> opcao;
     return opcao;

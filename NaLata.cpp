@@ -10,6 +10,7 @@
 #include "Loja.h"
 #include "Menu.h"
 #include "Auxiliar.h"
+#include <regex>
 
 
 #define RESET   "\033[0m"
@@ -44,7 +45,7 @@ int main() {
         { // Efetuar Vendas
             system("cls");
             cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            int id = lernumero("ID do cliente: ");
+            int id = lernumero(std::string(MARGEM) + "ID do cliente: ");
             loja.efetuarVenda(id);
             system("cls");
             break;
@@ -67,7 +68,7 @@ int main() {
                         string nome;
                         cin.clear();
                         cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                        cout << "Nome: ";
+                        cout << std::string(MARGEM) << "Nome: ";
                         getline(cin, nome);
                         nome = toUpper(nome);
                         // Verificar duplicidade de produto
@@ -78,7 +79,7 @@ int main() {
                             cout << "Preco de custo atual: " << fixed << setprecision(2) << existente->getPrecoCusto() << endl;
                             char opcao;
                             while (true) {
-                                cout << "Deseja atualizar a quantidade e o preco de custo? (s/n): ";
+                                cout << std::string(MARGEM) << "Deseja atualizar a quantidade e o preco de custo? (s/n): ";
                                 cin >> opcao;
                                 cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                                 if (opcao == 's' || opcao == 'S' || opcao == 'n' || opcao == 'N') break;
@@ -92,14 +93,14 @@ int main() {
                                     if (!primeiraTentativa) {
                                         cout << RED << "Entrada invalida. Digite um numero inteiro maior que 0." << RESET << endl;
                                     }
-                                    cout << "Nova quantidade a adicionar: ";
+                                    cout << std::string(MARGEM) << "Nova quantidade a adicionar: ";
                                     string input;
                                     getline(cin, input);
                                     istringstream iss(input);
                                     if ((iss >> qtdNova) && qtdNova > 0) break;
                                     primeiraTentativa = false;
                                 }
-                                precoNovo = lerFloatPositivo("Novo preco de custo: ");
+                                precoNovo = lerFloatPositivo(std::string(MARGEM) + "Novo preco de custo: ");
                                 existente->adicionarStock(qtdNova);
                                 existente->setPrecoCusto(precoNovo);
                                 cout << GREEN << "\nEstoque e preco atualizados com sucesso!" << RESET << endl;
@@ -116,14 +117,14 @@ int main() {
                                 if (!primeiraTentativa) {
                                     cout << RED << "Entrada invalida. Digite um numero inteiro maior que 0." << RESET << endl;
                                 }
-                                cout << "Quantidade: ";
+                                cout << std::string(MARGEM) << "Quantidade: ";
                                 string input;
                                 getline(cin, input);
                                 istringstream iss(input);
                                 if ((iss >> qtd) && qtd > 0) break;
                                 primeiraTentativa = false;
                             }
-                            preco = lerFloatPositivo("Preco de custo: ");
+                            preco = lerFloatPositivo(std::string(MARGEM) + "Preco de custo: ");
                             loja.criarProduto(nome, qtd, preco);
                             cout << GREEN << "\nProduto criado com sucesso!" << RESET << endl;
                         }
@@ -147,7 +148,7 @@ int main() {
                             if (!primeiraTentativaId) {
                                 cout << RED << "ID invalido. Escolha um ID da lista acima." << RESET << endl;
                             }
-                            cout << "ID do Produto: ";
+                            cout << std::string(MARGEM) << "ID do Produto: ";
                             string input;
                             getline(cin, input);
                             istringstream iss(input);
@@ -170,7 +171,7 @@ int main() {
                             if (!primeiraTentativa) {
                                 cout << RED << "Entrada invalida. Digite um numero inteiro maior que 0." << RESET << endl;
                             }
-                            cout << "Quantidade a adicionar: ";
+                            cout << std::string(MARGEM) << "Quantidade a adicionar: ";
                             string input;
                             getline(cin, input);
                             istringstream iss(input);
@@ -200,7 +201,7 @@ int main() {
                             if (!primeiraTentativaId) {
                                 cout << RED << "ID invalido. Escolha um ID da lista acima." << RESET << endl;
                             }
-                            cout << "ID do Produto a eliminar: ";
+                            cout << std::string(MARGEM) << "ID do Produto a eliminar: ";
                             string input;
                             getline(cin, input);
                             istringstream iss(input);
@@ -228,7 +229,7 @@ int main() {
                 { // Listar Produtos
                     system("cls");
                     loja.listarProdutos();
-                    cout << "\nPressione Enter para voltar...";
+                    cout << std::string(MARGEM) << "Pressione Enter para voltar...";
                     cin.clear();
                     cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                     cin.get();
@@ -261,9 +262,9 @@ int main() {
                         if (!primeiraVez) system("cls");
                         cin.clear();
                         cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                        string nome, tel, morada;
+                        string nome, tel, morada, dataNasc;
                         while (true) {
-                            cout << "Nome: ";
+                            cout << std::string(MARGEM) << "Nome: ";
                             getline(cin, nome);
                             nome = toUpper(nome);
                             if (!(nome.empty() || nome.find_first_not_of(' ') == string::npos)) {
@@ -278,14 +279,14 @@ int main() {
                         }
                         // Garantir telefone válido
                         while (true) {
-                            cout << "Telefone: ";
+                            cout << std::string(MARGEM) << "Telefone: ";
                             tel = lerTelefone("");
                             if (!tel.empty()) break;
                             cout << RED << "Telefone nao pode ser vazio!" << RESET << endl;
                         }
                         // Garantir morada não vazia
                         while (true) {
-                            cout << "Morada: ";
+                            cout << std::string(MARGEM) << "Morada: ";
                             getline(cin, morada);
                             morada = toUpper(morada);
                             if (!(morada.empty() || morada.find_first_not_of(' ') == string::npos)) {
@@ -293,7 +294,14 @@ int main() {
                             }
                             cout << RED << "Morada nao pode ser vazia!" << RESET << endl;
                         }
-                        loja.criarCliente(nome, tel, morada);
+                        // Solicitar data de nascimento
+                        while (true) {
+                            cout << std::string(MARGEM) << "Data de nascimento (dd-mm-aaaa): ";
+                            getline(cin, dataNasc);
+                            if (regex_match(dataNasc, regex("^\\d{2}-\\d{2}-\\d{4}$"))) break;
+                            cout << RED << "Data invalida! Use o formato dd-mm-aaaa." << RESET << endl;
+                        }
+                        loja.criarCliente(nome, tel, morada, dataNasc);
 
                         cout << GREEN << "\nCliente cadastrado com sucesso!" << RESET << endl;
                         primeiraVez = false;
@@ -315,7 +323,7 @@ int main() {
                             if (!primeiraTentativaId) {
                                 cout << RED << "Entrada invalida. Digite um numero inteiro maior que 0." << RESET << endl;
                             }
-                            cout << "ID do Cliente a remover: ";
+                            cout << std::string(MARGEM) << "ID do Cliente a remover: ";
                             string input;
                             getline(cin, input);
                             istringstream iss(input);
@@ -336,7 +344,7 @@ int main() {
                 { // Listar Clientes
                     system("cls");
                     loja.listarClientes();
-                    cout << "\nPressione Enter para voltar...";
+                    cout << std::string(MARGEM) << "Pressione Enter para voltar...";
                     cin.clear();
                     cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                     cin.get();
@@ -356,7 +364,7 @@ int main() {
                         if (!primeiraTentativa) {
                             cout << RED << "Entrada invalida. Digite um numero inteiro maior que 0." << RESET << endl;
                         }
-                        cout << "ID do Cliente: ";
+                        cout << std::string(MARGEM) << "ID do Cliente: ";
                         string input;
                         getline(cin, input);
                         istringstream iss(input);
@@ -364,7 +372,7 @@ int main() {
                         primeiraTentativa = false;
                     }
                     string novoNome;
-                    cout << "Novo nome: ";
+                    cout << std::string(MARGEM) << "Novo nome: ";
                     cin.ignore();
                     getline(cin, novoNome);
                     novoNome = toUpper(novoNome);
@@ -403,7 +411,7 @@ int main() {
                 case 1: // Relatório de Stock
                     system("cls");
                     loja.relatorioStock();
-                    cout << "\nPressione Enter para voltar...";
+                    cout << std::string(MARGEM) << "Pressione Enter para voltar...";
                     cin.clear();
                     cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                     cin.get();
@@ -426,7 +434,7 @@ int main() {
                 case 3: // Total de Vendas
                     system("cls");
                     loja.relatorioTotalVendas();
-                    cout << "\nPressione Enter para voltar...";
+                    cout << std::string(MARGEM) << "Pressione Enter para voltar...";
                     cin.clear();
                     cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                     cin.get();
@@ -434,7 +442,7 @@ int main() {
                 case 4: // Gráfico de Vendas
                     system("cls");
                     loja.relatorioGraficoVendas();
-                    cout << "\nPressione Enter para voltar...";
+                    cout << std::string(MARGEM) << "Pressione Enter para voltar...";
                     cin.clear();
                     cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                     cin.get();
@@ -442,7 +450,7 @@ int main() {
                 case 5: // Histórico de Vendas
                     system("cls");
                     loja.listarHistoricoVendas();
-                    cout << "\nPressione Enter para voltar...";
+                    cout << std::string(MARGEM) << "Pressione Enter para voltar...";
                     cin.clear();
                     cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                     cin.get();
@@ -450,7 +458,7 @@ int main() {
                 case 6: // Vendas Detalhadas
                     system("cls");
                     loja.relatorioVendasDetalhadoPorProduto();
-                    cout << "\nPressione Enter para voltar...";
+                    cout << std::string(MARGEM) << "Pressione Enter para voltar...";
                     cin.clear();
                     cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                     cin.get();
@@ -466,8 +474,7 @@ int main() {
         }
         case 5: // Sair
             loja.salvarDados();
-            cout << GREEN << "\nEncerrando sistema..." << RESET << endl;
-            break;
+            return 0;
         default:
             cout << RED << "Opcao invalida!" << RESET;
             Sleep(1000);

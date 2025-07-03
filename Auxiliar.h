@@ -8,6 +8,8 @@
 
 using namespace std;
 
+extern const std::string MARGEM;
+
 int lernumero(const string& mensagem);
 double lerFloatPositivo(const string& mensagem);
 string toLower(const string& str);

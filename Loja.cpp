@@ -20,7 +20,6 @@
 #define RED     "\033[31m"
 #define GRAY "\033[90m"
 
-
 using namespace std;
 
 // Construtor
@@ -47,7 +46,7 @@ void Loja::criarProduto()
     double preco;
     cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     while (true) {
-        cout << "Nome do produto: ";
+        cout << std::string(MARGEM) << "Nome do produto: ";
         getline(cin, nome);
         nome = toUpper(nome);
         if (!(nome.empty() || nome.find_first_not_of(' ') == string::npos)) {
@@ -67,7 +66,7 @@ void Loja::criarProduto()
         opcao = toupper(opcao);
         if (opcao == 'S') {
             int qnt;
-            cout << "Quantidade a adicionar: ";
+            cout << std::string(MARGEM) << "Quantidade a adicionar: ";
             bool primeiraTentativa = true;
             while (true) {
                 if (!primeiraTentativa) {
@@ -94,7 +93,7 @@ void Loja::criarProduto()
         if (!primeiraTentativa) {
             cout << RED << "Entrada invalida. Digite um numero inteiro maior que 0." << RESET << endl;
         }
-        cout << "Quantidade: ";
+        cout << std::string(MARGEM) << "Quantidade: ";
         string input;
         getline(cin, input);
         istringstream iss(input);
@@ -114,11 +113,11 @@ void Loja::adicionarStock(int idProduto, int quantidade)
         if (produtos[i].getId() == idProduto) 
         {
             produtos[i].adicionarStock(quantidade);
-            cout << "Stock adicionado com sucesso!\n";
+            cout << GREEN << "Stock adicionado com sucesso!\n" << RESET;
             return;
         }
     }
-    cout << "Produto nao encontrado.\n";
+    cout << RED << "Produto nao encontrado.\n" << RESET;
 }
 
 void Loja::eliminarProduto(int idProduto)
@@ -128,7 +127,7 @@ void Loja::eliminarProduto(int idProduto)
         if (produtos[i].getId() == idProduto)
         {
             if (!confirmarAcao("Tem certeza que deseja remover este produto?")) {
-                cout << "Operacao cancelada.\n";
+                cout << RED << "Operacao cancelada.\n" << RESET;
                 return;
             }
             produtos.erase(produtos.begin() + i);
@@ -137,45 +136,44 @@ void Loja::eliminarProduto(int idProduto)
                 produtos[j].setId(j + 1);
             }
             proximoIdProduto = produtos.size() + 1;
-            cout << "Produto removido.\n";
+            cout << GREEN << "Produto removido.\n" << RESET;
             return;
         }
     }
-    cout << "Produto nao encontrado.\n";
+    cout << RED << "Produto nao encontrado.\n" << RESET;
 }
 
 void Loja::eliminarProduto() 
 {
     listarProdutos();
-    int id = lernumero("Digite o ID do produto que deseja eliminar: ");
+    int id = lernumero(std::string(MARGEM) + "Digite o ID do produto que deseja eliminar: ");
     eliminarProduto(id);
 }
 
 
 void Loja::listarProdutos() const
 {
-    const string margem = "    ";
     // Definição das larguras das colunas
     const int wId = 4, wNome = 28, wQtd = 8, wCusto = 13, wVenda = 13;
     const int nPipes = 6; // 5 separadores + 1 de início
     const int larguraTabela = wId + wNome + wQtd + wCusto + wVenda + nPipes;
 
     // Título
-    cout << margem << "+" << string(larguraTabela - 2, '=') << "+" << endl;
-    cout << margem << "|" << centro("LISTA DE PRODUTOS", larguraTabela - 2) << "|" << endl;
-    cout << margem << "+" << string(larguraTabela - 2, '=') << "+" << endl;
+    cout << std::string(MARGEM) << "+" << string(larguraTabela - 2, '=') << "+" << endl;
+    cout << std::string(MARGEM) << "|" << centro("LISTA DE PRODUTOS", larguraTabela - 2) << "|" << endl;
+    cout << std::string(MARGEM) << "+" << string(larguraTabela - 2, '=') << "+" << endl;
 
     // Cabeçalho
-    cout << margem
+    cout << std::string(MARGEM)
         << "|" << centro("ID", wId) << "|"
         << centro("NOME", wNome) << "|"
         << centro("QTD", wQtd) << "|"
         << centro("PRECO CUSTO", wCusto) << "|"
         << centro("PRECO VENDA", wVenda) << "|" << endl;
-    cout << margem << string(wId, '-') << "+" << string(wNome, '-') << "+" << string(wQtd, '-') << "+" << string(wCusto, '-') << "+" << string(wVenda, '-') << endl;
+    cout << std::string(MARGEM) << string(wId, '-') << "+" << string(wNome, '-') << "+" << string(wQtd, '-') << "+" << string(wCusto, '-') << "+" << string(wVenda, '-') << endl;
 
     if (produtos.empty()) {
-        cout << margem << "|" << centro("Nenhum produto cadastrado.", larguraTabela - 2) << "|";
+        cout << std::string(MARGEM) << "|" << centro("Nenhum produto cadastrado.", larguraTabela - 2) << "|" << endl;
     } else {
         for (const auto& p : produtos) {
             string idStr = to_string(p.getId());
@@ -184,7 +182,7 @@ void Loja::listarProdutos() const
             ostringstream ossCusto, ossVenda;
             ossCusto << fixed << setprecision(2) << p.getPrecoCusto() << " EUR";
             ossVenda << fixed << setprecision(2) << p.getPrecoVenda() << " EUR";
-            cout << margem
+            cout << std::string(MARGEM)
                 << "|" << centro(idStr, wId)
                 << "|" << centro(nomeStr, wNome)
                 << "|" << centro(qtdStr, wQtd)
@@ -193,11 +191,11 @@ void Loja::listarProdutos() const
                 << "|" << endl;
         }
     }
-    cout << margem << "+" << string(wId, '=') << "+" << string(wNome, '=') << "+" << string(wQtd, '=') << "+" << string(wCusto, '=') << "+" << string(wVenda, '=') << "+" << endl;
+    cout << std::string(MARGEM) << string(wId, '=') << "+" << string(wNome, '=') << "+" << string(wQtd, '=') << "+" << string(wCusto, '=') << "+" << string(wVenda, '=') << "+" << endl;
 }
 
 
-void Loja::criarCliente(const string& nome, const string& telefone, const string& morada) 
+void Loja::criarCliente(const string& nome, const string& telefone, const string& morada, const string& dataNascimento) 
 {
     int novoId;
     string nomeMaiusculo = toUpper(nome);
@@ -224,7 +222,7 @@ void Loja::criarCliente(const string& nome, const string& telefone, const string
         }
     }
 
-    Cliente novoCliente(nomeMaiusculo, telefoneFormatado, moradaMaiuscula);
+    Cliente novoCliente(nomeMaiusculo, telefoneFormatado, moradaMaiuscula, dataNascimento);
     novoCliente.setIdCliente(novoId);
     clientes.push_back(novoCliente);
 
@@ -234,8 +232,7 @@ void Loja::criarCliente(const string& nome, const string& telefone, const string
             return a.getIdCliente() < b.getIdCliente();
         });
 
-    cout << "Cliente criado com ID: " << novoId << "\n";
-
+    cout << GREEN << "Cliente criado com ID: " << novoId << "\n" << RESET;
 }
 
 void Loja::eliminarCliente(int idCliente) 
@@ -245,17 +242,17 @@ void Loja::eliminarCliente(int idCliente)
         if (clientes[i].getIdCliente() == idCliente) 
         {
             if (!confirmarAcao("Tem certeza que deseja remover este cliente?")) {
-                cout << "Operacao cancelada.\n";
+                cout << RED << "Operacao cancelada.\n" << RESET;
                 return;
             }
             idsClientesDisponiveis.push_back(idCliente);
             sort(idsClientesDisponiveis.begin(), idsClientesDisponiveis.end());
             clientes.erase(clientes.begin() + i);
-            cout << "Cliente removido. ID " ;
+            cout << GREEN << "Cliente removido. ID " << idCliente << RESET;
             return;
         }
     }
-    cout << "Cliente nao encontrado.\n";
+    cout << RED << "Cliente nao encontrado.\n" << RESET;
 }
 
 void Loja::alterarNomeCliente(int idCliente, const string& novoNome) 
@@ -266,11 +263,11 @@ void Loja::alterarNomeCliente(int idCliente, const string& novoNome)
         if (clientes[i].getIdCliente() == idCliente) 
         {
             clientes[i].setNome(nomeMaiusculo);
-            cout << "Nome alterado.\n";
+            cout << GREEN << "Nome alterado.\n" << RESET;
             return;
         }
     }
-    cout << "Cliente nao encontrado.\n";
+    cout << RED << "Cliente nao encontrado.\n" << RESET;
 }
 bool Loja::carregarClientes(const string& caminho) {
     if (!arquivoExiste(caminho)) {
@@ -314,19 +311,20 @@ bool Loja::carregarClientes(const string& caminho) {
 
         // Processa dados do cliente
         istringstream iss(linha);
-        string idStr, nome, telefone, morada, totalStr;
+        string idStr, nome, telefone, morada, dataNasc, totalStr;
 
         if (getline(iss, idStr, ';') &&
             getline(iss >> ws, nome, ';') &&
             getline(iss >> ws, telefone, ';') &&
             getline(iss >> ws, morada, ';') &&
+            getline(iss >> ws, dataNasc, ';') &&
             getline(iss >> ws, totalStr)) {
 
             try {
                 int id = stoi(idStr);
                 double totalComprado = stof(totalStr);
 
-                Cliente cliente(nome, telefone, morada, totalComprado);
+                Cliente cliente(nome, telefone, morada, dataNasc, totalComprado);
                 cliente.setIdCliente(id);
                 clientes.push_back(cliente);
             }
@@ -348,7 +346,6 @@ bool Loja::carregarClientes(const string& caminho) {
 }
 
 void Loja::listarClientes() const {
-    const string margem = "    ";
     vector<Cliente> clientesOrdenados = clientes;
     sort(clientesOrdenados.begin(), clientesOrdenados.end(),
         [](const Cliente& a, const Cliente& b) {
@@ -358,7 +355,7 @@ void Loja::listarClientes() const {
     // Larguras das colunas
     const int wId = 4, wNome = 28, wTel = 11, wMorada = 30;
     const int larguraTabela = wId + wNome + wTel + wMorada + 5; // 5 pipes
-    const int larguraTotal = margem.length() + larguraTabela;
+    const int larguraTotal = larguraTabela;
 
     // Função para centralizar texto, truncando se necessário
     auto centro = [](const string& texto, int largura) {
@@ -371,22 +368,22 @@ void Loja::listarClientes() const {
     };
 
     // Título centralizado perfeitamente com a tabela
-    cout << margem << "+" << string(larguraTabela - 2, '=') << "+" << endl;
-    cout << margem << "|" << centro("LISTA DE CLIENTES", larguraTabela - 2) << "|" << endl;
-    cout << margem << "+" << string(larguraTabela - 2, '=') << "+" << endl;
+    cout << "+" << string(larguraTabela - 2, '=') << "+" << endl;
+    cout << "|" << centro("LISTA DE CLIENTES", larguraTabela - 2) << "|" << endl;
+    cout << "+" << string(larguraTabela - 2, '=') << "+" << endl;
 
     // Cabeçalho centralizado
-    cout << margem
-        << "|" << centro("ID", wId) << "|"
+    cout <<
+        "|" << centro("ID", wId) << "|"
         << centro("Nome", wNome) << "|"
         << centro("Telefone", wTel) << "|"
         << centro("Morada", wMorada) << "|" << endl;
 
-    cout << margem
-         << string(wId, '-') << "+" << string(wNome, '-') << "+" << string(wTel, '-') << "+" << string(wMorada, '-') << endl;
+    cout <<
+         string(wId, '-') << "+" << string(wNome, '-') << "+" << string(wTel, '-') << "+" << string(wMorada, '-') << endl;
 
     if (clientesOrdenados.empty()) {
-        cout << margem << "|" << centro("Nenhum cliente cadastrado.", larguraTabela - 2) << "|\n";
+        cout << "|" << centro("Nenhum cliente cadastrado.", larguraTabela - 2) << "|\n";
     } else {
         for (const auto& c : clientesOrdenados) {
             string idStr = to_string(c.getIdCliente());
@@ -398,15 +395,15 @@ void Loja::listarClientes() const {
             string moradaStr = toUpper(c.getMorada());
             moradaStr.erase(0, moradaStr.find_first_not_of(' '));
             moradaStr.erase(moradaStr.find_last_not_of(' ') + 1);
-            cout << margem
-                << "|" << centro(idStr, wId) << "|"
+            cout <<
+                "|" << centro(idStr, wId) << "|"
                 << centro(nomeStr, wNome) << "|"
                 << centro(telStr, wTel) << "|"
                 << centro(moradaStr, wMorada) << "|" << endl;
         }
     }
 
-    cout << margem << "+" << string(wId, '=') << "+" << string(wNome, '=') << "+" << string(wTel, '=') << "+" << string(wMorada, '=') << "+" << endl;
+    cout << string(wId, '=') << "+" << string(wNome, '=') << "+" << string(wTel, '=') << "+" << string(wMorada, '=') << "+" << endl;
 }
 
 void Loja::efetuarVenda(int idCliente)
@@ -426,7 +423,7 @@ void Loja::efetuarVenda(int idCliente)
             if (!confirmarAcao("Cliente nao encontrado. Deseja tentar outro ID?")) {
                 return;
             }
-            idCliente = lernumero("ID do cliente: ");
+            idCliente = lernumero(std::string(MARGEM) + "ID do cliente: ");
             continue;
         }
         break;
@@ -434,6 +431,9 @@ void Loja::efetuarVenda(int idCliente)
 
     Venda novaVenda(idCliente);
     novaVenda.setNomeCliente(clienteEncontrado->getNome());
+    novaVenda.setDataNascimentoCliente(clienteEncontrado->getDataNascimento());
+    int pontosTotais = static_cast<int>(clienteEncontrado->getTotalComprado() + novaVenda.getValorTotal());
+    novaVenda.setMonstersPoints(pontosTotais);
     listarProdutos();
     char mais = 'n';
     bool adicionouProduto = false;
@@ -453,7 +453,7 @@ void Loja::efetuarVenda(int idCliente)
             if (erroInput) {
                 cout << RED << "Entrada invalida. Digite um numero inteiro maior ou igual a 0." << RESET << endl;
             }
-            cout << "ID do Produto: ";
+            cout << std::string(MARGEM) << "ID do Produto: ";
             string input;
             getline(cin, input);
             istringstream iss(input);
@@ -489,7 +489,7 @@ void Loja::efetuarVenda(int idCliente)
             if (!primeiraTentativaQuantidade) {
                 cout << RED << "Entrada invalida. Digite um numero inteiro maior que 0." << RESET << endl;
             }
-            cout << "Quantidade: ";
+            cout << std::string(MARGEM) << "Quantidade: ";
             string input;
             getline(cin, input);
             istringstream iss(input);
@@ -505,7 +505,7 @@ void Loja::efetuarVenda(int idCliente)
         produtoSelecionado->removerStock(quantidade);
         adicionouProduto = true;
         while (true) {
-            cout << "Adicionar mais produtos? (s/n): ";
+            cout << std::string(MARGEM) << "Adicionar mais produtos? (s/n): ";
             cin >> mais;
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
             if (mais == 's' || mais == 'S' || mais == 'n' || mais == 'N') {
@@ -528,11 +528,11 @@ void Loja::efetuarVenda(int idCliente)
     while (true) {
         // Não limpa a tela novamente, mantém o resumo visível
         cout << endl;
-        cout << "O que deseja fazer?\n";
-        cout << "1 - Prosseguir para pagamento\n";
-        cout << "2 - Remover um item\n";
-        cout << "3 - Cancelar toda a venda\n";
-        cout << "Opcao: ";
+        cout << std::string(MARGEM) << "O que deseja fazer?\n";
+        cout << std::string(MARGEM) << "1 - Prosseguir para pagamento\n";
+        cout << std::string(MARGEM) << "2 - Remover um item\n";
+        cout << std::string(MARGEM) << "3 - Cancelar toda a venda\n";
+        cout << std::string(MARGEM) << "Opcao: ";
         int op;
         cin >> op;
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
@@ -544,7 +544,7 @@ void Loja::efetuarVenda(int idCliente)
                 continue;
             }
             int linha;
-            cout << "Digite o numero do item a remover: ";
+            cout << std::string(MARGEM) << "Digite o numero do item a remover: ";
             cin >> linha;
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
             // Antes de remover, repor estoque do item
@@ -560,6 +560,9 @@ void Loja::efetuarVenda(int idCliente)
                 cout << RED << "Todos os itens foram removidos. Venda cancelada automaticamente." << RESET << endl;
                 return;
             }
+            // Atualiza tela e resumo após remoção de item
+            system("cls");
+            mostrarResumoVenda(novaVenda);
         } else if (op == 3) {
             // Antes de cancelar, repor estoque de todos os itens
             reporEstoqueVenda(novaVenda);
@@ -576,11 +579,12 @@ void Loja::efetuarVenda(int idCliente)
     double valorFinal = ganhouTalaoGratis ? 0.0 : novaVenda.getValorTotal();
     if (ganhouTalaoGratis) {
         cout << GREEN << "PARABENS! Voce ganhou o talao gratis!\n" << RESET;
+        Sleep(5000); // Pausa 5 segundos para o usuário ver a mensagem e os valores
     }
 
     // Mostrar valor a pagar antes de pedir valor entregue
     cout << fixed << setprecision(2);
-    cout << "\nValor a pagar: " << (ganhouTalaoGratis ? 0.0 : novaVenda.getValorTotal()) << " EUR\n";
+    cout << std::string(MARGEM) << "\nValor a pagar: " << (ganhouTalaoGratis ? 0.0 : novaVenda.getValorTotal()) << " EUR\n";
 
     double valorEntregue = 0.0;
     if (ganhouTalaoGratis) {
@@ -593,7 +597,7 @@ void Loja::efetuarVenda(int idCliente)
                 if (!primeiraTentativa) {
                     cout << endl << RED << "Entrada inválida. Digite um número válido (>= 0)." << RESET << endl;
                 }
-                cout << "Valor entregue pelo cliente: ";
+                cout << std::string(MARGEM) << "Valor entregue pelo cliente: ";
                 string input;
                 getline(cin, input);
                 replace(input.begin(), input.end(), ',', '.');
@@ -614,9 +618,9 @@ void Loja::efetuarVenda(int idCliente)
         }
     }
 
-    system("cls"); // Limpa a tela antes de mostrar o talão
+    system("cls");
     novaVenda.imprimirTalao();
-    cout << "Pressione Enter para voltar..." << endl;
+    cout << std::string(MARGEM) << "Pressione Enter para voltar..." << endl;
     cin.clear();
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
     cin.get();
@@ -646,19 +650,18 @@ void Loja::mostrarResumoVenda(const Venda& venda) const {
     const int wId = 3, wProd = 22, wQtd = 6, wPSemIVA = 13, wPComIVA = 13, wTotal = 13;
     const int nPipes = 7; // 6 separadores + 1 de início
     const int larguraTabela = wId + wProd + wQtd + wPSemIVA + wPComIVA + wTotal + nPipes;
-    const string margem = "    ";
     string titulo = "RESUMO DA VENDA";
-    cout << margem << "+" << string(larguraTabela - 2, '=') << "+" << endl;
-    cout << margem << "|" << centro(titulo, larguraTabela - 2) << "|" << endl;
-    cout << margem << "+" << string(larguraTabela - 2, '=') << "+" << endl;
+    cout << string(4, ' ') << "+" << string(larguraTabela - 2, '=') << "+" << endl;
+    cout << string(4, ' ') << "|" << centro(titulo, larguraTabela - 2) << "|" << endl;
+    cout << string(4, ' ') << "+" << string(larguraTabela - 2, '=') << "+" << endl;
 
     ostringstream ossId;
     ossId << "ID DO CLIENTE: " << venda.getIdCliente();
-    cout << margem << "|" << centro(ossId.str(), larguraTabela - 2) << "|" << endl;
-    cout << margem << string(larguraTabela - 2, '-') << endl;
+    cout << string(4, ' ') << "|" << centro(ossId.str(), larguraTabela - 2) << "|" << endl;
+    cout << string(4, ' ') << string(larguraTabela - 2, '-') << endl;
 
     // Cabeçalho
-    cout << margem
+    cout << string(4, ' ')
         << "|" << centro("#", wId)
         << "|" << centro("PRODUTO", wProd)
         << "|" << centro("QTD", wQtd)
@@ -666,13 +669,13 @@ void Loja::mostrarResumoVenda(const Venda& venda) const {
         << "|" << centro("PRECO C/IVA", wPComIVA)
         << "|" << centro("TOTAL ITEM", wTotal)
         << "|" << endl;
-    cout << margem << string(wId, '-') << "+" << string(wProd, '-') << "+" << string(wQtd, '-') << "+" << string(wPSemIVA, '-') << "+" << string(wPComIVA, '-') << "+" << string(wTotal, '-') << endl;
+    cout << string(4, ' ') << string(wId, '-') << "+" << string(wProd, '-') << "+" << string(wQtd, '-') << "+" << string(wPSemIVA, '-') << "+" << string(wPComIVA, '-') << "+" << string(wTotal, '-') << endl;
 
     int idx = 1;
     for (const auto& item : venda.getItens()) {
         string prod = toUpper(item.nomeProduto);
         if ((int)prod.length() > wProd) prod = prod.substr(0, wProd);
-        cout << margem
+        cout << string(4, ' ')
             << "|" << centro(to_string(idx), wId)
             << "|" << centro(prod, wProd)
             << "|" << centro(to_string(item.quantidade), wQtd)
@@ -682,11 +685,11 @@ void Loja::mostrarResumoVenda(const Venda& venda) const {
             << "|" << endl;
         idx++;
     }
-    cout << margem << "+" << string(wId, '=') << "+" << string(wProd, '=') << "+" << string(wQtd, '=') << "+" << string(wPSemIVA, '=') << "+" << string(wPComIVA, '=') << "+" << string(wTotal, '=') << "+" << endl;
+    cout << string(4, ' ') << "+" << string(wId, '=') << "+" << string(wProd, '=') << "+" << string(wQtd, '=') << "+" << string(wPSemIVA, '=') << "+" << string(wPComIVA, '=') << "+" << string(wTotal, '=') << "+" << endl;
     ostringstream ossTotal;
     ossTotal << "TOTAL DA VENDA (COM IVA): " << fixed << setprecision(2) << venda.getTotalComIVA();
-    cout << margem << "|" << centro(ossTotal.str(), larguraTabela - 2) << "|" << endl;
-    cout << margem << "+" << string(larguraTabela - 2, '=') << "+" << endl;
+    cout << string(4, ' ') << "|" << centro(ossTotal.str(), larguraTabela - 2) << "|" << endl;
+    cout << string(4, ' ') << "+" << string(larguraTabela - 2, '=') << "+" << endl;
 }
 
 bool Loja::salvarDados(const string& diretorio) {
@@ -739,6 +742,7 @@ bool Loja::salvarClientes(const string& caminho) {
             << cliente.getNome() << ";"
             << cliente.getTelefone() << ";"
             << cliente.getMorada() << ";"
+            << cliente.getDataNascimento() << ";"
             << fixed << setprecision(2)
             << cliente.getTotalComprado() << "\n";
     }
@@ -962,18 +966,17 @@ void Loja::listarHistoricoVendas() const {
     int larguraTabela = 1; // pipe inicial
     for (int l : larguras) larguraTabela += l + 1; // +1 para cada pipe
 
-    const string margem = "    ";
     string titulo = "HISTORICO DE VENDAS";
-    cout << margem << "+" << string(larguraTabela - 2, '=') << "+" << endl;
-    cout << margem << "|" << centro(titulo, larguraTabela - 2) << "|" << endl;
-    cout << margem << "+" << string(larguraTabela - 2, '=') << "+" << endl;
+    cout << string(4, ' ') << "+" << string(larguraTabela - 2, '=') << "+" << endl;
+    cout << string(4, ' ') << "|" << centro(titulo, larguraTabela - 2) << "|" << endl;
+    cout << string(4, ' ') << "+" << string(larguraTabela - 2, '=') << "+" << endl;
 
     bool encontrouVendas = false;
     // Cabeçalho
-    cout << margem << "|";
+    cout << string(4, ' ') << "|";
     for (size_t i = 0; i < cabecalho.size(); ++i) cout << centro(cabecalho[i], larguras[i]) << "|";
     cout << endl;
-    cout << margem << string(larguraTabela - 2, '-') << endl;
+    cout << string(4, ' ') << string(larguraTabela - 2, '-') << endl;
 
     int numFatura = 1;
     for (int i = MAX_VENDAS - 1; i >= 0; i--) {
@@ -991,47 +994,42 @@ void Loja::listarHistoricoVendas() const {
                 to_string(item.quantidade),
                 (ostringstream{} << fixed << setprecision(2) << item.totalComIVA << " EUR").str()
             };
-            cout << margem << "|";
+            cout << string(4, ' ') << "|";
             for (size_t j = 0; j < linha.size(); ++j) cout << centro(linha[j], larguras[j]) << "|";
             cout << endl;
         }
         numFatura++;
-        cout << margem << string(larguraTabela - 2, '-') << endl;
+        cout << string(4, ' ') << string(larguraTabela - 2, '-') << endl;
     }
     if (!encontrouVendas) {
-        cout << margem << "|" << centro("Nenhuma venda registrada.", larguraTabela - 2) << "|" << endl;
+        cout << string(4, ' ') << "|" << centro("Nenhuma venda registrada.", larguraTabela - 2) << "|" << endl;
     }
-    cout << margem << "+" << string(larguraTabela - 2, '=') << "+" << endl;
+    cout << string(4, ' ') << "+" << string(larguraTabela - 2, '=') << "+" << endl;
 }
 
 void Loja::relatorioStock() const {
-    const string margem = "    ";
     // Definição das larguras das colunas
     const int wProd = 28, wQtd = 12;
     const int larguraTabela = wProd + wQtd + 3; // 2 pipes + 1 separador
-    imprimirTituloCentralizado("RELATORIO DE STOCK", larguraTabela, margem);
+    imprimirTituloCentralizado("RELATORIO DE STOCK", larguraTabela, string(4, ' '));
     // Cabeçalho
-    cout << margem << "+" << string(wProd, '=') << "+" << string(wQtd, '=') << "+" << endl;
-    cout << margem << "|" << centro("PRODUTO", wProd) << "|" << centro("QUANTIDADE", wQtd) << "|" << endl;
-    cout << margem << string(wProd, '-') << "+" << string(wQtd, '-') << "+" << endl;
+    cout << string(4, ' ') << "+" << string(wProd, '=') << "+" << string(wQtd, '=') << "+" << endl;
+    cout << string(4, ' ') << "|" << centro("PRODUTO", wProd) << "|" << centro("QUANTIDADE", wQtd) << "|" << endl;
+    cout << string(4, ' ') << string(wProd, '-') << "+" << string(wQtd, '-') << "+" << endl;
     for (const auto& p : produtos) {
-        cout << margem << "|" << centro(toUpper(p.getNome()), wProd) << "|" << centro(to_string(p.getQuantidade()), wQtd) << "|" << endl;
+        cout << string(4, ' ') << "|" << centro(toUpper(p.getNome()), wProd) << "|" << centro(to_string(p.getQuantidade()), wQtd) << "|" << endl;
     }
-    cout << margem << "+" << string(wProd, '=') << "+" << string(wQtd, '=') << "+" << endl;
+    cout << string(4, ' ') << "+" << string(wProd, '=') << "+" << string(wQtd, '=') << "+" << endl;
 }
 
 
 void Loja::relatorioVendasPorProduto(const string& nomeProduto) const {
-    const string margem = "    ";
-    // Definição das larguras das colunas
-    const int wFat = 10, wQtd = 5, wUnit = 13, wTotal = 13, wCusto = 10, wLucro = 10;
-    const int larguraTabela = wFat + wQtd + wUnit + wTotal + wCusto + wLucro + 7; // 6 pipes + 1 separador
-    string titulo = "DETALHAMENTO DE VENDAS - PRODUTO: " + toUpper(nomeProduto);
-    imprimirTituloCentralizado(titulo, larguraTabela, margem);
+    const string titulo = "DETALHAMENTO DE VENDAS - PRODUTO: " + toUpper(nomeProduto);
+    imprimirTituloCentralizado(titulo, 86, string(4, ' '));
     // Cabeçalho
-    cout << margem << "+" << string(wFat, '=') << "+" << string(wQtd, '=') << "+" << string(wUnit, '=') << "+" << string(wTotal, '=') << "+" << string(wCusto, '=') << "+" << string(wLucro, '=') << "+" << endl;
-    cout << margem << "|" << centro("FATURA N", wFat) << "|" << centro("QTD", wQtd) << "|" << centro("PRECO UNIT.", wUnit) << "|" << centro("TOTAL C/IVA", wTotal) << "|" << centro("CUSTO", wCusto) << "|" << centro("LUCRO", wLucro) << "|" << endl;
-    cout << margem << string(wFat, '-') << "+" << string(wQtd, '-') << "+" << string(wUnit, '-') << "+" << string(wTotal, '-') << "+" << string(wCusto, '-') << "+" << string(wLucro, '-') << "+" << endl;
+    cout << string(4, ' ') << "+" << string(10, '=') << "+" << string(5, '=') << "+" << string(13, '=') << "+" << string(13, '=') << "+" << string(10, '=') << "+" << string(10, '=') << "+" << endl;
+    cout << string(4, ' ') << "|" << centro("FATURA N", 10) << "|" << centro("QTD", 5) << "|" << centro("PRECO UNIT.", 13) << "|" << centro("TOTAL C/IVA", 13) << "|" << centro("CUSTO", 10) << "|" << centro("LUCRO", 10) << "|" << endl;
+    cout << string(4, ' ') << string(10, '-') << "+" << string(5, '-') << "+" << string(13, '-') << "+" << string(13, '-') << "+" << string(10, '-') << "+" << string(10, '-') << "+" << endl;
     bool encontrado = false;
     int totalQtd = 0;
     double totalCusto = 0, totalLucro = 0, totalComIVA = 0;
@@ -1045,12 +1043,12 @@ void Loja::relatorioVendasPorProduto(const string& nomeProduto) const {
                 double totalComIVAItem = item.totalComIVA;
                 double custoTotal = custoUnitario * quantidade;
                 double lucroTotal = (precoUnitario * quantidade) - custoTotal;
-                cout << margem << "|" << centro(venda.getNumeroFatura(), wFat)
-                    << "|" << centro(to_string(quantidade), wQtd)
-                    << "|" << centro((ostringstream{} << fixed << setprecision(2) << precoUnitario << " EUR").str(), wUnit)
-                    << "|" << centro((ostringstream{} << fixed << setprecision(2) << totalComIVAItem << " EUR").str(), wTotal)
-                    << "|" << centro((ostringstream{} << fixed << setprecision(2) << custoTotal << " EUR").str(), wCusto)
-                    << "|" << centro((ostringstream{} << fixed << setprecision(2) << lucroTotal << " EUR").str(), wLucro)
+                cout << string(4, ' ') << "|" << centro(venda.getNumeroFatura(), 10)
+                    << "|" << centro(to_string(quantidade), 5)
+                    << "|" << centro((ostringstream{} << fixed << setprecision(2) << precoUnitario << " EUR").str(), 13)
+                    << "|" << centro((ostringstream{} << fixed << setprecision(2) << totalComIVAItem << " EUR").str(), 13)
+                    << "|" << centro((ostringstream{} << fixed << setprecision(2) << custoTotal << " EUR").str(), 10)
+                    << "|" << centro((ostringstream{} << fixed << setprecision(2) << lucroTotal << " EUR").str(), 10)
                     << "|" << endl;
                 totalQtd += quantidade;
                 totalCusto += custoTotal;
@@ -1060,24 +1058,23 @@ void Loja::relatorioVendasPorProduto(const string& nomeProduto) const {
         }
     }
     if (!encontrado) {
-        cout << margem << "|" << centro("Nenhuma venda encontrada para este produto.", larguraTabela - 2) << "|" << endl;
+        cout << string(4, ' ') << "|" << centro("Nenhuma venda encontrada para este produto.", 82) << "|" << endl;
     } else {
-        cout << margem << "+" << string(wFat, '-') << "+" << string(wQtd, '-') << "+" << string(wUnit, '-') << "+" << string(wTotal, '-') << "+" << string(wCusto, '-') << "+" << string(wLucro, '-') << "+" << endl;
-        cout << margem << "|" << centro("TOTAL", wFat)
-            << "|" << centro(to_string(totalQtd), wQtd)
-            << "|" << centro("-", wUnit)
-            << "|" << centro((ostringstream{} << fixed << setprecision(2) << totalComIVA << " EUR").str(), wTotal)
-            << "|" << centro((ostringstream{} << fixed << setprecision(2) << totalCusto << " EUR").str(), wCusto)
-            << "|" << centro((ostringstream{} << fixed << setprecision(2) << totalLucro << " EUR").str(), wLucro)
+        cout << string(4, ' ') << "+" << string(10, '-') << "+" << string(5, '-') << "+" << string(13, '-') << "+" << string(13, '-') << "+" << string(10, '-') << "+" << string(10, '-') << "+" << endl;
+        cout << string(4, ' ') << "|" << left << setw(10) << "TOTAL"
+            << "|" << centro(to_string(totalQtd), 5)
+            << "|" << centro("-", 13)
+            << "|" << centro((ostringstream{} << fixed << setprecision(2) << totalComIVA << " EUR").str(), 13)
+            << "|" << centro((ostringstream{} << fixed << setprecision(2) << totalCusto << " EUR").str(), 10)
+            << "|" << centro((ostringstream{} << fixed << setprecision(2) << totalLucro << " EUR").str(), 10)
             << "|" << endl;
     }
-    cout << margem << "+" << string(wFat, '=') << "+" << string(wQtd, '=') << "+" << string(wUnit, '=') << "+" << string(wTotal, '=') << "+" << string(wCusto, '=') << "+" << string(wLucro, '=') << "+" << endl;
+    cout << string(4, ' ') << "+" << string(10, '=') << "+" << string(5, '=') << "+" << string(13, '=') << "+" << string(13, '=') << "+" << string(10, '=') << "+" << string(10, '=') << "+" << endl;
 }
 
 void Loja::relatorioTotalVendas() const {
     const int largura = 86;
-    const string margem = "    "; // 4 espaços
-    imprimirTituloCentralizado("RELATORIO TOTAL DE VENDAS", largura, margem);
+    imprimirTituloCentralizado("RELATORIO TOTAL DE VENDAS", largura, string(4, ' '));
 
     double total = 0.0;
     map<string, int> vendasPorProduto;
@@ -1092,7 +1089,7 @@ void Loja::relatorioTotalVendas() const {
     }
 
     if (vendas.empty()) {
-        cout << margem << "Nenhuma venda registrada.\n" << RESET;
+        cout << string(4, ' ') << "Nenhuma venda registrada.\n" << RESET;
         return;
     }
 
@@ -1139,22 +1136,21 @@ void Loja::relatorioTotalVendas() const {
     string totalLinha = totalStr + string(10, ' ') + ossTotal.str();
     int larguraTotal = largura - 2;
     int espacos = (larguraTotal - (int)totalLinha.length()) / 2;
-    cout << margem << string(espacos, ' ') << totalLinha << endl;
+    cout << string(4, ' ') << string(espacos, ' ') << totalLinha << endl;
 
     // Restante alinhado à esquerda
-    cout << left << setw(30) << margem + "Produto mais vendido:" << maisVendido << " (" << maxQtd << " unidades)\n";
-    cout << left << setw(30) << margem + "Produto menos vendido:" << menosVendido << " (" << minQtd << " unidades)\n";
-    cout << left << setw(30) << margem + "Lucro do mais vendido:" << "€" << lucroMaisVendido << "\n";
-    cout << left << setw(30) << margem + "Cliente que mais comprou (ID):" << idTopCliente << " com €" << maiorCompra << "\n";
+    cout << left << setw(30) << string(4, ' ') + "Produto mais vendido:" << maisVendido << " (" << maxQtd << " unidades)\n";
+    cout << left << setw(30) << string(4, ' ') + "Produto menos vendido:" << menosVendido << " (" << minQtd << " unidades)\n";
+    cout << left << setw(30) << string(4, ' ') + "Lucro do mais vendido:" << "€" << lucroMaisVendido << "\n";
+    cout << left << setw(30) << string(4, ' ') + "Cliente que mais comprou (ID):" << idTopCliente << " com €" << maiorCompra << "\n";
 
-    cout << margem << "+" << string(largura - 2, '=') << "+" << endl;
+    cout << string(4, ' ') << "+" << string(largura - 2, '=') << "+" << endl;
 }
 
 
 void Loja::relatorioGraficoVendas() const {
     const int largura = 86;
-    const string margem = "    "; // 4 espaços
-    imprimirTituloCentralizado("GRAFICO DE VENDAS POR PRODUTO", largura, margem);
+    imprimirTituloCentralizado("GRAFICO DE VENDAS POR PRODUTO", largura, string(4, ' '));
 
     // Mapeia vendas por produto
     map<string, int> vendasPorProduto;
@@ -1170,7 +1166,7 @@ void Loja::relatorioGraficoVendas() const {
 
     // Nada para exibir
     if (vendasPorProduto.empty()) {
-        cout << margem << RED << "Nenhuma venda registrada.\n" << RESET;
+        cout << string(4, ' ') << RED << "Nenhuma venda registrada.\n" << RESET;
         return;
     }
 
@@ -1210,31 +1206,30 @@ void Loja::relatorioGraficoVendas() const {
         }
     }
 
-    cout << margem << fixed << setprecision(2);
+    cout << string(4, ' ') << fixed << setprecision(2);
     cout << "-> Total vendido: €" << total << "\n";
     cout << "-> Produto mais vendido: " << maisVendido << " (" << maxQtd << " unidades)\n";
     cout << "-> Produto menos vendido: " << menosVendido << " (" << minQtd << " unidades)\n";
     cout << "-> Lucro do mais vendido: €" << lucroMaisVendido << "\n";
     cout << "-> Cliente que mais comprou (ID): " << idTopCliente << " com €" << maiorCompra << "\n";
-    cout << margem << string(58, '=') << endl;
+    cout << string(4, ' ') << string(58, '=') << endl;
 
-    cout << margem << "+" << string(largura - 2, '=') << "+" << endl;
+    cout << string(4, ' ') << "+" << string(largura - 2, '=') << "+" << endl;
 }
 
 
 void Loja::relatorioVendasDetalhadoPorProduto() const {
-    const string margem = "    "; // 4 espaços
     // Definição das larguras das colunas
     const int wProd = 25, wQtd = 6, wPreco = 12, wReceita = 14, wCusto = 14, wLucro = 14;
     // Largura total da tabela (incluindo pipes)
     const int larguraTabela = wProd + wQtd + wPreco + wReceita + wCusto + wLucro + 7;
 
     // Título centralizado e alinhado com a tabela
-    cout << margem
+    cout << string(4, ' ')
          << "+" << string(wProd, '=') << "+" << string(wQtd, '=') << "+" << string(wPreco, '=') << "+" << string(wReceita, '=') << "+" << string(wCusto, '=') << "+" << string(wLucro, '=') << "+" << endl;
-    cout << margem
+    cout << string(4, ' ')
          << "|" << centro("RELATORIO DETALHADO POR PRODUTO", larguraTabela - 2) << "|" << endl;
-    cout << margem
+    cout << string(4, ' ')
          << "+" << string(wProd, '=') << "+" << string(wQtd, '=') << "+" << string(wPreco, '=') << "+" << string(wReceita, '=') << "+" << string(wCusto, '=') << "+" << string(wLucro, '=') << "+" << endl;
 
     map<string, int> quantidadePorProduto;
@@ -1251,12 +1246,12 @@ void Loja::relatorioVendasDetalhadoPorProduto() const {
     }
 
     if (quantidadePorProduto.empty()) {
-        cout << margem << "\nNenhuma venda registrada.\n";
+        cout << string(4, ' ') << "\nNenhuma venda registrada.\n";
         return;
     }
 
     // Cabeçalho alinhado igual ao corpo usando centro
-    cout << margem
+    cout << string(4, ' ')
         << "|" << centro("Produto", wProd)
         << "|" << centro("Qtd", wQtd)
         << "|" << centro("Preco", wPreco)
@@ -1264,7 +1259,7 @@ void Loja::relatorioVendasDetalhadoPorProduto() const {
         << "|" << centro("Custo", wCusto)
         << "|" << centro("Lucro", wLucro)
         << "|" << endl;
-    cout << margem << "+" << string(wProd, '-') << "+" << string(wQtd, '-') << "+" << string(wPreco, '-') << "+" << string(wReceita, '-') << "+" << string(wCusto, '-') << "+" << string(wLucro, '-') << "+" << endl;
+    cout << string(4, ' ') << string(wProd, '-') << "+" << string(wQtd, '-') << "+" << string(wPreco, '-') << "+" << string(wReceita, '-') << "+" << string(wCusto, '-') << "+" << string(wLucro, '-') << "+" << endl;
 
     double totalLucro = 0.0;
 
@@ -1283,7 +1278,7 @@ void Loja::relatorioVendasDetalhadoPorProduto() const {
         ossCusto << fixed << setprecision(2) << custo << " euro";
         ossLucro << fixed << setprecision(2) << lucro << " euro";
 
-        cout << margem
+        cout << string(4, ' ')
             << "|" << centro(nome, wProd)
             << "|" << centro(to_string(qtd), wQtd)
             << "|" << centro(ossPreco.str(), wPreco)
@@ -1296,11 +1291,11 @@ void Loja::relatorioVendasDetalhadoPorProduto() const {
     // Total alinhado como linha da tabela
     ostringstream ossTotalLucro;
     ossTotalLucro << fixed << setprecision(2) << totalLucro << " euro";
-    cout << margem << "+" << string(wProd, '=') << "+" << string(wQtd, '=') << "+" << string(wPreco, '=') << "+" << string(wReceita, '=') << "+" << string(wCusto, '=') << "+" << string(wLucro, '=') << "+" << endl;
-    cout << margem
+    cout << string(4, ' ') << "+" << string(wProd, '=') << "+" << string(wQtd, '=') << "+" << string(wPreco, '=') << "+" << string(wReceita, '=') << "+" << string(wCusto, '=') << "+" << string(wLucro, '=') << "+" << endl;
+    cout << string(4, ' ')
         << "|" << left << setw(wProd + wQtd + wPreco + wReceita + wCusto + 5) << " Lucro total estimado:"
         << centro(ossTotalLucro.str(), wLucro) << "|" << endl;
-    cout << margem << "+" << string(wProd, '=') << "+" << string(wQtd, '=') << "+" << string(wPreco, '=') << "+" << string(wReceita, '=') << "+" << string(wCusto, '=') << "+" << string(wLucro, '=') << "+" << endl;
+    cout << string(4, ' ') << "+" << string(wProd, '=') << "+" << string(wQtd, '=') << "+" << string(wPreco, '=') << "+" << string(wReceita, '=') << "+" << string(wCusto, '=') << "+" << string(wLucro, '=') << "+" << endl;
 }
 
 // Adicionar função auxiliar em Loja para repor estoque de um item removido da venda

@@ -14,7 +14,6 @@
 #define RED "\033[31m"   // Define a cor de texto para vermelho
 #define GREEN "\033[32m" // Define a cor de texto para verde
 
-
 ItemVenda::ItemVenda(int linha, const string& nomeProduto, int quantidade, double precoUnit, double precoCusto)
     :   numeroLinha(linha),
         nomeProduto(nomeProduto),
@@ -143,11 +142,9 @@ void Venda::imprimirTalao() const {
     // Configurações de layout
     const int LARGURA = 60;
     const int larguraConsole = 100; // largura fixa para centralização
-    int margemEsq = (larguraConsole > LARGURA) ? (larguraConsole - LARGURA) / 2 : 0;
-    string margem(margemEsq, ' ');
 
     auto linhaBranca = [&](char c) {
-        cout << margem << FUNDO_BRANCO << TEXTO_PRETO << string(LARGURA - 2, c) << RESET << endl;
+        cout << MARGEM << FUNDO_BRANCO << TEXTO_PRETO << string(LARGURA - 2, c) << RESET << endl;
     };
     auto linhaTexto = [&](const string& texto, bool centralizar = false) {
         string linha = texto;
@@ -156,7 +153,7 @@ void Venda::imprimirTalao() const {
             linha += string(LARGURA - 2 - linha.length(), ' ');
         else if (linha.length() > LARGURA - 2)
             linha = linha.substr(0, LARGURA - 2);
-        cout << margem << FUNDO_BRANCO << TEXTO_PRETO << linha << RESET << endl;
+        cout << MARGEM << FUNDO_BRANCO << TEXTO_PRETO << linha << RESET << endl;
     };
 
     // Título
@@ -173,6 +170,9 @@ void Venda::imprimirTalao() const {
     if (!nomeCliente.empty()) {
         linhaTexto(centro("Bem-vindo!", LARGURA - 2), true);
         linhaTexto(centro("Nome: " + nomeCliente, LARGURA - 2), true);
+        ostringstream ossPontos;
+        ossPontos << "Monsters points: " << getMonstersPoints();
+        linhaTexto(centro(ossPontos.str(), LARGURA - 2), true);
     }
     linhaBranca('-');
 
@@ -198,7 +198,7 @@ void Venda::imprimirTalao() const {
             linha = linha.substr(0, LARGURA - 2);
         else if (linha.length() < static_cast<size_t>(LARGURA - 2))
             linha += string(LARGURA - 2 - linha.length(), ' ');
-        cout << margem << FUNDO_BRANCO << TEXTO_PRETO << linha << RESET << endl;
+        cout << MARGEM << FUNDO_BRANCO << TEXTO_PRETO << linha << RESET << endl;
     }
     linhaBranca('-');
 
@@ -219,7 +219,7 @@ void Venda::imprimirTalao() const {
         string linha = oss.str();
         if (linha.length() < LARGURA - 2)
             linha += string(LARGURA - 2 - linha.length(), ' ');
-        cout << margem << FUNDO_BRANCO << TEXTO_PRETO << linha << RESET << endl;
+        cout << MARGEM << FUNDO_BRANCO << TEXTO_PRETO << linha << RESET << endl;
     };
 
     linhaTotalSemPipes("Subtotal:", semIVA);
@@ -230,6 +230,19 @@ void Venda::imprimirTalao() const {
     linhaTotalSemPipes("Troco:", troco);
     linhaBranca('-');
     // Frase final centralizada
+    // Mensagem de parabéns se for aniversário
+    string dataNasc = getDataNascimentoCliente();
+    bool parabens = false;
+    if (dataNasc.length() == 10) { // formato dd-mm-aaaa
+        int diaNasc = stoi(dataNasc.substr(0,2));
+        int mesNasc = stoi(dataNasc.substr(3,2));
+        if (diaNasc == tempoLocal.tm_mday && mesNasc == (tempoLocal.tm_mon + 1)) {
+            parabens = true;
+        }
+    }
+    if (parabens) {
+        linhaTexto(centro("Parabens, hoje e seu dia que dia mais feliz!", LARGURA - 2), true);
+    }
     linhaTexto(centro("Obrigado pela sua preferencia!", LARGURA - 2), true);
     linhaBranca('=');
 }
