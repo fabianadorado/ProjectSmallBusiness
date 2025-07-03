@@ -175,7 +175,7 @@ void Loja::listarProdutos() const
     cout << margem << "+" << string(wId, '-') << "+" << string(wNome, '-') << "+" << string(wQtd, '-') << "+" << string(wCusto, '-') << "+" << string(wVenda, '-') << "+" << endl;
 
     if (produtos.empty()) {
-        cout << margem << "|" << centro("Nenhum produto cadastrado.", larguraTabela - 2) << "|\n";
+        cout << margem << "|" << centro("Nenhum produto cadastrado.", larguraTabela - 2) << "|";
     } else {
         for (const auto& p : produtos) {
             string idStr = to_string(p.getId());
@@ -193,7 +193,7 @@ void Loja::listarProdutos() const
                 << "|" << endl;
         }
     }
-    cout << margem << "+" << string(wId, '=') << "+" << string(wNome, '=') << "+" << string(wQtd, '=') << "+" << string(wCusto, '=') << "+" << string(wVenda, '=') << "+" << endl;
+    cout << margem << "+" << string(wId, '=') << "+" << string(wNome, '=') << "+" << string(wQtd, '=') << "+" << string(wCusto, '=') << "+" << string(wVenda, '=') << "+";
 }
 
 
@@ -438,11 +438,15 @@ void Loja::efetuarVenda(int idCliente)
     Venda novaVenda(idCliente);
     novaVenda.setNomeCliente(clienteEncontrado->getNome());
     listarProdutos();
-    cin.clear();
-    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     char mais = 'n';
     bool adicionouProduto = false;
+    bool primeiraVez = true;
     do {
+        if (!primeiraVez) {
+            system("cls");
+            listarProdutos();
+        }
+        primeiraVez = false;
         Produto* produtoSelecionado = nullptr;
         int idProduto;
         bool erroInput = false;
@@ -523,8 +527,6 @@ void Loja::efetuarVenda(int idCliente)
     // Limpa a tela e mostra o resumo da venda antes do menu de opções
     system("cls");
     mostrarResumoVenda(novaVenda);
-    cout << endl << "Pressione Enter para continuar..." << endl;
-    cin.get();
     // Agora exibe o menu de opções logo abaixo do resumo
     while (true) {
         // Não limpa a tela novamente, mantém o resumo visível
@@ -615,8 +617,6 @@ void Loja::efetuarVenda(int idCliente)
         }
     }
 
-    cout << endl << "Pressione Enter para ver o talao..." << endl;
-    cin.get();
     system("cls"); // Limpa a tela antes de mostrar o talão
     novaVenda.imprimirTalao();
     cout << "\nPressione Enter para voltar...";

@@ -27,7 +27,11 @@ using namespace std;
 int lernumero(const string& mensagem) {
     int valor;
     string input;
+    bool primeiraTentativa = true;
     while (true) {
+        if (!primeiraTentativa) {
+            cout << "\033[31mEntrada invalida. Digite um numero inteiro maior que 0.\033[0m\n";
+        }
         cout << mensagem;
         getline(cin, input);
         istringstream iss(input);
@@ -37,7 +41,7 @@ int lernumero(const string& mensagem) {
                 return valor;
             }
         }
-        cout << "\033[31mEntrada invalida. Digite um numero inteiro maior que 0.\033[0m\n";
+        primeiraTentativa = false;
     }
 }
 

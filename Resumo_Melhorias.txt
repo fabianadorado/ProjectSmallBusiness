@@ -184,6 +184,41 @@ Resumo de Melhorias e Correções - Projeto Small Business
 - O título "CADASTRO DE CLIENTE" aparece apenas uma vez, antes do início do cadastro, e não se repete a cada iteração.
 - Mensagens de sucesso e perguntas de repetição aparecem sempre em linhas separadas, melhorando a experiência visual.
 
+## Melhorias e Correções - Sessão 2024-06-10
+
+### 1. Experiência do Usuário e Validação
+- Mensagens de erro em prompts numéricos (ex: ID do Cliente) só aparecem após a primeira tentativa inválida, nunca antes da digitação.
+- Mensagens de erro e prompts aparecem sempre em linhas separadas, nunca juntos.
+- Ajuste do fluxo de alteração de dados do cliente para garantir que o prompt "ID do Cliente:" aparece limpo na primeira exibição.
+
+### 2. Limpeza de Tela e Fluxo de Inclusão
+- Ao adicionar itens à venda, a tela é limpa (system("cls")) a cada nova inclusão, exceto na primeira, mostrando sempre apenas a inclusão atual.
+- Após listar produtos, não há mais espaço digitável entre a tabela e o prompt "ID do Produto:".
+
+### 3. Listagens e Pausas
+- Ao listar produtos pelo menu, a tela agora pausa corretamente para visualização, mesmo após operações anteriores, usando cin.clear() e cin.ignore() antes do cin.get().
+- O mesmo padrão já era aplicado em listar clientes e foi replicado para produtos.
+
+### 4. Remoção de Pausas Desnecessárias
+- Removidas pausas "Pressione Enter para continuar..." e "Pressione Enter para ver o talao..." do fluxo de venda, tornando o processo mais ágil.
+- Após visualizar o talão, o usuário volta diretamente ao menu, sem precisar pressionar Enter novamente.
+
+### 5. Fluxo de Venda
+- O prompt "Adicionar mais produtos? (s/n):" só aceita respostas válidas, com mensagem de erro clara em caso de entrada inválida.
+- O fluxo de venda impede venda de produtos sem estoque, com mensagem clara e sem entrar no loop de quantidade.
+- O resumo da venda e o talão são exibidos de forma limpa, sem Enter extra ou pausas desnecessárias.
+
+### 6. Padronização Visual
+- Todos os prompts, mensagens de erro e confirmações seguem padrão visual consistente, com cores e espaçamento adequados.
+- Tabelas e relatórios não deixam espaços extras entre o conteúdo e o próximo prompt.
+
+### 7. Outras Correções
+- Ajustado o fluxo de alteração de dados do cliente para garantir que a mensagem de erro só aparece após a primeira tentativa inválida, nunca antes.
+- Garantido que todos os fluxos de repetição (cadastro, venda, remoção) limpem a tela corretamente entre repetições, mas não na primeira vez.
+- Removido espaço extra ao final da listagem de produtos para que o prompt "ID do Produto:" fique imediatamente abaixo da tabela.
+
+Essas melhorias garantem uma experiência de uso mais fluida, profissional e intuitiva no console, com validação robusta, prompts claros e navegação eficiente em todos os fluxos do sistema.
+
 Observações Finais
 ------------------
 - Se ainda houver problemas de acentuação, verifique se todos os arquivos .cpp/.h/.txt estão salvos como UTF-8.

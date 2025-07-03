@@ -46,8 +46,6 @@ int main() {
             cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             int id = lernumero("ID do cliente: ");
             loja.efetuarVenda(id);
-            cout << "\nPressione Enter para voltar...";
-            cin.get();
             system("cls");
             break;
         }
@@ -131,9 +129,6 @@ int main() {
                         }
                         primeiraVez = false;
                     } while (desejaContinuar("Deseja adicionar outro produto?"));
-                    cout << "\nPressione Enter para continuar...";
-                    limparBuffer();
-                    cin.get();
                     break;
                 }
                 case 2:
@@ -187,9 +182,6 @@ int main() {
                         cout << GREEN << "\nStock atualizado com sucesso!" << RESET << endl;
                         primeiraVez = false;
                     } while (desejaContinuar("Deseja adicionar estoque para outro produto?"));
-                    cout << "\nPressione Enter para continuar...";
-                    limparBuffer();
-                    cin.get();
                     break;
                 }
                 case 3:
@@ -230,9 +222,6 @@ int main() {
                         cout << GREEN << "\nProduto removido com sucesso!" << RESET << endl;
                         primeiraVez = false;
                     } while (desejaContinuar("Deseja eliminar outro produto?"));
-                    cout << "\n\nPressione Enter para continuar...";
-                    limparBuffer();
-                    cin.get();
                     break;
                 }
                 case 4:
@@ -240,7 +229,8 @@ int main() {
                     system("cls");
                     loja.listarProdutos();
                     cout << "\nPressione Enter para voltar...";
-                    limparBuffer();
+                    cin.clear();
+                    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                     cin.get();
                     break;
                 }
@@ -308,23 +298,38 @@ int main() {
                         cout << GREEN << "\nCliente cadastrado com sucesso!" << RESET << endl;
                         primeiraVez = false;
                     } while (desejaContinuar("Deseja cadastrar outro cliente?"));
-                    cout << "\nPressione Enter para continuar...";
-                    limparBuffer();
-                    cin.get();
                     break;
                 }
                 case 2:
                 { // Eliminar Cliente
-                    system("cls");
-                    loja.listarClientes();
-                    cout << "\n";
-                    int id = lernumero("ID do Cliente a remover: ");
-                    loja.eliminarCliente(id);
-
-                    cout << GREEN << "\nCliente removido com sucesso!" << RESET;
-                    cout << "\n\nPressione Enter para continuar...";
-                    limparBuffer();
-                    cin.get();
+                    bool primeiraVez = true;
+                    do {
+                        if (!primeiraVez) system("cls");
+                        loja.listarClientes();
+                        cout << "\n";
+                        cin.clear();
+                        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                        int id;
+                        bool primeiraTentativaId = true;
+                        while (true) {
+                            if (!primeiraTentativaId) {
+                                cout << RED << "Entrada invalida. Digite um numero inteiro maior que 0." << RESET << endl;
+                            }
+                            cout << "ID do Cliente a remover: ";
+                            string input;
+                            getline(cin, input);
+                            istringstream iss(input);
+                            if ((iss >> id) && id > 0) break;
+                            primeiraTentativaId = false;
+                        }
+                        if (confirmarAcao("Tem certeza que deseja remover este cliente?")) {
+                            loja.eliminarCliente(id);
+                            cout << GREEN << "\nCliente removido com sucesso!" << RESET << endl;
+                        } else {
+                            cout << YELLOW << "\nOperacao cancelada pelo usuario." << RESET << endl;
+                        }
+                        primeiraVez = false;
+                    } while (desejaContinuar("Deseja remover outro cliente?"));
                     break;
                 }
                 case 3:
@@ -332,16 +337,32 @@ int main() {
                     system("cls");
                     loja.listarClientes();
                     cout << "\nPressione Enter para voltar...";
-                    limparBuffer();
+                    cin.clear();
+                    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                     cin.get();
                     break;
                 }
                 case 4:
                 { // Alterar Dados
                     system("cls");
+                    cout << "ALTERACAO DE DADOS DO CLIENTE\n\n";
                     loja.listarClientes();
                     cout << "\n";
-                    int id = lernumero("ID do Cliente: ");
+                    cin.clear();
+                    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                    int id;
+                    bool primeiraTentativa = true;
+                    while (true) {
+                        if (!primeiraTentativa) {
+                            cout << RED << "Entrada invalida. Digite um numero inteiro maior que 0." << RESET << endl;
+                        }
+                        cout << "ID do Cliente: ";
+                        string input;
+                        getline(cin, input);
+                        istringstream iss(input);
+                        if ((iss >> id) && id > 0) break;
+                        primeiraTentativa = false;
+                    }
                     string novoNome;
                     cout << "Novo nome: ";
                     cin.ignore();
@@ -349,10 +370,16 @@ int main() {
                     novoNome = toUpper(novoNome);
                     loja.alterarNomeCliente(id, novoNome);
 
-                    cout << GREEN << "\nNome alterado com sucesso!" << RESET;
-                    cout << "\n\nPressione Enter para continuar...";
-                    limparBuffer();
-                    cin.get();
+                    cout << GREEN << "\nNome alterado com sucesso!" << RESET << endl;
+                    if (!desejaContinuar("Deseja alterar outro cliente?")) {
+                        break;
+                    }
+                    system("cls");
+                    cout << "ALTERACAO DE DADOS DO CLIENTE\n\n";
+                    loja.listarClientes();
+                    cout << "\n";
+                    cin.clear();
+                    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                     break;
                 }
                 case 5: // Voltar ao Menu Principal
@@ -377,7 +404,6 @@ int main() {
                     system("cls");
                     loja.relatorioStock();
                     cout << "\nPressione Enter para voltar...";
-                    limparBuffer();
                     cin.get();
                     break;
                 case 2:
@@ -391,7 +417,6 @@ int main() {
                     nome = toUpper(nome);
                     loja.relatorioVendasPorProduto(nome);
                     cout << "\nPressione Enter para voltar...";
-                    limparBuffer();
                     cin.get();
                     break;
                 }
@@ -399,28 +424,24 @@ int main() {
                     system("cls");
                     loja.relatorioTotalVendas();
                     cout << "\nPressione Enter para voltar...";
-                    limparBuffer();
                     cin.get();
                     break;
                 case 4: // Gráfico de Vendas
                     system("cls");
                     loja.relatorioGraficoVendas();
                     cout << "\nPressione Enter para voltar...";
-                    limparBuffer();
                     cin.get();
                     break;
                 case 5: // Histórico de Vendas
                     system("cls");
                     loja.listarHistoricoVendas();
                     cout << "\nPressione Enter para voltar...";
-                    limparBuffer();
                     cin.get();
                     break;
                 case 6: // Vendas Detalhadas
                     system("cls");
                     loja.relatorioVendasDetalhadoPorProduto();
                     cout << "\nPressione Enter para voltar...";
-                    limparBuffer();
                     cin.get();
                     break;
                 case 7: // Voltar ao Menu Principal
