@@ -1,0 +1,107 @@
+==============================
+DOCUMENTAÇÃO DO PROGRAMA
+==============================
+
+Este documento explica o funcionamento do sistema de gestão para pequenos negócios, detalhando cada classe, seus métodos e as bibliotecas utilizadas. O objetivo é facilitar o entendimento para estudantes de programação.
+
+------------------------------
+1. INTRODUÇÃO
+------------------------------
+O programa é um sistema de gestão de vendas, produtos e clientes para pequenas empresas, rodando em modo console (terminal). Ele permite cadastrar produtos, clientes, efetuar vendas, gerar relatórios e salvar/carregar dados em arquivos.
+
+------------------------------
+2. BIBLIOTECAS UTILIZADAS
+------------------------------
+- <iostream>: Entrada e saída de dados (cout, cin).
+- <string>: Manipulação de textos.
+- <vector>: Listas dinâmicas de objetos.
+- <iomanip>: Formatação de saída (ex: casas decimais).
+- <sstream>: Manipulação de strings como fluxos.
+- <fstream>: Leitura e escrita de arquivos.
+- <algorithm>: Funções utilitárias (sort, find, etc).
+- <limits>: Limites de tipos numéricos.
+- <ctime>: Data e hora.
+- <random> e <chrono>: Geração de números aleatórios.
+- <map>: Estruturas de dicionário.
+- <regex>: Validação de padrões (ex: telefone).
+- <locale>: Suporte a acentuação e formatação.
+- <windows.h>: Comandos específicos do Windows (ex: limpar tela).
+
+------------------------------
+3. CLASSES E MÉTODOS PRINCIPAIS
+------------------------------
+
+### Classe Produto
+- **Produto()**: Construtor padrão. Cria um produto vazio.
+- **Produto(int id, string nome, int quantidade, double precoCusto)**: Construtor com dados.
+- **getId(), getNome(), getQuantidade(), getPrecoCusto()**: Retornam os dados do produto.
+- **getPrecoVenda()**: Calcula o preço de venda (preço de custo + margem de lucro).
+- **getPrecoVendaComIVA()**: Calcula o preço de venda com imposto (IVA).
+- **adicionarStock(int qtd)**: Aumenta o estoque.
+- **removerStock(int qtd)**: Diminui o estoque.
+
+### Classe Cliente
+- **Cliente()**: Construtor padrão. Cria cliente vazio.
+- **Cliente(string nome, string telefone, string morada, string dataNascimento, double totalComprado=0.0)**: Construtor com dados.
+- **getIdCliente(), getNome(), getTelefone(), getMorada(), getDataNascimento(), getTotalComprado()**: Retornam dados do cliente.
+- **setIdCliente(), setNome(), setTelefone(), setMorada(), setDataNascimento()**: Alteram dados do cliente.
+- **liberarId()**: Libera o ID para reutilização ao remover cliente.
+- **adicionarCompra(double valor)**: Soma valor ao total comprado.
+- **toString()**: Retorna string formatada com dados do cliente.
+
+### Classe Venda
+- **Venda() / Venda(int idCliente)**: Construtores. Iniciam uma venda para um cliente.
+- **adicionarItem(nomeProduto, quantidade, precoUnit, precoCusto)**: Adiciona um item à venda.
+- **finalizarVenda(valorEntregue)**: Finaliza a venda, calcula troco.
+- **imprimirTalao()**: Imprime o recibo da venda.
+- **getNumeroFatura(), getIdCliente(), getValorTotal(), getTroco(), getTotalComIVA()**: Retornam dados da venda.
+- **removerItemPorLinha(numeroLinha)**: Remove um item da venda.
+- **cancelarVenda()**: Cancela toda a venda.
+- **getItens()**: Retorna os itens da venda.
+
+### Classe Loja
+- **criarProduto(), eliminarProduto(), adicionarStock(), listarProdutos()**: Gerenciam produtos.
+- **criarCliente(), eliminarCliente(), alterarNomeCliente(), listarClientes()**: Gerenciam clientes.
+- **efetuarVenda(idCliente)**: Inicia e processa uma venda.
+- **mostrarResumoVenda(venda)**: Mostra resumo da venda.
+- **relatorioStock(), relatorioVendasPorProduto(), relatorioTotalVendas(), relatorioGraficoVendas(), relatorioVendasDetalhadoPorProduto()**: Geram relatórios.
+- **listarHistoricoVendas()**: Lista vendas anteriores.
+- **salvarDados(), carregarDados()**: Salva/carrega dados em arquivos.
+- **reporEstoqueItem(), reporEstoqueVenda()**: Repõe estoque ao cancelar/remover vendas.
+
+### Classe Menu
+- **menuPrincipal()**: Mostra o menu principal.
+- **menuGerirProdutos()**: Menu de opções para produtos.
+- **menuGerirClientes()**: Menu de opções para clientes.
+- **menuRelatorios()**: Menu de relatórios.
+
+### Funções Utilitárias (Auxiliar)
+- **lernumero(mensagem)**: Lê um número inteiro válido do usuário.
+- **lerFloatPositivo(mensagem)**: Lê um número real positivo.
+- **toLower(), toUpper()**: Convertem texto para minúsculas/maiúsculas.
+- **limparBuffer()**: Limpa o buffer de entrada.
+- **desenharLinhaHorizontal(), desenharCaixaTitulo(), imprimirLinhaTabela(), imprimirTituloCentralizado()**: Funções para desenhar tabelas e títulos alinhados.
+- **mostrarMenu(titulo, opcoes)**: Mostra menus interativos.
+- **arquivoExiste(), criarDiretorioSeNaoExistir()**: Manipulação de arquivos e diretórios.
+- **lerTelefone(), formatarTelefone()**: Validação e formatação de telefone.
+- **centro()**: Centraliza texto.
+- **confirmarAcao(), desejaContinuar()**: Perguntas de confirmação ao usuário.
+- **encontrarProdutoPorNome(), encontrarClientePorNome()**: Busca produtos/clientes pelo nome.
+- **trim()**: Remove espaços extras de uma string.
+
+------------------------------
+4. FLUXO GERAL DO PROGRAMA
+------------------------------
+- O programa inicia mostrando o menu principal.
+- O usuário pode escolher entre: Efetuar Vendas, Gerir Produtos, Gerir Clientes, Relatórios ou Sair.
+- Cada opção leva a menus e funções específicas, sempre com validação de dados e mensagens claras.
+- Todos os dados são salvos em arquivos para persistência.
+
+------------------------------
+5. OBSERVAÇÕES FINAIS
+------------------------------
+- O código é modular, separado por classes e funções para facilitar manutenção e entendimento.
+- O uso de margem padronizada (MARGEM) garante alinhamento visual em todas as telas.
+- O sistema é ideal para estudantes aprenderem boas práticas de programação orientada a objetos e manipulação de arquivos em C++.
+
+FIM DO DOCUMENTO 
