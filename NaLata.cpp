@@ -65,7 +65,7 @@ int main() {
                     bool primeiraVez = true;
                     do {
                         if (!primeiraVez) system("cls");
-                        string nome;
+                    string nome;
                         cin.clear();
                         cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                         cout << std::string(MARGEM) << "Nome: ";
@@ -110,8 +110,8 @@ int main() {
                             primeiraVez = false;
                             continue;
                         } else {
-                            int qtd;
-                            double preco;
+                    int qtd;
+                    double preco;
                             bool primeiraTentativa = true;
                             while (true) {
                                 if (!primeiraTentativa) {
@@ -125,7 +125,7 @@ int main() {
                                 primeiraTentativa = false;
                             }
                             preco = lerFloatPositivo(std::string(MARGEM) + "Preco de custo: ");
-                            loja.criarProduto(nome, qtd, preco);
+                    loja.criarProduto(nome, qtd, preco);
                             cout << GREEN << "\nProduto criado com sucesso!" << RESET << endl;
                         }
                         primeiraVez = false;
@@ -138,8 +138,8 @@ int main() {
                     bool primeiraVez = true;
                     do {
                         if (!primeiraVez) system("cls");
-                        loja.listarProdutos();
-                        cout << "\n";
+                    loja.listarProdutos();
+                    cout << "\n";
                         cin.clear();
                         cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                         int id;
@@ -178,7 +178,7 @@ int main() {
                             if ((iss >> qtd) && qtd > 0) break;
                             primeiraTentativa = false;
                         }
-                        loja.adicionarStock(id, qtd);
+                    loja.adicionarStock(id, qtd);
 
                         cout << GREEN << "\nStock atualizado com sucesso!" << RESET << endl;
                         primeiraVez = false;
@@ -191,8 +191,8 @@ int main() {
                     bool primeiraVez = true;
                     do {
                         if (!primeiraVez) system("cls");
-                        loja.listarProdutos();
-                        cout << "\n";
+                    loja.listarProdutos();
+                    cout << "\n";
                         cin.clear();
                         cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                         int id;
@@ -218,7 +218,7 @@ int main() {
                             }
                             primeiraTentativaId = false;
                         }
-                        loja.eliminarProduto(id);
+                    loja.eliminarProduto(id);
 
                         cout << GREEN << "\nProduto removido com sucesso!" << RESET << endl;
                         primeiraVez = false;
@@ -265,7 +265,7 @@ int main() {
                         string nome, tel, morada, dataNasc;
                         while (true) {
                             cout << std::string(MARGEM) << "Nome: ";
-                            getline(cin, nome);
+                    getline(cin, nome);
                             nome = toUpper(nome);
                             if (!(nome.empty() || nome.find_first_not_of(' ') == string::npos)) {
                                 break;
@@ -287,7 +287,7 @@ int main() {
                         // Garantir morada não vazia
                         while (true) {
                             cout << std::string(MARGEM) << "Morada: ";
-                            getline(cin, morada);
+                    getline(cin, morada);
                             morada = toUpper(morada);
                             if (!(morada.empty() || morada.find_first_not_of(' ') == string::npos)) {
                                 break;
@@ -313,8 +313,8 @@ int main() {
                     bool primeiraVez = true;
                     do {
                         if (!primeiraVez) system("cls");
-                        loja.listarClientes();
-                        cout << "\n";
+                    loja.listarClientes();
+                    cout << "\n";
                         cin.clear();
                         cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                         int id;
@@ -331,7 +331,7 @@ int main() {
                             primeiraTentativaId = false;
                         }
                         if (confirmarAcao("Tem certeza que deseja remover este cliente?")) {
-                            loja.eliminarCliente(id);
+                    loja.eliminarCliente(id);
                             cout << GREEN << "\nCliente removido com sucesso!" << RESET << endl;
                         } else {
                             cout << YELLOW << "\nOperacao cancelada pelo usuario." << RESET << endl;
@@ -380,8 +380,8 @@ int main() {
 
                     cout << GREEN << "\nNome alterado com sucesso!" << RESET << endl;
                     if (!desejaContinuar("Deseja alterar outro cliente?")) {
-                        break;
-                    }
+                    break;
+                }
                     system("cls");
                     cout << "ALTERACAO DE DADOS DO CLIENTE\n\n";
                     loja.listarClientes();
@@ -419,14 +419,14 @@ int main() {
                 case 2:
                 { // Vendas por Produto
                     do {
-                        system("cls");
-                        string nome;
+                    system("cls");
+                    string nome;
                         cout << "Relatorio por Produto\n\n";
-                        cout << "Nome do produto: ";
-                        cin.ignore();
-                        getline(cin, nome);
+                    cout << "Nome do produto: ";
+                    cin.ignore();
+                    getline(cin, nome);
                         nome = trim(toUpper(nome));
-                        loja.relatorioVendasPorProduto(nome);
+                    loja.relatorioVendasPorProduto(nome);
                         cout << "\n";
                     } while (desejaContinuar("Deseja ver o relatorio de outro produto?"));
                     break;

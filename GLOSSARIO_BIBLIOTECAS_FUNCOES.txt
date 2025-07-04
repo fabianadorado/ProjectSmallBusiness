@@ -1,0 +1,1087 @@
+==============================
+GLOSSÁRIO DE BIBLIOTECAS E FUNÇÕES DO PROGRAMA (POR CLASSE)
+==============================
+
+Este glossário está organizado por classe. Para cada classe, listamos as bibliotecas utilizadas, explicamos como funcionam, mostramos exemplos reais do código e detalhamos as funções principais.
+
+------------------------------
+CLASSE PRODUTO
+------------------------------
+
+**Bibliotecas utilizadas:**
+- <string>: Armazena nome do produto.
+- <iostream>: Exibe informações do produto.
+- <iomanip>: Formata saída (ex: casas decimais).
+- <locale>: (opcional) Suporte a acentuação.
+- <sstream>: Formatação de strings.
+
+**Exemplos e funções:**
+- **<string>**
+  - Usada para armazenar e manipular o nome do produto.
+  - Exemplo:
+    ```cpp
+    string nome = "COCA-COLA";
+    ```
+- **<iostream>**
+  - Exibe informações do produto.
+    ```cpp
+    cout << produto.getNome() << endl;
+    ```
+- **<iomanip>**
+  - Formata valores monetários.
+    ```cpp
+    cout << fixed << setprecision(2) << preco << endl;
+    ```
+- **<sstream>**
+  - Monta strings formatadas para exibição.
+    ```cpp
+    ostringstream oss;
+    oss << fixed << setprecision(2) << preco;
+    string precoFormatado = oss.str();
+    ```
+
+==============================
+DETALHAMENTO LINHA A LINHA E FUNÇÕES DE BIBLIOTECA: CLASSE PRODUTO
+==============================
+
+Resumo: A classe Produto representa um item comercializável, com id, nome, quantidade em estoque e preço de custo. Fornece métodos para manipular e consultar esses dados.
+
+Arquivo: Produto.h / Produto.cpp
+
+------------------------------
+// Produto.h
+------------------------------
+
+```cpp
+#pragma once
+#include <string>         // Usada para o tipo string (nome do produto)
+#include <iostream>       // Usada para exibir informações do produto
+
+using namespace std;      // Evita precisar escrever std:: antes de string, cout, etc.
+
+class Produto {
+private:
+    static int proximoId; // Armazena o próximo id disponível (compartilhado entre todos os produtos)
+    int id;               // Identificador único do produto
+    string nome;          // Nome do produto
+    int quantidade;       // Quantidade em estoque
+    double precoCusto;    // Preço de custo do produto
+
+public:
+    Produto();
+    Produto(int id, string nome, int quantidade, double precoCusto);
+
+    int getId() const;
+    string getNome() const;
+    int getQuantidade() const;
+    double getPrecoCusto() const;
+    double getPrecoVenda() const;           // Preço com margem
+    double getPrecoVendaComIVA() const;     // Preço com margem + IVA
+
+    void adicionarStock(int qtd);
+    void removerStock(int qtd);
+    void setId(int novoId) { id = novoId; }
+    void setPrecoCusto(double novoPreco) { precoCusto = novoPreco; }
+};
+```
+
+------------------------------
+// Produto.cpp
+------------------------------
+
+```cpp
+#include "Produto.h"
+#include <iostream>
+#include <locale>
+#include <sstream>
+#include "Auxiliar.h" // Para funções auxiliares como toUpper
+
+using namespace std;
+
+// Inicialização do ID estático
+int Produto::proximoId = 1; // Começa em 1
+
+// Construtor padrão
+Produto::Produto() {
+    id = proximoId++;         // Atribui id único e incrementa para o próximo produto
+    nome = "";               // Nome vazio
+    quantidade = 0;          // Estoque zerado
+    precoCusto = 0.0;        // Preço de custo zero
+}
+
+// Construtor com parâmetros
+Produto::Produto(int id, string nome, int quantidade, double precoCusto) {
+    this->id = id;                       // Define o id recebido
+    this->nome = toUpper(nome);          // Converte nome para maiúsculas (padronização)
+    this->quantidade = quantidade;       // Define quantidade
+    this->precoCusto = precoCusto;       // Define preço de custo
+    if (id >= proximoId) {               // Garante que o próximo id será sempre maior
+        proximoId = id + 1;
+    }
+}
+
+// Getters
+int Produto::getId() const {
+    return id;
+}
+
+string Produto::getNome() const {
+    return nome;
+}
+
+int Produto::getQuantidade() const {
+    return quantidade;
+}
+
+double Produto::getPrecoCusto() const {
+    return precoCusto;
+}
+
+// Preço de venda com margem (exemplo: 30% de lucro)
+double Produto::getPrecoVenda() const {
+    return precoCusto * 1.3; // Aplica margem de 30%
+}
+
+// Preço de venda com IVA (23% aplicado sobre o preço de venda)
+double Produto::getPrecoVendaComIVA() const {
+    double precoVenda = getPrecoVenda(); // Usa o método anterior
+    return precoVenda * 1.23;            // Aplica 23% de IVA
+}
+
+// Estoque
+void Produto::adicionarStock(int qtd) {
+    quantidade += qtd; // Soma quantidade ao estoque
+}
+
+void Produto::removerStock(int qtd) {
+    if (quantidade >= qtd) { // Só remove se houver estoque suficiente
+        quantidade -= qtd;
+    }
+}
+```
+
+------------------------------
+Comentários Didáticos:
+------------------------------
+- O uso de `static int proximoId` garante que cada produto criado tenha um id único, mesmo que vários objetos sejam criados.
+- O construtor com parâmetros converte o nome para maiúsculas usando a função auxiliar `toUpper` (definida em Auxiliar.cpp), garantindo padronização para buscas e exibição.
+- Os métodos `getPrecoVenda` e `getPrecoVendaComIVA` facilitam o cálculo do preço final, centralizando a lógica de margem e impostos.
+- O método `removerStock` protege contra estoques negativos.
+- O uso de `<sstream>` e `<locale>` permite, em outros métodos, formatar valores para exibição (ex: casas decimais, separador de milhar).
+
+------------------------------
+Se quiser o mesmo detalhamento para as próximas classes (Cliente, Venda, Loja, Menu, Auxiliar, main), peça para continuar!
+
+------------------------------
+CLASSE CLIENTE
+------------------------------
+
+**Bibliotecas utilizadas:**
+- <string>: Armazena nome, telefone, morada.
+- <iostream>: Exibe informações do cliente.
+- <sstream>: Formatação de strings.
+- <vector>: Lista de ids disponíveis.
+- <algorithm>: Ordenação de ids.
+- <iomanip>: Formatação de saída.
+
+**Exemplos e funções:**
+- **<vector>**
+  - Armazena ids disponíveis para reutilização.
+    ```cpp
+    static vector<int> idsDisponiveis;
+    ```
+- **<algorithm>**
+  - Ordena a lista de ids disponíveis.
+    ```cpp
+    sort(idsDisponiveis.begin(), idsDisponiveis.end());
+    ```
+- **<sstream>**
+  - Monta string formatada para exibição.
+    ```cpp
+    stringstream dadosCliente;
+    dadosCliente << "ID: " << idCliente;
+    ```
+
+==============================
+DETALHAMENTO LINHA A LINHA: CLASSE CLIENTE
+==============================
+
+Resumo: A classe Cliente representa um cliente do sistema, com id, nome, telefone, morada, data de nascimento e total comprado. Permite criar, modificar e consultar dados do cliente, além de controlar a reutilização de ids.
+
+Arquivo: Cliente.h / Cliente.cpp
+
+------------------------------
+// Cliente.h
+------------------------------
+
+```cpp
+#pragma once
+#include <iostream>      // Exibe informações do cliente
+#include <string>        // Manipula nome, telefone, morada
+#include <sstream>       // Formatação de strings
+#include <vector>        // Lista de ids disponíveis
+
+using namespace std;
+
+class Cliente {
+private:
+    static int proximoCliente;      // Próximo id disponível (compartilhado)
+    static vector<int> idsDisponiveis; // Lista de ids liberados para reutilização
+    int idCliente;                  // Id do cliente
+    string nome;                    // Nome do cliente
+    string telefone;                // Telefone do cliente
+    string morada;                  // Morada (endereço)
+    string dataNascimento;          // Data de nascimento
+    double totalComprado;           // Total gasto pelo cliente
+
+public:
+    Cliente();
+    Cliente(string nome, string telefone, string morada, string dataNascimento, double totalComprado = 0.0);
+
+    // Getters
+    int getIdCliente() const;
+    string getNome() const;
+    string getTelefone() const;
+    string getMorada() const;
+    string getDataNascimento() const;
+    double getTotalComprado() const;
+
+    // Setters
+    void setIdCliente(int id);
+    void setNome(string nome);
+    void setTelefone(string telefone);
+    void setMorada(string morada);
+    void setDataNascimento(const string& data);
+
+    // Outros métodos
+    void liberarId();
+    void adicionarCompra(double valor);
+    string toString() const;
+};
+```
+
+------------------------------
+// Cliente.cpp
+------------------------------
+
+```cpp
+#include "Cliente.h"
+#include <string>
+#include <sstream>
+#include <algorithm>   // Para sort
+#include <iomanip>     // Para setw
+
+using namespace std;
+
+int Cliente::proximoCliente = 1;           // Inicializa id global
+vector<int> Cliente::idsDisponiveis;       // Inicializa lista de ids disponíveis
+
+// Construtor padrão
+Cliente::Cliente()
+    : idCliente(proximoCliente++), nome(""), telefone(""), morada(""), dataNascimento(""), totalComprado(0.0) {
+    // Cria cliente vazio e atribui id único
+}
+
+// Construtor com parâmetros
+Cliente::Cliente(string nome, string telefone, string morada, string dataNascimento, double totalComprado)
+    : idCliente(proximoCliente++), nome(nome), telefone(telefone), morada(morada), dataNascimento(dataNascimento), totalComprado(totalComprado) {
+    // Verifica se há ids disponíveis para reutilização
+    if (!idsDisponiveis.empty()) {
+        idCliente = idsDisponiveis.back(); // Usa id liberado
+        idsDisponiveis.pop_back();
+    }
+    else {
+        idCliente = proximoCliente++;
+    }
+    this->nome = nome;
+    this->telefone = telefone;
+    this->morada = morada;
+    this->dataNascimento = dataNascimento;
+    this->totalComprado = totalComprado;
+}
+
+// Getters
+int Cliente::getIdCliente() const {
+    return idCliente;
+}
+
+string Cliente::getNome() const {
+    return nome;
+}
+
+string Cliente::getTelefone() const {
+    return telefone;
+}
+
+string Cliente::getMorada() const {
+    return morada;
+}
+
+string Cliente::getDataNascimento() const {
+    return dataNascimento;
+}
+
+double Cliente::getTotalComprado() const {
+    return totalComprado;
+}
+
+// Setters
+void Cliente::setIdCliente(int id) {
+    idCliente = id;
+    if (id >= proximoCliente) {
+        proximoCliente = id + 1;
+    }
+}
+
+void Cliente::setNome(string nome) {
+    this->nome = nome;
+}
+
+void Cliente::setTelefone(string telefone) {
+    this->telefone = telefone;
+}
+
+void Cliente::setMorada(string morada) {
+    this->morada = morada;
+}
+
+void Cliente::setDataNascimento(const string& data) {
+    dataNascimento = data;
+}
+
+// Método para liberar id quando cliente é removido
+void Cliente::liberarId() {
+    idsDisponiveis.push_back(idCliente);   // Adiciona id à lista de reutilização
+    sort(idsDisponiveis.begin(), idsDisponiveis.end()); // Mantém lista ordenada
+}
+
+void Cliente::adicionarCompra(double valor) {
+    totalComprado += valor; // Soma valor ao total comprado
+}
+
+string Cliente::toString() const {
+    stringstream dadosCliente;
+    dadosCliente << left
+        << "ID: " << setw(6) << idCliente
+        << " | Nome: " << setw(20) << nome
+        << " | Telefone: " << setw(15) << telefone
+        << " | Morada: " << setw(30) << morada;
+    return dadosCliente.str();
+}
+```
+
+------------------------------
+Comentários Didáticos:
+------------------------------
+- O uso de `static int proximoCliente` e `static vector<int> idsDisponiveis` permite gerar ids únicos e reutilizar ids de clientes removidos.
+- O construtor com parâmetros verifica se há ids disponíveis para reutilização, promovendo economia de espaço e organização.
+- Os métodos getters e setters permitem acessar e modificar os dados do cliente de forma controlada.
+- O método `liberarId` é fundamental para evitar "buracos" na sequência de ids.
+- O método `toString` usa <sstream> e <iomanip> para montar uma string formatada, útil para exibição em tabelas.
+
+------------------------------
+Se quiser o mesmo detalhamento para as próximas classes (Venda, Loja, Menu, Auxiliar, main), peça para continuar!
+
+------------------------------
+CLASSE VENDA
+------------------------------
+
+**Bibliotecas utilizadas:**
+- <string>: Armazena nomes, número de fatura.
+- <vector>: Lista de itens da venda.
+- <iomanip>: Formatação de valores.
+- <sstream>: Formatação de strings.
+- <random>, <chrono>: Geração de número de fatura aleatório.
+- <ctime>: Data/hora do recibo.
+- <iostream>: Exibe recibo e mensagens.
+- <algorithm>: Busca e remoção de itens.
+
+**Exemplos e funções:**
+- **<random> e <chrono>**
+  - Geram número de fatura único.
+    ```cpp
+    mt19937 gerador(random_device{}());
+    uniform_int_distribution<int> distribuidor(10000, 99999);
+    ostringstream criarNFatura;
+    criarNFatura << distribuidor(gerador);
+    numeroFatura = criarNFatura.str();
+    ```
+- **<ctime>**
+  - Obtém data/hora atual para o recibo.
+    ```cpp
+    time_t agora = time(0);
+    tm tempoLocal;
+    localtime_s(&tempoLocal, &agora);
+    ```
+- **<algorithm>**
+  - Remove item do vetor de itens.
+    ```cpp
+    auto it = find_if(itens.begin(), itens.end(), ...);
+    itens.erase(it);
+    ```
+
+==============================
+DETALHAMENTO LINHA A LINHA E FUNÇÕES DE BIBLIOTECA: CLASSE VENDA
+==============================
+
+Resumo: A classe Venda representa uma venda realizada para um cliente, contendo itens, valores, número de fatura, métodos para adicionar/remover itens, finalizar/cancelar venda e imprimir o talão.
+
+Arquivo: Venda.h / Venda.cpp
+
+------------------------------
+// Venda.h
+------------------------------
+
+```cpp
+#pragma once
+#include <string>         // Nomes, número de fatura
+#include <vector>         // Lista de itens
+#include <iomanip>        // Formatação
+#include <sstream>        // Formatação
+#include <random>         // Geração de número de fatura
+#include <chrono>         // Semente aleatória
+#include "Cliente.h"     // Para associar venda a cliente
+
+using namespace std;
+
+struct ItemVenda {
+    int numeroLinha;
+    string nomeProduto;
+    int quantidade;
+    double precoUnitario;
+    double precoSemIVA;
+    double iva;
+    double totalComIVA;
+    double precoCusto;
+
+    ItemVenda(int linha, const string& nomeProduto, int quantidade, double precoUnit, double precoCusto);
+};
+
+class Venda {
+private:
+    static mt19937 gerador;
+    static uniform_int_distribution<int> distribuidor;
+    int idCliente;
+    string numeroFatura;
+    vector<ItemVenda> itens;
+    double valorEntregue;
+    double troco;
+    bool gratis = false;
+    string nomeCliente;
+    string dataNascimentoCliente;
+    int monstersPoints = 0;
+public:
+    Venda();
+    Venda(int idCliente);
+    void adicionarItem(const string& nomeProduto, int quantidade, double precoUnit, double precoCusto);
+    void finalizarVenda(double valorEntregue);
+    void imprimirTalao() const;
+    string getNumeroFatura() const;
+    int getIdCliente() const;
+    double getValorTotal() const;
+    double getTroco() const;
+    double getTotalComIVA() const;
+    bool isGratis() const { return gratis; }
+    const vector<ItemVenda>& getItens() const { return itens; }
+    void removerItemPorLinha(int numeroLinha);
+    void cancelarVenda();
+    void setNomeCliente(const string& nome) { nomeCliente = nome; }
+    string getNomeCliente() const { return nomeCliente; }
+    void setDataNascimentoCliente(const string& data) { dataNascimentoCliente = data; }
+    string getDataNascimentoCliente() const { return dataNascimentoCliente; }
+    void setMonstersPoints(int pts) { monstersPoints = pts; }
+    int getMonstersPoints() const { return monstersPoints; }
+};
+```
+
+------------------------------
+// Venda.cpp - Exemplos detalhados de funções de biblioteca
+------------------------------
+
+### Gerando um número de fatura aleatório
+```cpp
+mt19937 Venda::gerador(random_device{}());
+uniform_int_distribution<int> Venda::distribuidor(10000, 99999);
+ostringstream criarNFatura;
+criarNFatura << distribuidor(gerador);
+numeroFatura = criarNFatura.str();
+```
+- **mt19937** e **uniform_int_distribution** (da biblioteca `<random>`)  
+  - **O que fazem:** Geram números aleatórios de alta qualidade.
+  - **Por que usar:** Para criar um número de fatura único e difícil de prever.
+  - **Como funciona:** `mt19937` é o gerador, `uniform_int_distribution` define o intervalo.
+- **random_device** (da biblioteca `<random>`)  
+  - **O que faz:** Fornece uma semente aleatória baseada no hardware.
+- **ostringstream** (da biblioteca `<sstream>`)  
+  - **O que faz:** Monta a string do número de fatura.
+
+### Adicionando um item à venda
+```cpp
+itens.push_back(item);
+```
+- **push_back** (da biblioteca `<vector>`)  
+  - **O que faz:** Adiciona um novo item ao vetor de itens da venda.
+  - **Por que usar:** Permite que a venda tenha múltiplos produtos.
+
+### Validando e arredondando valores
+```cpp
+auto arred2 = [](double v) { return round(v * 100.0) / 100.0; };
+```
+- **round** (da biblioteca `<cmath>`)  
+  - **O que faz:** Arredonda um número para o inteiro mais próximo.
+  - **Por que usar:** Para garantir precisão de centavos em valores monetários.
+- **lambda** (C++ padrão)  
+  - **O que faz:** Cria uma função anônima para arredondar valores.
+
+### Exibindo informações no console
+```cpp
+cout << "Item removido.\n";
+```
+- **cout** (da biblioteca `<iostream>`)  
+  - **O que faz:** Exibe mensagens para o usuário.
+
+### Buscando e removendo itens do vetor
+```cpp
+auto it = find_if(itens.begin(), itens.end(), [numeroLinha](const ItemVenda& item) {
+    return item.numeroLinha == numeroLinha;
+});
+itens.erase(it);
+```
+- **find_if** (da biblioteca `<algorithm>`)  
+  - **O que faz:** Busca o primeiro item que satisfaz a condição (número da linha).
+  - **Por que usar:** Permite localizar rapidamente um item específico para remoção.
+- **erase** (da biblioteca `<vector>`)  
+  - **O que faz:** Remove o item do vetor.
+  - **Por que usar:** Permite excluir itens da venda antes de finalizar.
+
+### Formatando e exibindo o talão (recibo)
+```cpp
+cout << fixed << setprecision(2) << preco << endl;
+```
+- **fixed** e **setprecision** (da biblioteca `<iomanip>`)  
+  - **O que fazem:** Garantem que valores monetários sejam exibidos com duas casas decimais.
+
+### Obtendo a data/hora atual
+```cpp
+time_t agora = time(0);
+tm tempoLocal;
+localtime_s(&tempoLocal, &agora);
+```
+- **time_t, time, tm, localtime_s** (da biblioteca `<ctime>`)  
+  - **O que fazem:** Obtêm a data e hora atual do sistema.
+  - **Por que usar:** Para registrar a data da venda no recibo.
+
+------------------------------
+Comentários Didáticos:
+------------------------------
+- O uso de `<random>` garante que cada venda tenha um número de fatura único.
+- O uso de `<vector>` permite adicionar/remover itens dinamicamente.
+- O uso de `<algorithm>` facilita buscas e remoções eficientes.
+- O uso de `<iomanip>` centraliza a formatação de valores.
+- O uso de `<ctime>` permite registrar a data/hora da venda.
+
+------------------------------
+Se quiser o mesmo detalhamento para as próximas classes (Loja, Menu, Auxiliar, main), peça para continuar!
+
+------------------------------
+CLASSE LOJA
+------------------------------
+
+**Bibliotecas utilizadas:**
+- <vector>: Armazena produtos, clientes, vendas.
+- <string>: Manipula nomes, mensagens.
+- <map>: Relatórios e agrupamentos.
+- <fstream>: Leitura e escrita de arquivos.
+- <algorithm>: Ordenação e busca.
+- <iostream>: Exibe relatórios e mensagens.
+- <sstream>: Conversão e formatação de dados.
+- <limits>: Limpa buffer de entrada.
+- <locale>: Suporte a acentuação.
+
+**Exemplos e funções:**
+- **<map>**
+  - Agrupa vendas por produto em relatórios.
+    ```cpp
+    map<string, int> vendasPorProduto;
+    vendasPorProduto[produto] += quantidade;
+    ```
+- **<fstream>**
+  - Salva e carrega dados em arquivos.
+    ```cpp
+    ofstream arquivo("produtos.txt");
+    arquivo << ...;
+    arquivo.close();
+    ```
+- **<limits>**
+  - Limpa buffer de entrada após leitura.
+    ```cpp
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    ```
+
+==============================
+DETALHAMENTO LINHA A LINHA: CLASSE LOJA
+==============================
+
+Resumo: A classe Loja gerencia produtos, clientes e vendas. Permite criar, listar, remover, alterar e salvar/carregar dados, além de gerar relatórios e repor estoque.
+
+Arquivo: Loja.h / Loja.cpp
+
+------------------------------
+// Loja.h
+------------------------------
+
+```cpp
+#pragma once
+#include <vector>         // Armazena produtos, clientes, vendas
+#include <string>         // Manipula nomes, mensagens
+#include "Produto.h"
+#include "Cliente.h"
+#include "Venda.h"
+#include <map>            // Relatórios e agrupamentos
+
+using namespace std;
+
+class Loja {
+private:
+    vector<Produto> produtos;
+    vector<Cliente> clientes;
+    vector<Venda> vendas;
+    vector<int> idsClientesDisponiveis;
+    int proximoIdProduto;
+    int proximoIdCliente;
+    int proximaPosicaoVenda;
+    const int MAX_VENDAS = 100;
+    // Métodos de persistência privados
+    bool salvarClientes(const string& caminho);
+    bool salvarProdutos(const string& caminho);
+    bool salvarVendas(const string& caminho);
+    bool carregarClientes(const string& caminho);
+    bool carregarProdutos(const string& caminho);
+    bool carregarVendas(const string& caminho);
+public:
+    Loja();
+    // Produtos
+    void criarProduto();
+    void eliminarProduto();
+    void criarProduto(const string& nome, int quantidade, double precoCusto);
+    void adicionarStock(int idProduto, int quantidade);
+    void eliminarProduto(int idProduto);
+    void listarProdutos() const;
+    // Clientes
+    void criarCliente(const string& nome, const string& telefone, const string& morada, const string& dataNascimento);
+    void eliminarCliente(int idCliente);
+    void alterarNomeCliente(int idCliente, const string& novoNome);
+    void listarClientes() const;
+    // Vendas
+    void efetuarVenda(int idCliente);
+    void mostrarResumoVenda(const Venda& venda) const;
+    // Relatórios
+    void relatorioStock() const;
+    void relatorioVendasPorProduto(const string& nomeProduto) const;
+    void relatorioTotalVendas() const;
+    void relatorioGraficoVendas() const;
+    void relatorioVendasDetalhadoPorProduto() const;
+    // Histórico de Vendas
+    void listarHistoricoVendas() const;
+    // Persistência
+    bool salvarDados(const string& diretorio = "dados_loja");
+    bool carregarDados(const string& diretorio = "dados_loja");
+    // Getters
+    std::vector<Produto>& getProdutos() { return produtos; }
+    std::vector<Cliente>& getClientes() { return clientes; }
+    // Repor estoque ao remover item ou cancelar venda
+    void reporEstoqueItem(const ItemVenda& item);
+    void reporEstoqueVenda(const Venda& venda);
+};
+```
+
+------------------------------
+// Loja.cpp - Exemplos detalhados de funções de biblioteca
+------------------------------
+
+### Adicionando um produto ao vetor de produtos
+```cpp
+produtos.push_back(novoProduto);
+```
+- **push_back** (da biblioteca `<vector>`)  
+  - **O que faz:** Adiciona um elemento ao final do vetor.
+  - **Por que usar:** Permite inserir novos produtos na lista dinâmica da loja.
+
+### Iterando sobre produtos para exibição
+```cpp
+for (const auto& p : produtos) {
+    cout << p.getNome() << endl;
+}
+```
+- **for (const auto& ... : ...)** (C++11 range-based for)  
+  - **O que faz:** Itera sobre todos os elementos do vetor.
+  - **Por que usar:** Facilita a leitura e evita erros de índice.
+- **cout** (da biblioteca `<iostream>`)  
+  - **O que faz:** Exibe informações no console.
+
+### Formatando tabelas e colunas
+```cpp
+cout << left << setw(20) << nome << right << setw(6) << quantidade;
+```
+- **left** e **right** (da biblioteca `<iomanip>`)  
+  - **O que fazem:** Alinham o texto à esquerda ou à direita.
+- **setw(20)** (da biblioteca `<iomanip>`)  
+  - **O que faz:** Define a largura mínima do campo para 20 caracteres.
+  - **Por que usar:** Para alinhar colunas em tabelas.
+
+### Ordenando produtos/clientes
+```cpp
+sort(produtos.begin(), produtos.end(), [](const Produto& a, const Produto& b) {
+    return a.getId() < b.getId();
+});
+```
+- **sort** (da biblioteca `<algorithm>`)  
+  - **O que faz:** Ordena os elementos do vetor conforme critério definido.
+  - **Por que usar:** Para exibir produtos/clientes em ordem crescente de id.
+- **lambda** (C++ padrão)  
+  - **O que faz:** Define a função de comparação para o sort.
+
+### Agrupando vendas por produto
+```cpp
+map<string, int> vendasPorProduto;
+vendasPorProduto[nomeProduto] += quantidade;
+```
+- **map** (da biblioteca `<map>`)  
+  - **O que faz:** Estrutura de dicionário, associa um valor (quantidade) a uma chave (nome do produto).
+  - **Por que usar:** Para gerar relatórios de vendas por produto.
+
+### Salvando e carregando dados em arquivos
+```cpp
+ofstream arquivo("produtos.txt");
+arquivo << ...;
+arquivo.close();
+```
+- **ofstream** (da biblioteca `<fstream>`)  
+  - **O que faz:** Abre um arquivo para escrita.
+  - **Por que usar:** Para salvar dados persistentes da loja.
+- **ifstream** (da biblioteca `<fstream>`)  
+  - **O que faz:** Abre um arquivo para leitura.
+  - **Por que usar:** Para carregar dados salvos anteriormente.
+
+### Limpando o buffer de entrada
+```cpp
+cin.ignore(numeric_limits<streamsize>::max(), '\n');
+```
+- **cin.ignore** (da biblioteca `<iostream>`)  
+  - **O que faz:** Descarta caracteres restantes no buffer de entrada.
+- **numeric_limits<streamsize>::max()** (da biblioteca `<limits>`)  
+  - **O que faz:** Garante que todos os caracteres até o fim da linha sejam descartados.
+
+------------------------------
+Comentários Didáticos:
+------------------------------
+- O uso de `<vector>` permite armazenar listas dinâmicas de produtos, clientes e vendas.
+- O uso de `<map>` facilita a geração de relatórios agrupados.
+- O uso de `<fstream>` permite persistência dos dados.
+- O uso de `<algorithm>` e lambdas facilita ordenação e buscas customizadas.
+- O uso de `<iomanip>` centraliza a formatação de tabelas e colunas.
+- O uso de `<limits>` e `cin.ignore` evita problemas de leitura de entrada.
+
+------------------------------
+Se quiser o mesmo detalhamento para as próximas classes (Menu, Auxiliar, main), peça para continuar!
+
+==============================
+DETALHAMENTO LINHA A LINHA: CLASSE MENU
+==============================
+
+Resumo: A classe Menu centraliza a exibição dos menus principais e de navegação do sistema, utilizando listas dinâmicas de opções e funções auxiliares para exibição e leitura.
+
+Arquivo: Menu.h / Menu.cpp
+
+------------------------------
+// Menu.cpp - Exemplos detalhados de funções de biblioteca
+------------------------------
+
+### Limpando a tela do console
+```cpp
+system("cls");
+```
+- **system** (da biblioteca `<windows.h>`/C padrão)  
+  - **O que faz:** Executa um comando do sistema operacional.
+  - **Por que usar:** Para limpar a tela do console antes de exibir um novo menu, melhorando a experiência visual.
+
+### Criando uma lista de opções de menu
+```cpp
+vector<string> opcoes = {
+    "Efetuar Vendas",
+    "Gerir Produtos",
+    "Gerir Clientes",
+    "Relatorios",
+    "Sair"
+};
+```
+- **vector** (da biblioteca `<vector>`)  
+  - **O que faz:** Cria uma lista dinâmica de strings.
+  - **Por que usar:** Permite adicionar, remover ou alterar opções de menu facilmente.
+
+### Exibindo o menu e lendo a opção do usuário
+```cpp
+return mostrarMenu("MENU PRINCIPAL", opcoes);
+```
+- **mostrarMenu** (função auxiliar definida em Auxiliar.cpp)  
+  - **O que faz:** Exibe o menu formatado, lê e retorna a opção escolhida pelo usuário.
+  - **Por que usar:** Centraliza a lógica de exibição e leitura, padronizando todos os menus do sistema.
+
+------------------------------
+Comentários Didáticos:
+------------------------------
+- O uso de `<vector>` permite criar menus dinâmicos e facilmente modificáveis.
+- O uso de `system("cls")` melhora a experiência visual, mas é específico do Windows.
+- O uso de funções auxiliares como `mostrarMenu` centraliza e padroniza a navegação.
+
+------------------------------
+Se quiser o mesmo detalhamento para as próximas classes (Auxiliar, main), peça para continuar!
+
+==============================
+DETALHAMENTO LINHA A LINHA: CLASSE AUXILIAR
+==============================
+
+Resumo: As funções Auxiliar fornecem utilidades para entrada, validação, formatação e exibição de dados, centralizando operações comuns usadas em todo o sistema.
+
+Arquivo: Auxiliar.h / Auxiliar.cpp
+
+------------------------------
+// Auxiliar.cpp - Exemplos detalhados de funções de biblioteca
+------------------------------
+
+### Lendo e validando números inteiros
+```cpp
+int lernumero(const string& mensagem) {
+    int valor;
+    string input;
+    bool primeiraTentativa = true;
+    while (true) {
+        if (!primeiraTentativa) {
+            cout << "\033[31mEntrada invalida. Digite um numero inteiro maior que 0.\033[0m\n";
+        }
+        cout << mensagem;
+        getline(cin, input);
+        istringstream iss(input);
+        if (iss >> valor && valor > 0) {
+            char extra;
+            if (!(iss >> extra)) {
+                return valor;
+            }
+        }
+        primeiraTentativa = false;
+    }
+}
+```
+- **getline** (da biblioteca `<iostream>`)  
+  - **O que faz:** Lê uma linha completa de texto, incluindo espaços.
+  - **Por que usar:** Para capturar a entrada do usuário como string antes de validar.
+- **istringstream** (da biblioteca `<sstream>`)  
+  - **O que faz:** Permite tratar uma string como um fluxo de entrada.
+  - **Por que usar:** Para converter a string lida em número, validando se é realmente um número.
+- **cout** (da biblioteca `<iostream>`)  
+  - **O que faz:** Exibe mensagens no console.
+- **\033[31m** (códigos ANSI)  
+  - **O que faz:** Colore o texto de vermelho para destacar mensagens de erro.
+
+### Lendo e validando números reais
+```cpp
+double lerFloatPositivo(const string& mensagem) {
+    double valor;
+    while (true) {
+        cout << mensagem;
+        string input;
+        getline(cin, input);
+        replace(input.begin(), input.end(), ',', '.');
+        istringstream iss(input);
+        if (iss >> valor && valor >= 0.0f) {
+            char extra;
+            if (!(iss >> extra)) {
+                return valor;
+            }
+        }
+        cout << "\033[31mEntrada inválida. Digite um número válido (>= 0).\033[0m\n";
+    }
+}
+```
+- **replace** (da biblioteca `<algorithm>`)  
+  - **O que faz:** Substitui todas as vírgulas por pontos na string.
+  - **Por que usar:** Para aceitar tanto vírgula quanto ponto como separador decimal.
+
+### Convertendo texto para maiúsculas
+```cpp
+string toUpper(const string& str) {
+    string resultado = str;
+    for (char& c : resultado) {
+        c = toupper(static_cast<unsigned char>(c));
+    }
+    return resultado;
+}
+```
+- **for (char& c : resultado)** (C++11 range-based for)  
+  - **O que faz:** Itera sobre cada caractere da string.
+- **toupper** (da biblioteca `<cctype>`)  
+  - **O que faz:** Converte um caractere para maiúscula.
+- **static_cast<unsigned char>** (C++ padrão)  
+  - **O que faz:** Converte o char para unsigned char para evitar warnings.
+
+### Validando telefone com expressão regular
+```cpp
+string lerTelefone(const string& mensagem) {
+    regex telefoneRegex("^\\d{9}$");
+    string telefone;
+    while (true) {
+        cout << mensagem;
+        getline(cin, telefone);
+        if (regex_match(telefone, telefoneRegex)) {
+            return telefone;
+        } else {
+            cout << "\033[31mTelefone invalido. Digite exatamente 9 numeros.\033[0m\n";
+        }
+    }
+}
+```
+- **regex** (da biblioteca `<regex>`)  
+  - **O que faz:** Define um padrão de texto (expressão regular).
+- **regex_match** (da biblioteca `<regex>`)  
+  - **O que faz:** Verifica se a string corresponde ao padrão definido.
+  - **Por que usar:** Para validar se o telefone tem exatamente 9 dígitos.
+
+### Verificando se um arquivo existe
+```cpp
+bool arquivoExiste(const string& nomeArquivo) {
+    struct stat buffer;
+    return (stat(nomeArquivo.c_str(), &buffer) == 0);
+}
+```
+- **struct stat** e **stat** (da biblioteca `<sys/stat.h>`)  
+  - **O que fazem:** Obtêm informações sobre um arquivo.
+  - **Por que usar:** Para verificar se um arquivo existe antes de tentar abri-lo.
+
+### Centralizando texto em uma largura fixa
+```cpp
+string centro(const string& texto, int largura) {
+    string t = texto;
+    if ((int)t.length() > largura) t = t.substr(0, largura);
+    int espacos = largura - (int)t.length();
+    int esq = espacos / 2;
+    int dir = espacos - esq;
+    return string(esq, ' ') + t + string(dir, ' ');
+}
+```
+- **substr** (da biblioteca `<string>`)  
+  - **O que faz:** Extrai uma parte da string.
+- **string(esq, ' ')** (construtor da biblioteca `<string>`)  
+  - **O que faz:** Cria uma string com 'esq' espaços.
+
+------------------------------
+Comentários Didáticos:
+------------------------------
+- O uso de `<iostream>` e `<sstream>` permite ler e validar entradas do usuário de forma robusta.
+- O uso de `<regex>` facilita a validação de padrões complexos como telefones.
+- O uso de `<algorithm>` e `<cctype>` simplifica transformações de texto.
+- O uso de `<sys/stat.h>` permite verificar a existência de arquivos de forma eficiente.
+- O uso de códigos ANSI melhora a experiência visual com cores.
+
+------------------------------
+Se quiser o mesmo detalhamento para o main (NaLata.cpp), peça para continuar! 
+
+==============================
+DETALHAMENTO LINHA A LINHA E FUNÇÕES DE BIBLIOTECA: MAIN (NaLata.cpp)
+==============================
+
+Resumo: O arquivo principal do programa, responsável pelo fluxo geral, inicialização, menus e chamadas às funções das classes. Centraliza a lógica de navegação e controle do sistema.
+
+Arquivo: NaLata.cpp
+
+------------------------------
+// NaLata.cpp - Exemplos detalhados de funções de biblioteca
+------------------------------
+
+### Inicializando objetos e carregando dados
+```cpp
+Menu menu;
+Loja loja;
+loja.carregarDados();
+```
+- **Construtores de classe** (C++ padrão)  
+  - **O que fazem:** Criam instâncias das classes Menu e Loja.
+  - **Por que usar:** Para ter acesso aos métodos e funcionalidades de cada classe.
+- **carregarDados()** (método da classe Loja)  
+  - **O que faz:** Carrega dados salvos anteriormente (produtos, clientes, vendas).
+  - **Por que usar:** Para restaurar o estado da loja entre execuções do programa.
+
+### Limpando a tela do console
+```cpp
+system("cls");
+```
+- **system** (da biblioteca `<windows.h>`/C padrão)  
+  - **O que faz:** Executa um comando do sistema operacional.
+  - **Por que usar:** Para limpar a tela antes de exibir menus ou informações.
+
+### Criando o loop principal do programa
+```cpp
+int opcao;
+do {
+    opcao = menu.menuPrincipal();
+    switch (opcao) {
+        case 1:
+            // Efetuar Vendas
+            break;
+        case 2:
+            // Gerir Produtos
+            break;
+        // ... demais opções
+    }
+} while (opcao != 5);
+```
+- **do-while** (C++ padrão)  
+  - **O que faz:** Cria um loop que executa pelo menos uma vez e continua enquanto a condição for verdadeira.
+  - **Por que usar:** Para manter o programa rodando até o usuário escolher sair.
+- **switch** (C++ padrão)  
+  - **O que faz:** Executa diferentes blocos de código baseado no valor de uma variável.
+  - **Por que usar:** Para organizar as diferentes opções do menu de forma clara.
+
+### Lendo entrada do usuário e limpando buffer
+```cpp
+cin.ignore(numeric_limits<streamsize>::max(), '\n');
+int id = lernumero(string(MARGEM) + "ID do cliente: ");
+```
+- **cin.ignore** (da biblioteca `<iostream>`)  
+  - **O que faz:** Descarta caracteres restantes no buffer de entrada.
+- **numeric_limits<streamsize>::max()** (da biblioteca `<limits>`)  
+  - **O que faz:** Garante que todos os caracteres até o fim da linha sejam descartados.
+- **lernumero** (função auxiliar)  
+  - **O que faz:** Lê e valida um número inteiro do usuário.
+- **string(MARGEM) + "ID do cliente: "** (da biblioteca `<string>`)  
+  - **O que faz:** Concatena a margem com a mensagem para manter o alinhamento.
+
+### Chamando métodos das classes
+```cpp
+loja.efetuarVenda(id);
+loja.salvarDados();
+```
+- **Métodos de classe** (C++ padrão)  
+  - **O que fazem:** Executam funcionalidades específicas da classe Loja.
+  - **Por que usar:** Para delegar a lógica específica para as classes responsáveis.
+
+### Retornando do programa
+```cpp
+return 0;
+```
+- **return** (C++ padrão)  
+  - **O que faz:** Termina a execução do programa e retorna um código de saída.
+  - **Por que usar:** Para indicar que o programa terminou com sucesso (código 0).
+
+------------------------------
+Comentários Didáticos:
+------------------------------
+- O uso de `do-while` garante que o menu seja exibido pelo menos uma vez.
+- O uso de `switch` organiza as opções do menu de forma clara e eficiente.
+- O uso de `cin.ignore` e `numeric_limits` evita problemas de leitura de entrada.
+- O uso de `system("cls")` melhora a experiência visual, mas é específico do Windows.
+- O uso de métodos das classes centraliza a lógica e facilita manutenção.
+- O uso de `carregarDados()` e `salvarDados()` garante persistência entre execuções.
+
+------------------------------
+FIM DO DOCUMENTO
+------------------------------ 

@@ -47,7 +47,7 @@ void Loja::criarProduto()
     cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     while (true) {
         cout << std::string(MARGEM) << "Nome do produto: ";
-        getline(cin, nome);
+    getline(cin, nome);
         nome = toUpper(nome);
         if (!(nome.empty() || nome.find_first_not_of(' ') == string::npos)) {
             break;
@@ -122,9 +122,9 @@ void Loja::adicionarStock(int idProduto, int quantidade)
 
 void Loja::eliminarProduto(int idProduto)
 {
-    for (size_t i = 0; i < produtos.size(); i++)
+    for (size_t i = 0; i < produtos.size(); i++) 
     {
-        if (produtos[i].getId() == idProduto)
+        if (produtos[i].getId() == idProduto) 
         {
             if (!confirmarAcao("Tem certeza que deseja remover este produto?")) {
                 cout << RED << "Operacao cancelada.\n" << RESET;
@@ -151,7 +151,7 @@ void Loja::eliminarProduto()
 }
 
 
-void Loja::listarProdutos() const
+void Loja::listarProdutos() const 
 {
     // Definição das larguras das colunas
     const int wId = 4, wNome = 28, wQtd = 8, wCusto = 13, wVenda = 13;
@@ -189,8 +189,8 @@ void Loja::listarProdutos() const
                 << "|" << centro(ossCusto.str(), wCusto)
                 << "|" << centro(ossVenda.str(), wVenda)
                 << "|" << endl;
-        }
     }
+}
     cout << std::string(MARGEM) << string(wId, '=') << "+" << string(wNome, '=') << "+" << string(wQtd, '=') << "+" << string(wCusto, '=') << "+" << string(wVenda, '=') << "+" << endl;
 }
 
@@ -411,17 +411,17 @@ void Loja::efetuarVenda(int idCliente)
     Cliente* clienteEncontrado = nullptr;
     while (true) {
         clienteEncontrado = nullptr;
-        for (auto& c : clientes)
+    for (auto& c : clientes)
+    {
+        if (c.getIdCliente() == idCliente)
         {
-            if (c.getIdCliente() == idCliente)
-            {
-                clienteEncontrado = &c;
-                break;
-            }
+            clienteEncontrado = &c;
+            break;
         }
+    }
         if (!clienteEncontrado) {
             if (!confirmarAcao("Cliente nao encontrado. Deseja tentar outro ID?")) {
-                return;
+        return;
             }
             idCliente = lernumero(std::string(MARGEM) + "ID do cliente: ");
             continue;
@@ -466,14 +466,14 @@ void Loja::efetuarVenda(int idCliente)
                 produtoSelecionado = nullptr;
                 for (auto& p : produtos) {
                     if (p.getId() == idProduto) {
-                        produtoSelecionado = &p;
-                        break;
-                    }
-                }
+                produtoSelecionado = &p;
+                break;
+            }
+        }
                 if (!produtoSelecionado) {
                     cout << RED << "Produto inexistente." << RESET << endl;
-                    continue;
-                }
+            continue;
+        }
                 if (produtoSelecionado->getQuantidade() == 0) {
                     cout << RED << "Produto sem estoque. Escolha outro produto ou digite 0 para desistir." << RESET << endl;
                     continue;
@@ -506,7 +506,7 @@ void Loja::efetuarVenda(int idCliente)
         adicionouProduto = true;
         while (true) {
             cout << std::string(MARGEM) << "Adicionar mais produtos? (s/n): ";
-            cin >> mais;
+        cin >> mais;
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
             if (mais == 's' || mais == 'S' || mais == 'n' || mais == 'N') {
                 break;
@@ -609,7 +609,7 @@ void Loja::efetuarVenda(int idCliente)
                 primeiraTentativa = false;
             }
             try {
-                novaVenda.finalizarVenda(valorEntregue);
+    novaVenda.finalizarVenda(valorEntregue);
                 valorValido = true;
             } catch (const std::invalid_argument& e) {
                 cout << endl << RED << "Erro: " << e.what() << RESET << endl;
@@ -757,7 +757,7 @@ bool Loja::salvarProdutos(const string& caminho) {
     if (!arquivo.is_open()) {
         return false;
     }
-    
+
     for (const auto& produto : produtos) {
         arquivo << produto.getId() << ";"
             << produto.getNome() << ";"
@@ -824,7 +824,7 @@ bool Loja::carregarProdutos(const string& caminho) {
     if (!arquivo.is_open()) {
         return false;
     }
-    
+
     produtos.clear();
     string linha;
     
@@ -921,7 +921,7 @@ bool Loja::carregarVendas(const string& caminho) {
                 double total = stod(totalStr);
                 double troco = stod(trocoStr);
 
-                                Venda venda(idCliente);
+                Venda venda(idCliente);
                 venda.finalizarVenda(total + troco);
 
                 vector<string> itensVenda;
@@ -1000,7 +1000,7 @@ void Loja::listarHistoricoVendas() const {
         }
         numFatura++;
         cout << string(4, ' ') << string(larguraTabela - 2, '-') << endl;
-    }
+        }
     if (!encontrouVendas) {
         cout << string(4, ' ') << "|" << centro("Nenhuma venda registrada.", larguraTabela - 2) << "|" << endl;
     }
@@ -1179,7 +1179,7 @@ void Loja::relatorioGraficoVendas() const {
         if (qtd > maxQtd) {
             maxQtd = qtd;
             maisVendido = produto;
-        }
+    }
         if (qtd < minQtd) {
             minQtd = qtd;
             menosVendido = produto;
@@ -1215,7 +1215,7 @@ void Loja::relatorioGraficoVendas() const {
     cout << string(4, ' ') << string(58, '=') << endl;
 
     cout << string(4, ' ') << "+" << string(largura - 2, '=') << "+" << endl;
-}
+    }
 
 
 void Loja::relatorioVendasDetalhadoPorProduto() const {

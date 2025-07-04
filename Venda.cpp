@@ -203,12 +203,12 @@ void Venda::imprimirTalao() const {
     linhaBranca('-');
 
     double total = getValorTotal();
-    double semIVA = total / 1.23;
-    double iva = total - semIVA;
+        double semIVA = total / 1.23;
+        double iva = total - semIVA;
 
     // Função para alinhar totais igual à linha do item, sem pipes intermediários
     auto linhaTotalSemPipes = [&](const string& label, double valor) {
-        ostringstream oss;
+            ostringstream oss;
         oss << left << setw(2) << ""; // espaço do número
         oss << left << setw(20) << label;
         oss << left << setw(3) << ""; // espaço da quantidade

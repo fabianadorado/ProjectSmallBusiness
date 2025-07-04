@@ -49,17 +49,17 @@ int Menu::menuGerirClientes() {
     return mostrarMenu("GERIR CLIENTES", opcoes);
 }
 
-int Menu::menuRelatorios() {
-    system("cls");
-    vector< string> opcoes = {
-        "Relatorio de Stock",
-        "Vendas por Produto",
-        "Total de Vendas",
-        "Grafico de Vendas",
-        "Historico de Vendas",
-        "Vendas por Produto Detalhado",
-        "Voltar ao Menu Principal"
-    };
-    return mostrarMenu("RELATORIOS", opcoes);
-}
+    int Menu::menuRelatorios() {
+        system("cls");
+        vector< string> opcoes = {
+            "Relatorio de Stock",
+            "Vendas por Produto",
+            "Total de Vendas",
+            "Grafico de Vendas",
+            "Historico de Vendas",
+            "Vendas por Produto Detalhado",
+            "Voltar ao Menu Principal"
+        };
+        return mostrarMenu("RELATORIOS", opcoes);
+    }
 

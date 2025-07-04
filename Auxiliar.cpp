@@ -40,7 +40,7 @@ int lernumero(const string& mensagem) {
         if (iss >> valor && valor > 0) {
             char extra;
             if (!(iss >> extra)) {
-                return valor;
+            return valor;
             }
         }
         primeiraTentativa = false;
@@ -48,22 +48,22 @@ int lernumero(const string& mensagem) {
 }
 
 double lerFloatPositivo(const string& mensagem) {
-    double valor;
-    while (true) {
-        cout << mensagem;
-        string input;
-        getline(cin, input);
-        replace(input.begin(), input.end(), ',', '.');
-        istringstream iss(input);
-        if (iss >> valor && valor >= 0.0f) {
-            char extra;
+       double valor;
+        while (true) {
+            cout << mensagem;
+            string input;
+            getline(cin, input);
+            replace(input.begin(), input.end(), ',', '.');
+            istringstream iss(input);
+            if (iss >> valor && valor >= 0.0f) {
+                char extra;
             if (!(iss >> extra)) {
-                return valor;
+                    return valor;
+                }
             }
+                cout << "\033[31mEntrada inválida. Digite um número válido (>= 0).\033[0m\n";
         }
-        cout << "\033[31mEntrada inválida. Digite um número válido (>= 0).\033[0m\n";
-    }
-}
+ }
 
 string toLower(const string& str) {
     string resultado = str;
