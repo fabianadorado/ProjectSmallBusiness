@@ -8,15 +8,20 @@ using namespace std;
 
 #define RESET   "\033[0m"
 #define CYAN    "\033[36m"
-#define GREEN   "\033[32m"
+#define GREEN   "\033[38;5;22m"
 #define BOLD    "\033[1m"
-#define YELLOW  "\033[33m"
+#define YELLOW  "\033[38;5;3m"
+#define BG_BLUE   "\033[44m"
+#define FG_MAGENTA "\033[35m"
+#define FG_BRIGHT_GRAY "\033[37m"
+#define FG_BRIGHT_WHITE "\033[97m"
 
 
 int Menu::menuPrincipal() {
     system("cls");
     preencherTela(BG_BLUE, FG_GRAY_MEDIUM);
-    vector< string> opcoes = {
+    desenharNALATA();
+       vector< string> opcoes = {
         "Efetuar Vendas",
         "Gerir Produtos",
         "Gerir Clientes",
@@ -29,6 +34,7 @@ int Menu::menuPrincipal() {
 int Menu::menuGerirProdutos() {
     system("cls");
     preencherTela(BG_BLUE, FG_GRAY_MEDIUM);
+    desenharNALATA();
     vector< string> opcoes = {
         "Criar Produto",
         "Adicionar Stock",
@@ -42,6 +48,7 @@ int Menu::menuGerirProdutos() {
 int Menu::menuGerirClientes() {
     system("cls");
     preencherTela(BG_BLUE, FG_GRAY_MEDIUM);
+    desenharNALATA();
     vector< string> opcoes = {
         "Criar Cliente",
         "Eliminar Cliente",
@@ -55,6 +62,7 @@ int Menu::menuGerirClientes() {
 int Menu::menuRelatorios() {
     system("cls");
     preencherTela(BG_BLUE, FG_GRAY_MEDIUM);
+    desenharNALATA();
     vector< string> opcoes = {
         "Relatorio de Stock",
         "Vendas por Produto",

@@ -1,0 +1,26 @@
+==============================
+DETALHAMENTO LINHA A LINHA E FUNÇÕES DE BIBLIOTECA: CLASSE AUXILIAR
+==============================
+
+Resumo: As funções Auxiliar fornecem utilidades para entrada, validação, formatação e exibição de dados, centralizando operações comuns usadas em todo o sistema.
+
+Arquivo: Auxiliar.h / Auxiliar.cpp
+
+------------------------------
+// Observação importante sobre MARGEM
+------------------------------
+A constante global `MARGEM` (quatro espaços) é definida em `Auxiliar.cpp` e declarada em `Auxiliar.h`:
+```cpp
+// Auxiliar.cpp
+const std::string MARGEM = "    ";
+// Auxiliar.h
+extern const std::string MARGEM;
+```
+Ela deve ser usada em todo o projeto para garantir padronização de recuo e alinhamento visual. Não é necessário (nem recomendado) definir `MARGEM` localmente em outros arquivos. Basta incluir `#include "Auxiliar.h"` e usar diretamente `MARGEM`.
+
+Exemplo real após padronização:
+```cpp
+cout << BG_GRAY << FG_BLACK << MARGEM << "Pressione Enter para voltar..." << RESET << endl;
+novaVenda.imprimirTalao(MARGEM);
+```
+------------------------------ 

@@ -37,7 +37,6 @@ int main() {
         case 1:
         { // Efetuar Vendas
             system("cls");
-            cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             loja.efetuarVenda();
             system("cls");
             break;
@@ -57,9 +56,8 @@ int main() {
                     do {
                         system("cls");
                         preencherTela(BG_GRAY, FG_BLUE);
-                        cout << BG_GRAY << FG_BLUE << std::string(MARGEM) << "REGISTO DE PRODUTO" << RESET << endl << endl;
+                        cout << BG_GRAY << FG_BLUE << std::string(MARGEM) << "REGISTO DE PRODUTO" << RESET << endl;
                         cin.clear();
-                        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                         string nome;
                         int quantidade;
                         double preco;
@@ -113,10 +111,10 @@ int main() {
                                 string inputPreco;
                                 getline(cin, inputPreco);
                                 cout << RESET;
-                                if (!inputPreco.empty()) {
-                                    // Troca vírgula por ponto
-                                    replace(inputPreco.begin(), inputPreco.end(), ',', '.');
-                                    istringstream iss(inputPreco);
+                                                            if (!inputPreco.empty()) {
+                                // Normaliza entrada decimal
+                                inputPreco = normalizarDecimal(inputPreco);
+                                istringstream iss(inputPreco);
                                     double novoPreco;
                                     if ((iss >> novoPreco) && novoPreco >= 0.0) {
                                         char extra;
@@ -161,8 +159,8 @@ int main() {
                             string input;
                             getline(cin, input);
                             cout << RESET;
-                            // Troca vírgula por ponto
-                            replace(input.begin(), input.end(), ',', '.');
+                            // Normaliza entrada decimal
+                            input = normalizarDecimal(input);
                             istringstream iss(input);
                             if ((iss >> preco) && preco >= 0.0) {
                                 char extra;
@@ -173,7 +171,7 @@ int main() {
                         
                         loja.criarProduto(nome, quantidade, preco);
                         cout << BG_GRAY << std::string(MARGEM) << GREEN << "Produto registado com sucesso!" << RESET << endl;
-                    } while (desejaContinuar("Deseja adicionar outro produto?"));
+                    } while (confirmarAcao("Deseja adicionar outro produto?"));
                     break;
                 }
                 case 2:
@@ -186,7 +184,6 @@ int main() {
                         preencherTela(BG_GRAY, FG_BLUE);
                         loja.listarProdutos();
                         cin.clear();
-                        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                         int id;
                         bool primeiraTentativaId = true;
                         while (true) {
@@ -215,7 +212,7 @@ int main() {
                         bool primeiraTentativa = true;
                         while (true) {
                             if (!primeiraTentativa) {
-                                cout << BG_GRAY << RED << "Entrada invalida. Digite um numero inteiro maior que 0." << RESET << endl;
+                                cout << BG_GRAY << RED << std::string(MARGEM) << "Entrada invalida. Digite um numero inteiro maior que 0." << RESET << endl;
                             }
                             cout << BG_GRAY << FG_BLUE << std::string(MARGEM) << "Quantidade a adicionar: " << BG_GRAY << flush;
                             string input;
@@ -226,7 +223,7 @@ int main() {
                             primeiraTentativa = false;
                         }
                         loja.adicionarStock(id, qtd);
-                    } while (desejaContinuar("Deseja adicionar estoque para outro produto?"));
+                    } while (confirmarAcao("Deseja adicionar estoque para outro produto?"));
                     break;
                 }
                 case 3:
@@ -239,30 +236,22 @@ int main() {
                         preencherTela(BG_GRAY, FG_BLUE);
                         loja.listarProdutos();
                         cin.clear();
-                        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                         int id;
                         bool primeiraTentativaId = true;
                         while (true) {
                             if (!primeiraTentativaId) {
                                 cout << BG_GRAY << RED << std::string(MARGEM) << "ID invalido. Escolha um ID da lista acima." << RESET << endl;
                             }
-                            cout << BG_GRAY << FG_BLUE << std::string(MARGEM) << "ID do Produto a eliminar: " << BG_GRAY << flush;
-                            string input;
-                            getline(cin, input);
-                            cout << RESET;
-                            cout << endl;
-                            istringstream iss(input);
-                            if ((iss >> id) && id > 0) {
-                                // Verifica se o ID existe na lista de produtos
-                                bool existe = false;
-                                for (const auto& p : loja.getProdutos()) {
-                                    if (p.getId() == id) {
-                                        existe = true;
-                                        break;
-                                    }
+                            id = lerIDPositivo(std::string(BG_GRAY) + std::string(FG_BLUE) + std::string(MARGEM) + "ID do Produto a eliminar: ");
+                            // Verifica se o ID existe na lista de produtos
+                            bool existe = false;
+                            for (const auto& p : loja.getProdutos()) {
+                                if (p.getId() == id) {
+                                    existe = true;
+                                    break;
                                 }
-                                if (existe) break;
                             }
+                            if (existe) break;
                             primeiraTentativaId = false;
                         }
                         // Confirmação antes de eliminar
@@ -291,7 +280,7 @@ int main() {
                         } else {
                             cout << BG_GRAY << YELLOW << std::string(MARGEM) << "Operacao cancelada pelo usuario." << RESET << endl;
                         }
-                    } while (desejaContinuar(std::string(BG_GRAY) + FG_BLUE + "Deseja eliminar outro produto? (s/n): " + BG_GRAY));
+                    } while (confirmarAcao("Deseja eliminar outro produto?"));
                     break;
                 }
                 case 4:
@@ -300,7 +289,6 @@ int main() {
                     preencherTela(BG_GRAY, FG_BLUE);
                     loja.listarProdutos();
                     cout << BG_GRAY << FG_BLUE << std::string(MARGEM) << "Pressione Enter para voltar..." << RESET;
-                    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                     cin.get();
                     break;
                 }
@@ -328,9 +316,8 @@ int main() {
                     do {
                         system("cls");
                         preencherTela(BG_GRAY, FG_BLUE);
-                        cout << BG_GRAY << FG_BLUE << std::string(MARGEM) << "REGISTO DE CLIENTE" << RESET << endl << endl;
+                        cout << BG_GRAY << FG_BLUE << std::string(MARGEM) << "REGISTO DE CLIENTE" << RESET << endl;
                         cin.clear();
-                        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                         string nome, tel, morada, dataNasc;
                         while (true) {
                             cout << BG_GRAY << FG_BLUE << std::string(MARGEM) << "Nome: " << BG_GRAY << flush;
@@ -380,7 +367,7 @@ int main() {
                         loja.criarCliente(nome, tel, morada, dataNasc);
 
                         cout << BG_GRAY << std::string(MARGEM) << GREEN << "Cliente registado com sucesso!" << RESET << endl;
-                    } while (desejaContinuar(std::string(BG_GRAY) + FG_BLUE + "Deseja registar outro cliente?" + BG_GRAY));
+                    } while (confirmarAcao("Deseja registar outro cliente?"));
                     break;
                 }
                 case 2:
@@ -393,7 +380,6 @@ int main() {
                         preencherTela(BG_GRAY, FG_BLUE);
                         loja.listarClientes();
                         cin.clear();
-                        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                         int id;
                         while (true) {
                             cout << BG_GRAY << FG_BLUE << std::string(MARGEM) << "ID do Cliente a remover: " << BG_GRAY << flush;
@@ -408,7 +394,7 @@ int main() {
                             cout << BG_GRAY << RED << std::string(MARGEM) << "Entrada invalida. Digite um numero inteiro maior que 0." << RESET << endl;
                         }
                         loja.eliminarCliente(id);
-                    } while (desejaContinuar("Deseja remover outro cliente?"));
+                    } while (confirmarAcao("Deseja remover outro cliente?"));
                     break;
                 }
                 case 3:
@@ -417,7 +403,6 @@ int main() {
                     preencherTela(BG_GRAY, FG_BLUE);
                     loja.listarClientes();
                     cout << BG_GRAY << FG_BLUE << std::string(MARGEM) << "Pressione Enter para voltar..." << RESET;
-                    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                     cin.get();
                     break;
                 }
@@ -430,7 +415,6 @@ int main() {
                         loja.listarClientes();
                         cout << endl;
                         cin.clear();
-                        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                         int id;
                         while (true) {
                             cout << BG_GRAY << FG_BLUE << std::string(MARGEM) << "ID do Cliente: " << BG_GRAY << flush;
@@ -449,7 +433,7 @@ int main() {
                         cout << RESET;
                         novoNome = toUpper(novoNome);
                         loja.alterarNomeCliente(id, novoNome);
-                    } while (desejaContinuar(BG_GRAY + std::string(FG_BLUE) + "Deseja alterar outro cliente?" + BG_GRAY));
+                    } while (confirmarAcao("Deseja alterar outro cliente?"));
                     break;
                 }
                 case 5: // Voltar ao Menu Principal
@@ -473,6 +457,8 @@ int main() {
                 case 1: // Relatório de Stock
                     system("cls");
                     loja.relatorioStock();
+                    cout << BG_GRAY << FG_BLUE << std::string(MARGEM) << "Pressione Enter para voltar..." << RESET;
+                    cin.get();
                     break;
                 case 2:
                 { // Vendas por Produto
@@ -490,24 +476,32 @@ int main() {
                         if (!encontrou) {
                             cout << BG_GRAY << FG_BLUE << std::string(MARGEM) << "Nenhuma venda encontrada para este produto." << RESET << endl;
                         }
-                    } while (desejaContinuar("Deseja ver o relatorio de outro produto?"));
+                    } while (confirmarAcao("Deseja ver o relatorio de outro produto?"));
                     break;
                 }
                 case 3: // Total de Vendas
                     system("cls");
                     loja.relatorioTotalVendas();
+                    cout << BG_GRAY << FG_BLUE << std::string(MARGEM) << "Pressione Enter para voltar..." << RESET;
+                    cin.get();
                     break;
                 case 4: // Gráfico de Vendas
                     system("cls");
                     loja.relatorioGraficoVendas();
+                    cout << BG_GRAY << FG_BLUE << std::string(MARGEM) << "Pressione Enter para voltar..." << RESET;
+                    cin.get();
                     break;
                 case 5: // Histórico de Vendas
                     system("cls");
                     loja.listarHistoricoVendas();
+                    cout << BG_GRAY << FG_BLUE << std::string(MARGEM) << "Pressione Enter para voltar..." << RESET;
+                    cin.get();
                     break;
                 case 6: // Vendas Detalhadas
                     system("cls");
                     loja.relatorioVendasDetalhadoPorProduto();
+                    cout << BG_GRAY << FG_BLUE << std::string(MARGEM) << "Pressione Enter para voltar..." << RESET;
+                    cin.get();
                     break;
                 case 7: // Voltar ao Menu Principal
                     break;

@@ -218,7 +218,7 @@ Arquivo: Cliente.h / Cliente.cpp
 #pragma once
 #include <iostream>      // Exibe informações do cliente
 #include <string>        // Manipula nome, telefone, morada
-#include <sstream>       // Formatação de strings
+#include <sstream>       // Formatação
 #include <vector>        // Lista de ids disponíveis
 
 using namespace std;
@@ -1083,176 +1083,126 @@ Comentários Didáticos:
 - O uso de `carregarDados()` e `salvarDados()` garante persistência entre execuções.
 
 ------------------------------
-CORES E MACROS DE FORMATAÇÃO
+ATUALIZAÇÕES RECENTES DE UX, ENTRADA E VISUAL (2024)
+==============================
+
+Resumo: Esta seção documenta as principais melhorias feitas no sistema para garantir uma experiência de uso mais fluida, visualmente consistente e robusta na entrada de dados. Todas as mudanças seguem o padrão de explicação e exemplos reais do código.
+
+------------------------------
+ENTRADA DE DADOS E VALIDAÇÃO
 ------------------------------
 
-**Macros utilizadas:**
-- BG_GRAY, FG_BLACK, FUNDO_BRANCO, TEXTO_PRETO, BG_BLUE, FG_BRIGHT_GRAY, FG_BLUE, FG_GRAY_MEDIUM, RESET, RED, GREEN, YELLOW, CYAN, BOLD
+**Explicação:**
+- Todos os fluxos de entrada agora usam `getline` para leitura, evitando problemas de buffer e garantindo que apenas um Enter seja necessário por ação.
+- A função `lerIDPositivo` foi padronizada para aceitar apenas números positivos, exibindo o campo de entrada com fundo cinza (`BG_GRAY`) e texto azul (`FG_BLUE`). O texto digitado pelo usuário também aparece em azul sobre fundo cinza.
+- Mensagens de erro usam texto vermelho (`RED`) sobre fundo cinza.
+- Remoção de todos os `cin.ignore` desnecessários, eliminando enters extras em cadastros, alterações, remoções e relatórios.
 
-**Exemplo de uso:**
+**Exemplo real do programa:**
 ```cpp
-cout << BG_GRAY << FG_BLACK << "Texto com fundo cinza e texto preto" << RESET << endl;
-cout << FUNDO_BRANCO << TEXTO_PRETO << "Talão" << RESET << endl;
+std::cout << mensagem << BG_GRAY << FG_BLUE << flush;
+std::getline(std::cin, input);
+std::cout << RESET;
+bool soDigitos = !input.empty() && std::all_of(input.begin(), input.end(), ::isdigit);
+if (soDigitos) {
+    int id = std::stoi(input);
+    if (id > 0) return id;
+}
+std::cout << BG_GRAY << RED << MARGEM << "ID inválido. " << RESET << std::endl;
 ```
 
-**Resumo:**
-Macros de cor são usadas para personalizar a aparência do terminal, destacando áreas importantes como talão, tabelas, mensagens de erro e prompts.
-
-**Comentários Didáticos:**
-- O uso de macros facilita a manutenção e padronização visual do sistema.
-- RESET deve ser usado após cada linha colorida para evitar "vazamento" de cor.
-
 ------------------------------
-FUNÇÕES AUXILIARES DE COR E LAYOUT
+MENUS E NAVEGAÇÃO
 ------------------------------
 
-**Funções principais:**
-- preencherTela(bgColor, fgColor, linhas, colunas): Preenche a tela com cor.
-- imprimirLinhaInterna, imprimirLinhaHorizontalBranca, imprimirLinhaTabela, imprimirTituloCentralizado: Funções para impressão de linhas/tabelas com cor e alinhamento.
-- desenharLinhaHorizontal, desenharLinhaHorizontalVenda, desenharCaixaTitulo: Desenho de linhas e caixas com cor.
+**Explicação:**
+- A função `mostrarMenu` agora lê a opção do menu usando `getline` e converte para inteiro, evitando loops infinitos e aceitando apenas números válidos.
+- Se o usuário digitar uma letra ou valor inválido, retorna -1 e exibe "Opção inválida!" sem travar o menu.
+- Todos os menus (principal, produtos, clientes, relatórios) seguem o mesmo padrão de cor e navegação.
+
+**Exemplo real do programa:**
+```cpp
+int opcao = 0;
+std::string input;
+std::getline(std::cin, input);
+std::istringstream iss(input);
+if (!(iss >> opcao)) {
+    opcao = -1; // Valor impossível para forçar erro
+}
+```
+
+------------------------------
+CONSISTÊNCIA VISUAL E UX
+------------------------------
+
+**Explicação:**
+- Todos os prompts de entrada (ID, nome, telefone, etc.) usam fundo cinza (`BG_GRAY`) e texto azul (`FG_BLUE`), inclusive o campo de digitação do usuário.
+- Mensagens de erro usam texto vermelho (`RED`) sobre fundo cinza.
+- Não há mais enters extras entre tabelas e prompts (ex: "ID do Produto:", "ID do Cliente:").
+- Após relatórios e listagens, só um Enter é necessário para voltar ao menu, usando apenas `cin.get()`.
+- Todos os relatórios agora exibem "Pressione Enter para voltar..." e usam apenas um `cin.get()` para retornar ao menu.
+
+**Exemplo real do programa:**
+```cpp
+cout << BG_GRAY << FG_BLUE << std::string(MARGEM) << "Pressione Enter para voltar..." << RESET;
+cin.get();
+```
+
+------------------------------
+FLUXOS DE CONFIRMAÇÃO E VALIDAÇÃO DE ID
+------------------------------
+
+**Explicação:**
+- Ao digitar um ID inexistente (cliente/produto), o sistema pergunta se deseja tentar novamente (s/n). Se "n", retorna ao menu anterior.
+- Confirmações de remoção e alteração seguem o mesmo padrão visual e de navegação.
+
+**Exemplo real do programa:**
+```cpp
+if (!clienteEncontrado) {
+    cout << BG_GRAY << RED << std::string(MARGEM) << "ID inválido. Digite apenas números de um cliente existente." << RESET << endl;
+    string resposta;
+    while (true) {
+        cout << BG_GRAY << FG_BLUE << std::string(MARGEM) << "Deseja tentar novamente? (s/n): ";
+        getline(cin, resposta);
+        if (!resposta.empty() && (resposta[0] == 's' || resposta[0] == 'S')) {
+            // Tenta novamente
+            break;
+        } else if (!resposta.empty() && (resposta[0] == 'n' || resposta[0] == 'N')) {
+            // Cancela operação
+            return;
+        }
+    }
+}
+```
+
+------------------------------
+MACROS DE COR E PADRÃO VISUAL
+------------------------------
+
+**Explicação:**
+- Macros de cor padronizadas: `BG_GRAY`, `FG_BLUE`, `FG_BLACK`, `BG_BLUE`, `RESET`, `RED`, `GREEN`, `YELLOW`, `CYAN`, `BOLD`, `FG_BRIGHT_GRAY`, `FG_BRIGHT_WHITE`.
+- Menus: fundo azul, texto cinza/azul.
+- Prompts e tabelas: fundo cinza, texto azul.
+- Mensagens de erro: texto vermelho sobre cinza.
+- Talão/recibo: fundo branco, texto preto.
+
+**Exemplo real do programa:**
+```cpp
+cout << BG_GRAY << FG_BLUE << std::string(MARGEM) << "ID do cliente: " << BG_GRAY << FG_BLUE << flush;
+```
+
+------------------------------
+FUNÇÕES AUXILIARES E LAYOUT
+------------------------------
+
+**Explicação:**
+- Funções como `preencherTela`, `imprimirLinhaInterna`, `imprimirTituloCentralizado`, `centro`, `alinhar`, `repetir` continuam centralizando a lógica de layout e cor.
+- ASCII art e banners sempre centralizados e exibidos acima dos menus.
 
 **Exemplo real do programa:**
 ```cpp
 preencherTela(BG_GRAY, FG_BLUE, 40, 120);
 ```
-**Detalhamento:**
-- `preencherTela`: Função que imprime linhas preenchendo toda a tela com a cor de fundo e texto especificadas.
-- `BG_GRAY`: Cor de fundo cinza.
-- `FG_BLUE`: Cor do texto azul.
-- `40, 120`: Quantidade de linhas e colunas a preencher.
-
-**Resumo:**
-Essas funções centralizam a lógica de layout e cor, facilitando a criação de telas e tabelas padronizadas.
-
-**Comentários Didáticos:**
-- Separar lógica de cor/layout em funções auxiliares evita repetição e facilita ajustes visuais.
-
-------------------------------
-FUNÇÕES DE FORMATAÇÃO E ALINHAMENTO
-------------------------------
-
-**Funções principais:**
-- centro, centroExato, alinhar, repetir: Centralizam, alinham e repetem strings para formatação de tabelas e textos.
-
-**Exemplo real do programa:**
-```cpp
-cout << centro("TALAO DE COMPRA", 60) << endl;
-```
-**Detalhamento:**
-- `centro`: Função que centraliza o texto em uma largura fixa.
-- `"TALAO DE COMPRA"`: Texto a ser centralizado.
-- `60`: Largura total da linha.
-
-**Resumo:**
-Permitem criar tabelas e relatórios visualmente organizados.
-
-**Comentários Didáticos:**
-- Centralizar e alinhar textos melhora a legibilidade das tabelas e relatórios.
-
-------------------------------
-FUNÇÕES DE ENTRADA E VALIDAÇÃO
-------------------------------
-
-**Funções principais:**
-- lernumero, lerFloatPositivo, lerTelefone, formatarTelefone, confirmarAcao, desejaContinuar
-
-**Exemplo real do programa:**
-```cpp
-int id = lernumero("Digite o ID do produto: ");
-```
-**Detalhamento:**
-- `lernumero`: Função que exibe a mensagem e lê um número inteiro válido do usuário.
-- `"Digite o ID do produto: "`: Mensagem exibida ao usuário.
-- O valor digitado é validado antes de ser retornado.
-
-**Resumo:**
-Centralizam a lógica de entrada e validação, tornando o código principal mais limpo.
-
-**Comentários Didáticos:**
-- Funções de validação evitam erros de entrada e melhoram a experiência do usuário.
-
-------------------------------
-UTILITÁRIOS DE ARQUIVO E BUSCA
-------------------------------
-
-**Funções principais:**
-- arquivoExiste, criarDiretorioSeNaoExistir, encontrarProdutoPorNome, encontrarClientePorNome, trim, normalizarNomeProduto, removerPontuacao
-
-**Exemplo real do programa:**
-```cpp
-if (arquivoExiste("produtos.txt")) {
-    // Carrega produtos do arquivo
-}
-```
-**Detalhamento:**
-- `arquivoExiste`: Função que verifica se o arquivo existe no sistema.
-- `"produtos.txt"`: Nome do arquivo a ser verificado.
-- O bloco só é executado se o arquivo existir.
-
-**Resumo:**
-Facilitam operações comuns de arquivo e busca, centralizando lógica recorrente.
-
-**Comentários Didáticos:**
-- Centralizar utilidades reduz bugs e facilita manutenção.
-
-------------------------------
-PADRÕES DE UX E FLUXOS VISUAIS
-------------------------------
-
-**Principais padrões:**
-- Margem colorida à esquerda do talão (BG_GRAY)
-- Mensagem de retorno com fundo cinza
-- Tabelas e relatórios com cabeçalhos coloridos
-- Mensagens de erro coloridas
-- Confirmação de ações com prompts customizados
-
-**Exemplo real do programa:**
-```cpp
-cout << BG_GRAY << FG_BLACK << MARGEM << FUNDO_BRANCO << TEXTO_PRETO << linhaTalão << RESET << std::endl;
-```
-**Detalhamento:**
-- `BG_GRAY << FG_BLACK << MARGEM`: Imprime a margem à esquerda do talão com fundo cinza.
-- `FUNDO_BRANCO << TEXTO_PRETO << linhaTalão`: Imprime o conteúdo do talão com fundo branco e texto preto.
-- `RESET`: Restaura as cores padrão após cada linha.
-
-**Resumo:**
-Esses padrões garantem uma experiência visual consistente e profissional.
-
-**Comentários Didáticos:**
-- O uso de cor e margem melhora a usabilidade e o aspecto visual do sistema.
-
-------------------------------
-ESTRUTURAS E MÉTODOS NÃO DETALHADOS
-------------------------------
-
-**Exemplo real do programa:**
-```cpp
-struct ItemVenda {
-    int numeroLinha;
-    string nomeProduto;
-    int quantidade;
-    double precoUnitario;
-    double precoSemIVA;
-    double iva;
-    double totalComIVA;
-    double precoCusto;
-};
-```
-**Detalhamento:**
-- `numeroLinha`: Número da linha do item no talão.
-- `nomeProduto`: Nome do produto vendido.
-- `quantidade`: Quantidade vendida.
-- `precoUnitario`: Preço unitário do produto.
-- `precoSemIVA`: Preço sem imposto.
-- `iva`: Valor do imposto.
-- `totalComIVA`: Total do item com imposto.
-- `precoCusto`: Preço de custo do produto.
-
-**Resumo:**
-Essas estruturas e métodos complementam as funcionalidades principais, permitindo controle detalhado de vendas, estoque e relatórios.
-
-**Comentários Didáticos:**
-- Documentar todas as estruturas e métodos facilita o entendimento e a evolução do sistema.
 
 FIM DO DOCUMENTO
 ------------------------------ 

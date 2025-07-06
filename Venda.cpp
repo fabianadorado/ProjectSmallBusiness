@@ -68,7 +68,7 @@ void Venda::adicionarItem(const string& nomeProduto, int quantidade, double prec
     {
         throw invalid_argument("Preco unitario nao pode ser negativo");
     }
-    int linha = itens.size() + 1;
+    int linha = static_cast<int>(itens.size()) + 1;
     ItemVenda item(linha, nomeProduto, quantidade, precoUnit, precoCusto);
     itens.push_back(item);
 }
@@ -249,7 +249,7 @@ void Venda::removerItemPorLinha(int numeroLinha) {
     itens.erase(it);
     // Atualiza os numeros das linhas restantes
     for (size_t i = 0; i < itens.size(); ++i) {
-        itens[i].numeroLinha = i + 1;
+        itens[i].numeroLinha = static_cast<int>(i) + 1;
     }
     std::cout << MARGEM << "Item removido.\n";
 }

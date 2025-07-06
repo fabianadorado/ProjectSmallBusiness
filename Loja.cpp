@@ -31,102 +31,7 @@ void Loja::criarProduto(const string& nome, int quantidade, double precoCusto)
     proximoIdProduto++;
 }
 
-void Loja::criarProduto() 
-{
-    system("cls");
-    cout << "CRIAR PRODUTO\n\n";
-    string nome;
-    int quantidade;
-    double preco;
-    while (true) {
-        cout << "Nome do produto: ";
-        getline(cin, nome);
-        cout << endl;
-        nome = toUpper(nome);
-        if (!nome.empty() && nome.find_first_not_of(' ') != string::npos) {
-            break;
-        }
-        cout << "Nome do produto nao pode ser vazio!" << endl;
-    }
-
-    // Verifica se o produto já existe
-    Produto* existente = encontrarProdutoPorNome(nome, produtos);
-    if (existente != nullptr) {
-        cout << BG_GRAY << YELLOW << std::string(MARGEM) << "Produto ja existe." << RESET << endl;
-        cout << BG_GRAY << std::string(MARGEM) << "Quantidade atual: " << existente->getQuantidade() << RESET << endl;
-        cout << BG_GRAY << std::string(MARGEM) << "Preco de custo atual: " << fixed << setprecision(2) << existente->getPrecoCusto() << RESET << endl;
-        cout << BG_GRAY << FG_BLUE << std::string(MARGEM) << "Deseja atualizar a quantidade e o preco de custo? (s/n): ";
-        char opcao;
-        while (true) {
-            cin >> opcao;
-            cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            opcao = toupper(opcao);
-            if (opcao == 'S' || opcao == 'N') break;
-            cout << BG_GRAY << RED << std::string(MARGEM) << "Entrada invalida. Digite 's' para sim ou 'n' para nao." << RESET << endl;
-        }
-        if (opcao == 'S') {
-            int qnt;
-            cout << BG_GRAY << FG_BLUE << std::string(MARGEM) << "Quantidade a adicionar: ";
-            bool primeiraTentativaQuantidade = true;
-            while (true) {
-                if (!primeiraTentativaQuantidade) {
-                    cout << BG_GRAY << RED << std::string(MARGEM) << "Entrada invalida. Digite um numero inteiro maior que 0." << RESET << endl;
-                }
-                string input;
-                getline(cin, input);
-                istringstream iss(input);
-                if ((iss >> qnt) && qnt > 0) break;
-                primeiraTentativaQuantidade = false;
-            }
-            cout << RESET;
-            existente->adicionarStock(qnt);
-
-            // Pedir novo preço de custo (opcional)
-            cout << BG_GRAY << FG_BLUE << std::string(MARGEM) << "Novo preco de custo (pressione Enter para manter o atual): ";
-            string inputPreco;
-            getline(cin, inputPreco);
-            if (!inputPreco.empty()) {
-                // Troca vírgula por ponto
-                replace(inputPreco.begin(), inputPreco.end(), ',', '.');
-                istringstream iss(inputPreco);
-                double novoPreco;
-                if ((iss >> novoPreco) && novoPreco >= 0.0) {
-                    char extra;
-                    if (!(iss >> extra)) {
-                        existente->setPrecoCusto(novoPreco);
-                        cout << BG_GRAY << GREEN << std::string(MARGEM) << "Preco de custo atualizado com sucesso!" << RESET << endl;
-                    } else {
-                        cout << BG_GRAY << RED << std::string(MARGEM) << "Valor invalido. Preco de custo mantido." << RESET << endl;
-                    }
-                } else {
-                    cout << BG_GRAY << RED << std::string(MARGEM) << "Valor invalido. Preco de custo mantido." << RESET << endl;
-                }
-            }
-        } else {
-            cout << BG_GRAY << RED << std::string(MARGEM) << "Operacao cancelada." << RESET << endl;
-        }
-        return;
-    }
-
-    // Se o produto não existir, continua o cadastro normal
-    bool primeiraTentativaQuantidade = true;
-    while (true) {
-        if (!primeiraTentativaQuantidade) {
-            cout << BG_GRAY << RED << std::string(MARGEM) << "Entrada invalida. Digite um numero inteiro maior que 0." << RESET << endl;
-        }
-        cout << BG_GRAY << FG_BLUE << std::string(MARGEM) << "Quantidade: ";
-        string input;
-        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        getline(cin, input);
-        istringstream iss(input);
-        if ((iss >> quantidade) && quantidade > 0) break;
-        primeiraTentativaQuantidade = false;
-    }
-    cout << RESET;
-    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    preco = lerFloatPositivo("Preco de custo: ");
-    criarProduto(nome, quantidade, preco);  // Chama a versão já implementada
-}
+// Função criarProduto() sem parâmetros removida - usar apenas a versão com parâmetros
 
 
 void Loja::adicionarStock(int idProduto, int quantidade) 
@@ -163,7 +68,7 @@ bool Loja::eliminarProduto(int idProduto)
 }
 
 void Loja::listarProdutos() const {
-    // preencherTela(BG_GRAY, FG_BLUE); // Removido para não limpar a tela durante o fluxo
+    
     // Definição das larguras das colunas
     const int wId = 4, wNome = 28, wQtd = 8, wCusto = 13, wVenda = 13;
     const int nPipes = 6; // 5 separadores + 1 de início
@@ -214,7 +119,6 @@ void Loja::listarProdutos() const {
     }
     cout << BG_GRAY << FG_BLUE;
     cout << std::string(MARGEM) << string(wId, '=') << "+" << string(wNome, '=') << "+" << string(wQtd, '=') << "+" << string(wCusto, '=') << "+" << string(wVenda, '=') << "+" << endl;
-    // Linha de preenchimento cinza para cobrir o fundo preto ao lado do cursor
     cout << BG_GRAY << std::string(MARGEM) << string(larguraTabela, ' ') << RESET << endl;
     cout << RESET;
 }
@@ -371,7 +275,7 @@ bool Loja::carregarClientes(const string& caminho) {
 }
 
 void Loja::listarClientes() const {
-    // preencherTela(BG_GRAY, FG_BLUE); // Removido para não limpar a tela durante o fluxo
+    
     vector<Cliente> clientesOrdenados = clientes;
     sort(clientesOrdenados.begin(), clientesOrdenados.end(),
         [](const Cliente& a, const Cliente& b) {
@@ -383,16 +287,7 @@ void Loja::listarClientes() const {
     const int larguraTabela = wId + wNome + wTel + wMorada + 5; // 5 pipes
     const int larguraTotal = larguraTabela;
 
-    // Função para centralizar texto, truncando se necessário
-    auto centro = [](const string& texto, int largura) {
-        string t = texto;
-        if ((int)t.length() > largura) t = t.substr(0, largura);
-        int espacos = largura - (int)t.length();
-        int esq = espacos / 2;
-        int dir = espacos - esq;
-        return string(esq, ' ') + t + string(dir, ' ');
-    };
-
+    
     // Título centralizado perfeitamente com a tabela
     cout << BG_GRAY << FG_BLUE << std::string(MARGEM) << "+" << string(larguraTabela - 2, '=') << "+" << RESET << endl;
     cout << BG_GRAY << FG_BLUE << std::string(MARGEM) << "|" << centro("LISTA DE CLIENTES", larguraTabela - 2) << "|" << RESET << endl;
@@ -432,24 +327,45 @@ void Loja::listarClientes() const {
 }
 
 void Loja::efetuarVenda() {
-    preencherTela(BG_GRAY, FG_BLUE);
+    preencherTela(BG_GRAY, FG_BLUE, 40, 120); // Garante fundo cinza em toda a tela
     int idCliente;
     Cliente* clienteEncontrado = nullptr;
-    do {
-        cout << BG_GRAY << FG_BLUE << std::string(MARGEM) << "ID do cliente: ";
-        cin >> idCliente;
-        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    bool tentarNovamenteCliente = true;
+    while (tentarNovamenteCliente) {
+        cout << BG_GRAY << FG_BLUE << std::string(MARGEM) << "REALIZAR VENDA" << RESET << endl << endl;
+        idCliente = lerIDPositivo(std::string(BG_GRAY) + std::string(FG_BLUE) + std::string(MARGEM) + "ID do cliente: " + RESET);
         clienteEncontrado = nullptr;
         for (auto& c : clientes) {
             if (c.getIdCliente() == idCliente) {
-            clienteEncontrado = &c;
+                clienteEncontrado = &c;
+                break;
+            }
+        }
+        if (!clienteEncontrado) {
+            cout << BG_GRAY << RED << std::string(MARGEM) << "ID inválido. Digite apenas números de um cliente existente." << RESET << endl;
+            string resposta;
+            while (true) {
+                cout << BG_GRAY << FG_BLUE << std::string(MARGEM) << "Deseja tentar novamente? (s/n): ";
+                getline(cin, resposta);
+                if (!resposta.empty() && (resposta[0] == 's' || resposta[0] == 'S')) {
+                    tentarNovamenteCliente = true;
+                    system("cls");
+                    break;
+                } else if (!resposta.empty() && (resposta[0] == 'n' || resposta[0] == 'N')) {
+                    tentarNovamenteCliente = false;
+                    break;
+                } else {
+                    cout << std::string(MARGEM) << RED << "Entrada invalida. Digite 's' para sim ou 'n' para nao." << RESET << endl;
+                }
+            }
+        } else {
             break;
         }
     }
-        if (!clienteEncontrado) {
-            cout << std::string(MARGEM) << RED << "ID inválido. Digite um ID de cliente existente." << RESET << endl;
-        }
-    } while (!clienteEncontrado);
+    if (!clienteEncontrado) {
+        cout << std::string(MARGEM) << RED << "Operação de venda cancelada." << RESET << endl;
+        return;
+    }
 
     // Exibe produtos logo abaixo do ID do cliente
     listarProdutos();
@@ -617,7 +533,6 @@ void Loja::efetuarVenda() {
     double valorFinal = ganhouTalaoGratis ? 0.0 : novaVenda.getValorTotal();
     if (ganhouTalaoGratis) {
         cout << std::string(MARGEM) << GREEN << "PARABENS! Voce ganhou o talao gratis!\n" << RESET;
-        Sleep(5000); // Pausa 5 segundos para o usuário ver a mensagem e os valores
     }
 
     // Mostrar valor a pagar antes de pedir valor entregue
@@ -660,16 +575,9 @@ void Loja::efetuarVenda() {
 
     system("cls");
     // Defina a margem padrão (exemplo: 4 espaços)
-    std::string MARGEM = std::string(4, ' ');
-    std::string MARGEM_CENTRAL = MARGEM; // agora a margem é usada para alinhar o talão à esquerda com recuo
     cout << RESET;
-    novaVenda.imprimirTalao(MARGEM_CENTRAL);
+    novaVenda.imprimirTalao(MARGEM);
     cout << RESET;
-    cout << BG_GRAY << FG_BLACK;
-    std::cout << MARGEM << "Pressione Enter para voltar..." << std::endl;
-    cout << RESET;
-    std::cin.clear();
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 }
 
 void Loja::mostrarResumoVenda(const Venda& venda) const {
@@ -742,7 +650,7 @@ bool Loja::salvarDados(const string& diretorio) {
     sucesso &= salvarProdutos(diretorio + "/produtos.txt");
 
     if (sucesso) {
-        cout << std::string(MARGEM) << GREEN << "Dados salvos com sucesso no diretorio '" << diretorio << "'" << RESET << endl;
+        cout << BG_BLUE << std::string(MARGEM) << GREEN << "Dados salvos com sucesso no diretorio '" << diretorio << "'" << RESET << endl;
     }
     else {
         cout << std::string(MARGEM) << RED << "Erro ao salvar alguns dados." << RESET << endl;
@@ -888,8 +796,8 @@ bool Loja::carregarProdutos(const string& caminho) {
                 precoStr.erase(precoStr.find_last_not_of(" \n\r\t") + 1);
                 precoStr.erase(0, precoStr.find_first_not_of(" \n\r\t"));
                 
-                // Substitui vírgula por ponto se necessário
-                replace(precoStr.begin(), precoStr.end(), ',', '.');
+                // Normaliza entrada decimal
+                precoStr = normalizarDecimal(precoStr);
 
                 int id = stoi(idStr);
                 int quantidade = stoi(qtdStr);
@@ -1003,7 +911,7 @@ bool Loja::carregarVendas(const string& caminho) {
 
 void Loja::listarHistoricoVendas() const {
     system("cls");
-    // preencherTela(BG_GRAY, FG_BLUE); // Removido para não preencher fundo da tela
+    preencherTela(BG_GRAY, FG_BLUE); // Preenche toda a tela de cinza
     vector<string> cabecalho = {"#", "FATURA N", "CLIENTE ID", "TOTAL VENDA", "PRODUTO", "QTD", "TOTAL C/IVA"};
     vector<int> larguras = {4, 12, 10, 14, 18, 6, 14};
     int larguraTabela = 1; // pipe inicial
@@ -1048,9 +956,6 @@ void Loja::listarHistoricoVendas() const {
         cout << string(4, ' ') << "|" << centro("Nenhuma venda registrada.", larguraTabela - 2) << "|" << endl;
     }
     cout << string(4, ' ') << "+" << string(larguraTabela - 2, '=') << "+" << endl;
-    cout << BG_GRAY << FG_BLUE << std::string(MARGEM) << "Pressione Enter para voltar..." << RESET;
-    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    cin.get();
 }
 
 void Loja::relatorioStock() const {
@@ -1068,9 +973,6 @@ void Loja::relatorioStock() const {
         cout << BG_GRAY << FG_BLUE << string(4, ' ') << "|" << centro(toUpper(p.getNome()), wProd) << "|" << centro(to_string(p.getQuantidade()), wQtd) << "|" << RESET << endl;
     }
     cout << BG_GRAY << FG_BLUE << string(4, ' ') << "+" << string(wProd, '=') << "+" << string(wQtd, '=') << "+" << RESET << endl;
-    cout << BG_GRAY << FG_BLUE << std::string(MARGEM) << "Pressione Enter para voltar..." << RESET;
-    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    cin.get();
 }
 
 
@@ -1134,12 +1036,12 @@ bool Loja::relatorioVendasPorProduto(const string& nomeProduto) const {
                 string custoTotalStr = (ostringstream{} << fixed << setprecision(2) << custoTotal << " EUR").str();
                 string lucroTotalStr = (ostringstream{} << fixed << setprecision(2) << lucroTotal << " EUR").str();
                 cout << BG_GRAY << FG_BLUE << std::string(MARGEM)
-                    << "|" << centroExato(nomeProdutoStr, wProd)
-                    << "|" << centroExato(qtdStr, wQtd)
-                    << "|" << centroExato(precoUnitStr, wUnit)
-                    << "|" << centroExato(totalComIVAStr, wTotal)
-                    << "|" << centroExato(custoTotalStr, wCusto)
-                    << "|" << centroExato(lucroTotalStr, wLucro)
+                    << "|" << centro(nomeProdutoStr, wProd)
+                    << "|" << centro(qtdStr, wQtd)
+                    << "|" << centro(precoUnitStr, wUnit)
+                    << "|" << centro(totalComIVAStr, wTotal)
+                    << "|" << centro(custoTotalStr, wCusto)
+                    << "|" << centro(lucroTotalStr, wLucro)
                     << "|" << RESET << endl;
                 totalQtd += quantidade;
                 totalCusto += custoTotal;
@@ -1153,12 +1055,12 @@ bool Loja::relatorioVendasPorProduto(const string& nomeProduto) const {
         << string(wProd, '-') << "+" << string(wQtd, '-') << "+" << string(wUnit, '-') << "+" << string(wTotal, '-') << "+" << string(wCusto, '-') << "+" << string(wLucro, '-') << "+" << RESET << endl;
     // Linha de totais
     cout << BG_GRAY << FG_BLUE << std::string(MARGEM)
-        << "|" << centroExato("TOTAL", wProd)
-        << "|" << centroExato(to_string(totalQtd), wQtd)
-        << "|" << centroExato("", wUnit)
-        << "|" << centroExato((ostringstream{} << fixed << setprecision(2) << totalComIVA << " EUR").str(), wTotal)
-        << "|" << centroExato((ostringstream{} << fixed << setprecision(2) << totalCusto << " EUR").str(), wCusto)
-        << "|" << centroExato((ostringstream{} << fixed << setprecision(2) << totalLucro << " EUR").str(), wLucro)
+        << "|" << centro("TOTAL", wProd)
+        << "|" << centro(to_string(totalQtd), wQtd)
+        << "|" << centro("", wUnit)
+        << "|" << centro((ostringstream{} << fixed << setprecision(2) << totalComIVA << " EUR").str(), wTotal)
+        << "|" << centro((ostringstream{} << fixed << setprecision(2) << totalCusto << " EUR").str(), wCusto)
+        << "|" << centro((ostringstream{} << fixed << setprecision(2) << totalLucro << " EUR").str(), wLucro)
         << "|" << RESET << endl;
     // Linha dupla após o total
     cout << BG_GRAY << FG_BLUE << std::string(MARGEM) << "+" << string(larguraTabela - 2, '=') << "+" << RESET << endl;
@@ -1235,15 +1137,12 @@ void Loja::relatorioTotalVendas() const {
     cout << BG_GRAY << FG_BLUE << std::string(MARGEM) << "Cliente que mais comprou (ID):" << idTopCliente << " com " << maiorCompra << " EUR" << RESET << endl;
 
     cout << BG_GRAY << FG_BLUE << std::string(MARGEM) << "+" << string(largura - 2, '=') << "+" << RESET << endl;
-    cout << BG_GRAY << FG_BLUE << std::string(MARGEM) << "Pressione Enter para voltar..." << RESET;
-    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    cin.get();
 }
 
 
 void Loja::relatorioGraficoVendas() const {
     system("cls");
-    preencherTela(BG_BLUE, FG_GRAY_MEDIUM);
+    preencherTela(BG_GRAY, FG_BLUE);
     const int largura = 86;
     imprimirTituloCentralizado("GRAFICO DE VENDAS POR PRODUTO", largura, string(4, ' '));
 
@@ -1256,7 +1155,7 @@ void Loja::relatorioGraficoVendas() const {
     }
 
     if (valorPorProduto.empty()) {
-        cout << BG_BLUE << FG_GRAY_MEDIUM << std::string(MARGEM) << "Nenhuma venda registrada.\n" << RESET;
+        cout << BG_GRAY << FG_BLUE << std::string(MARGEM) << "Nenhuma venda registrada.\n" << RESET;
         return;
     }
 
@@ -1267,7 +1166,7 @@ void Loja::relatorioGraficoVendas() const {
     }
     const int barraMax = 40; // tamanho máximo da barra
 
-    cout << BG_BLUE << FG_GRAY_MEDIUM;
+    cout << BG_GRAY << FG_BLUE;
     for (const auto& par : valorPorProduto) {
         int barLen = (int)(barraMax * par.second / maxValor);
         cout << std::string(MARGEM)
@@ -1276,9 +1175,6 @@ void Loja::relatorioGraficoVendas() const {
              << " " << fixed << setprecision(2) << par.second << " EUR" << endl;
     }
     cout << RESET;
-    cout << BG_BLUE << FG_GRAY_MEDIUM << std::string(MARGEM) << "Pressione Enter para voltar..." << RESET;
-    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    cin.get();
 }
 
 
@@ -1357,9 +1253,6 @@ void Loja::relatorioVendasDetalhadoPorProduto() const {
          << "|" << left << setw(larguraTexto) << texto
          << right << setw(larguraValor) << ossValor.str() << "|" << RESET << endl;
     cout << BG_GRAY << FG_BLUE << string(4, ' ') << "+" << string(larguraTabela - 2, '=') << "+" << RESET << endl;
-    cout << BG_GRAY << FG_BLUE << std::string(MARGEM) << "Pressione Enter para voltar..." << RESET;
-    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    cin.get();
 }
 
 // Adicionar função auxiliar em Loja para repor estoque de um item removido da venda

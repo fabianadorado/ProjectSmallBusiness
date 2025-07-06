@@ -35,7 +35,6 @@ public:
     Loja();
 
     // Produtos
-    void criarProduto();
     bool eliminarProduto(int idProduto);
     void criarProduto(const string& nome, int quantidade, double precoCusto);
     void adicionarStock(int idProduto, int quantidade);
