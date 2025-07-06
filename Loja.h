@@ -36,10 +36,9 @@ public:
 
     // Produtos
     void criarProduto();
-    void eliminarProduto();
+    bool eliminarProduto(int idProduto);
     void criarProduto(const string& nome, int quantidade, double precoCusto);
     void adicionarStock(int idProduto, int quantidade);
-    void eliminarProduto(int idProduto);
     void listarProdutos() const;
 
     // Clientes
@@ -50,12 +49,12 @@ public:
     
 
     // Vendas
-    void efetuarVenda(int idCliente);
+    void efetuarVenda();
     void mostrarResumoVenda(const Venda& venda) const;
     
     // Relatorios
     void relatorioStock() const;
-    void relatorioVendasPorProduto(const string& nomeProduto) const;
+    bool relatorioVendasPorProduto(const string& nomeProduto) const;
     void relatorioTotalVendas() const;
     void relatorioGraficoVendas() const;
     void relatorioVendasDetalhadoPorProduto() const;

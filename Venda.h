@@ -44,7 +44,7 @@ public:
 
     void adicionarItem(const string& nomeProduto, int quantidade, double precoUnit, double precoCusto);
     void finalizarVenda(double valorEntregue);
-    void imprimirTalao() const;
+    void imprimirTalao(const std::string& margemCentral) const;
 
     string getNumeroFatura() const;
 

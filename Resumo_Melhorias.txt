@@ -215,4 +215,294 @@ Observações Finais
 
 - Ajustado o fluxo de leitura de Enter entre telas para evitar a necessidade de pressionar Enter múltiplas vezes, tornando a navegação mais fluida.
 
-- Removido o espaço extra entre a quantidade e o preco de custo ao adicionar novo produto, deixando a interface mais limpa. 
+- Removido o espaço extra entre a quantidade e o preco de custo ao adicionar novo produto, deixando a interface mais limpa.
+
+==========================================
+RELATÓRIO DE AÇÕES DUPLICADAS - OTIMIZAÇÕES
+==========================================
+
+Este relatório identifica ações duplicadas no código que podem ser removidas sem prejuízo ao funcionamento do sistema, melhorando a eficiência e manutenibilidade.
+
+==========================================
+1. DUPLICAÇÕES EM Loja.cpp
+==========================================
+
+### 1.1 Funções de Validação de Entrada Duplicadas
+
+**Problema:** Código repetitivo para validação de entrada numérica em múltiplas funções.
+
+**Localizações:**
+- Linhas 78-99 em `criarProduto()`
+- Linhas 459-495 em `efetuarVenda()`
+- Linhas 604-729 em `efetuarVenda()`
+- Linhas 207-329 em `NaLata.cpp` (case 1)
+- Linhas 329-370 em `NaLata.cpp` (case 2)
+
+**Código Duplicado:**
+```cpp
+bool primeiraTentativa = true;
+while (true) {
+    if (!primeiraTentativa) {
+        cout << RED << "Entrada invalida. Digite um numero inteiro maior que 0." << RESET << endl;
+    }
+    cout << std::string(MARGEM) << "Quantidade: ";
+    string input;
+    getline(cin, input);
+    istringstream iss(input);
+    if ((iss >> quantidade) && quantidade > 0) break;
+    primeiraTentativa = false;
+}
+```
+
+**Solução:** Criar função auxiliar `lerQuantidade()` em Auxiliar.cpp
+
+### 1.2 Limpeza de Buffer Duplicada
+
+**Problema:** `cin.ignore()` repetido em múltiplos locais.
+
+**Localizações:**
+- Linha 47 em `criarProduto()`
+- Linha 67 em `criarProduto()`
+- Linha 520 em `efetuarVenda()`
+- Linha 625 em `efetuarVenda()`
+- Múltiplas ocorrências em `NaLata.cpp`
+
+**Código Duplicado:**
+```cpp
+cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+```
+
+**Solução:** Usar a função `limparBuffer()` já existente em Auxiliar.cpp
+
+### 1.3 Lógica de Busca de Produto Duplicada
+
+**Problema:** Loops de busca de produto repetidos.
+
+**Localizações:**
+- Linhas 109-122 em `adicionarStock()`
+- Linhas 123-147 em `eliminarProduto()`
+- Linhas 470-485 em `efetuarVenda()`
+
+**Código Duplicado:**
+```cpp
+for (size_t i = 0; i < produtos.size(); i++) {
+    if (produtos[i].getId() == idProduto) {
+        // lógica específica
+        return;
+    }
+}
+```
+
+**Solução:** Criar função `encontrarProdutoPorId()` em Loja.cpp
+
+### 1.4 Lógica de Busca de Cliente Duplicada
+
+**Problema:** Loops de busca de cliente repetidos.
+
+**Localizações:**
+- Linhas 409-430 em `efetuarVenda()`
+- Linhas 238-257 em `eliminarCliente()`
+- Linhas 258-277 em `alterarNomeCliente()`
+
+**Código Duplicado:**
+```cpp
+for (auto& c : clientes) {
+    if (c.getIdCliente() == idCliente) {
+        // lógica específica
+        break;
+    }
+}
+```
+
+**Solução:** Criar função `encontrarClientePorId()` em Loja.cpp
+
+### 1.5 Lógica de Relatórios Duplicada
+
+**Problema:** Cálculos de estatísticas repetidos em múltiplos relatórios.
+
+**Localizações:**
+- `relatorioTotalVendas()` (linhas 1080-1150)
+- `relatorioGraficoVendas()` (linhas 1152-1220)
+- `relatorioVendasDetalhadoPorProduto()` (linhas 1222-1317)
+
+**Código Duplicado:**
+```cpp
+map<string, int> vendasPorProduto;
+map<int, double> totalPorCliente;
+double total = 0.0;
+for (const auto& venda : vendas) {
+    total += venda.getValorTotal();
+    totalPorCliente[venda.getIdCliente()] += venda.getValorTotal();
+    for (const auto& item : venda.getItens()) {
+        vendasPorProduto[item.nomeProduto] += item.quantidade;
+    }
+}
+```
+
+**Solução:** Criar função `calcularEstatisticasVendas()` em Loja.cpp
+
+==========================================
+2. DUPLICAÇÕES EM Auxiliar.cpp
+==========================================
+
+### 2.1 Funções de Desenho de Linha Duplicadas
+
+**Problema:** Funções muito similares para desenhar linhas.
+
+**Localizações:**
+- `desenharLinhaHorizontal()` (linha 89)
+- `desenharLinhaHorizontalVenda()` (linha 97)
+
+**Código Duplicado:**
+```cpp
+void desenharLinhaHorizontal(const string& inicio, const string& fim, size_t largura) {
+    string linha_str;
+    for (size_t i = 0; i < largura; ++i) {
+        linha_str += "-";
+    }
+    cout << BOLD << MARGEM << inicio << linha_str << fim << END_COLOR << endl;
+}
+
+void desenharLinhaHorizontalVenda(const string& inicio, const string& fim, size_t largura) {
+    string linha_str;
+    for (size_t i = 0; i < largura; ++i) {
+        linha_str += "-";
+    }
+    cout << BOLD << MARGEM << inicio << linha_str << fim << END_COLOR << endl;
+}
+```
+
+**Solução:** Manter apenas `desenharLinhaHorizontal()` e remover `desenharLinhaHorizontalVenda()`
+
+### 2.2 Funções de Confirmação Duplicadas
+
+**Problema:** Funções muito similares para confirmação do usuário.
+
+**Localizações:**
+- `desejaContinuar()` (linha 243)
+- `confirmarAcao()` (linha 259)
+
+**Código Duplicado:**
+```cpp
+bool desejaContinuar(const std::string& mensagem) {
+    char opcao;
+    while (true) {
+        std::cout << mensagem << " (s/n): ";
+        std::cin >> opcao;
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        if (opcao == 's' || opcao == 'S') {
+            return true;
+        } else if (opcao == 'n' || opcao == 'N') {
+            return false;
+        } else {
+            std::cout << "Entrada invalida. Digite 's' para sim ou 'n' para nao." << std::endl;
+        }
+    }
+}
+```
+
+**Solução:** Manter apenas `confirmarAcao()` e remover `desejaContinuar()`
+
+==========================================
+3. DUPLICAÇÕES EM NaLata.cpp
+==========================================
+
+### 3.1 Validação de ID de Produto Duplicada
+
+**Problema:** Código repetitivo para validar se ID de produto existe.
+
+**Localizações:**
+- Case 2 (Adicionar Stock) - linhas 180-200
+- Case 3 (Eliminar Produto) - linhas 220-240
+
+**Código Duplicado:**
+```cpp
+bool existe = false;
+for (const auto& p : loja.getProdutos()) {
+    if (p.getId() == id) {
+        existe = true;
+        break;
+    }
+}
+if (existe) break;
+```
+
+**Solução:** Usar função `encontrarProdutoPorId()` proposta acima
+
+### 3.2 Estrutura de Menu Duplicada
+
+**Problema:** Estrutura switch-case repetitiva.
+
+**Localizações:**
+- Menu principal (linhas 35-50)
+- Submenu de produtos (linhas 55-200)
+- Submenu de clientes (linhas 250-350)
+
+**Solução:** Criar função genérica `processarMenu()` para reduzir duplicação
+
+==========================================
+4. BENEFÍCIOS DAS OTIMIZAÇÕES
+==========================================
+
+### 4.1 Redução de Código
+- **Antes:** ~1317 linhas em Loja.cpp
+- **Depois:** ~1100 linhas estimadas
+- **Redução:** ~16% do código
+
+### 4.2 Melhorias na Manutenibilidade
+- Código mais limpo e organizado
+- Menos pontos de falha
+- Facilita correções e melhorias futuras
+
+### 4.3 Melhorias na Performance
+- Menos código para executar
+- Funções otimizadas e reutilizáveis
+- Redução de overhead
+
+### 4.4 Melhorias na Legibilidade
+- Código mais fácil de entender
+- Funções com responsabilidades claras
+- Menos repetição visual
+
+==========================================
+5. IMPLEMENTAÇÃO DAS OTIMIZAÇÕES
+==========================================
+
+### 5.1 Prioridade Alta (Crítica)
+1. Criar função `lerQuantidade()` em Auxiliar.cpp
+2. Criar função `encontrarProdutoPorId()` em Loja.cpp
+3. Criar função `encontrarClientePorId()` em Loja.cpp
+4. Remover `desenharLinhaHorizontalVenda()` duplicada
+5. Remover `desejaContinuar()` duplicada
+
+### 5.2 Prioridade Média (Importante)
+1. Criar função `calcularEstatisticasVendas()` em Loja.cpp
+2. Substituir `cin.ignore()` por `limparBuffer()`
+3. Criar função `processarMenu()` em NaLata.cpp
+
+### 5.3 Prioridade Baixa (Opcional)
+1. Refatorar estrutura de menus
+2. Otimizar funções de relatório
+
+==========================================
+6. IMPACTO NAS FUNCIONALIDADES
+==========================================
+
+### 6.1 Funcionalidades Preservadas
+- Todas as funcionalidades principais mantidas
+- Interface do usuário inalterada
+- Dados e persistência preservados
+
+### 6.2 Melhorias Esperadas
+- Código mais robusto
+- Menos bugs potenciais
+- Facilidade de manutenção
+- Performance ligeiramente melhor
+
+==========================================
+CONCLUSÃO
+==========================================
+
+As otimizações propostas podem reduzir significativamente a duplicação de código sem afetar o funcionamento do sistema. A implementação deve ser feita gradualmente, testando cada mudança para garantir que não há regressões.
+
+Recomenda-se começar pelas otimizações de prioridade alta, que trarão os maiores benefícios com menor risco. 

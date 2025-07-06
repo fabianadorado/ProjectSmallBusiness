@@ -15,6 +15,7 @@ using namespace std;
 
 int Menu::menuPrincipal() {
     system("cls");
+    preencherTela(BG_BLUE, FG_GRAY_MEDIUM);
     vector< string> opcoes = {
         "Efetuar Vendas",
         "Gerir Produtos",
@@ -27,6 +28,7 @@ int Menu::menuPrincipal() {
 
 int Menu::menuGerirProdutos() {
     system("cls");
+    preencherTela(BG_BLUE, FG_GRAY_MEDIUM);
     vector< string> opcoes = {
         "Criar Produto",
         "Adicionar Stock",
@@ -39,6 +41,7 @@ int Menu::menuGerirProdutos() {
 
 int Menu::menuGerirClientes() {
     system("cls");
+    preencherTela(BG_BLUE, FG_GRAY_MEDIUM);
     vector< string> opcoes = {
         "Criar Cliente",
         "Eliminar Cliente",
@@ -49,17 +52,18 @@ int Menu::menuGerirClientes() {
     return mostrarMenu("GERIR CLIENTES", opcoes);
 }
 
-    int Menu::menuRelatorios() {
-        system("cls");
-        vector< string> opcoes = {
-            "Relatorio de Stock",
-            "Vendas por Produto",
-            "Total de Vendas",
-            "Grafico de Vendas",
-            "Historico de Vendas",
-            "Vendas por Produto Detalhado",
-            "Voltar ao Menu Principal"
-        };
-        return mostrarMenu("RELATORIOS", opcoes);
-    }
+int Menu::menuRelatorios() {
+    system("cls");
+    preencherTela(BG_BLUE, FG_GRAY_MEDIUM);
+    vector< string> opcoes = {
+        "Relatorio de Stock",
+        "Vendas por Produto",
+        "Total de Vendas",
+        "Grafico de Vendas",
+        "Historico de Vendas",
+        "Vendas por Produto Detalhado",
+        "Voltar ao Menu Principal"
+    };
+    return mostrarMenu("RELATORIOS", opcoes);
+}
 

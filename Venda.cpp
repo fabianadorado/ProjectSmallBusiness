@@ -10,9 +10,10 @@
 #include <chrono>     // Para geração de sementes aleatórias
 #include "Auxiliar.h"
 
-#define END_COLOR "\033[0m"  // Define a cor de texto para padrao
-#define RED "\033[31m"   // Define a cor de texto para vermelho
-#define GREEN "\033[32m" // Define a cor de texto para verde
+#define BG_GRAY "\033[100m"
+#define FUNDO_BRANCO "\033[47m"
+#define TEXTO_PRETO "\033[30m"
+#define RESET "\033[0m"
 
 ItemVenda::ItemVenda(int linha, const string& nomeProduto, int quantidade, double precoUnit, double precoCusto)
     :   numeroLinha(linha),
@@ -121,51 +122,44 @@ int Venda::getIdCliente() const
     return idCliente;
 }
 
-void Venda::imprimirTalao() const {
-    // Definição das larguras das colunas (igual à tabela do talão)
-    const int wId = 3, wProd = 22, wQtd = 6, wPSemIVA = 13, wPComIVA = 13, wTotal = 13;
-
-    // Configurações de cores ANSI
-    const string FUNDO_BRANCO = "\033[47m";
-    const string TEXTO_PRETO = "\033[30m";
-    const string NEGRITO = "\033[1m";
-    const string RESET = "\033[0m";
-
+void Venda::imprimirTalao(const std::string& margemCentral) const {
+    const int LARGURA = 60;
+    // Função utilitária para imprimir qualquer linha do talão com fundo branco e texto preto, e margem cinza
+    auto printLinhaTalao = [&](const std::string& texto) {
+        // Imprime a margem com fundo cinza
+        std::cout << BG_GRAY << FG_BLACK << margemCentral << RESET;
+        // Imprime o talão com fundo branco
+        std::cout << FUNDO_BRANCO << TEXTO_PRETO << texto << RESET << std::endl;
+    };
+    auto linhaBranca = [&](char c) {
+        std::string faixaBranca(LARGURA, c);
+        printLinhaTalao(faixaBranca);
+    };
+    auto linhaTexto = [&](const std::string& texto, bool centralizar = false) {
+        std::string linha = texto;
+        if (centralizar) linha = centro(linha, LARGURA);
+        if (linha.length() < LARGURA)
+            linha += std::string(LARGURA - linha.length(), ' ');
+        else if (linha.length() > LARGURA)
+            linha = linha.substr(0, LARGURA);
+        printLinhaTalao(linha);
+    };
     // Obter data atual
     time_t agora = time(0);
-    tm tempoLocal;
+    tm tempoLocal = {};
     localtime_s(&tempoLocal, &agora);
     string data = to_string(tempoLocal.tm_mday) + "/" +
         to_string(tempoLocal.tm_mon + 1) + "/" +
         to_string(tempoLocal.tm_year + 1900);
 
-    // Configurações de layout
-    const int LARGURA = 60;
-    const int larguraConsole = 100; // largura fixa para centralização
-
-    auto linhaBranca = [&](char c) {
-        cout << MARGEM << FUNDO_BRANCO << TEXTO_PRETO << string(LARGURA - 2, c) << RESET << endl;
-    };
-    auto linhaTexto = [&](const string& texto, bool centralizar = false) {
-        string linha = texto;
-        if (centralizar) linha = centro(linha, LARGURA - 2);
-        if (linha.length() < LARGURA - 2)
-            linha += string(LARGURA - 2 - linha.length(), ' ');
-        else if (linha.length() > LARGURA - 2)
-            linha = linha.substr(0, LARGURA - 2);
-        cout << MARGEM << FUNDO_BRANCO << TEXTO_PRETO << linha << RESET << endl;
-    };
-
-    // Título
+    // Montar o talão no vetor
     linhaBranca('=');
     linhaTexto("TALAO DE COMPRA", true);
     linhaBranca('=');
-
     // Dados centralizados
     linhaTexto(centro("Data: " + data, LARGURA - 2), true);
     linhaTexto(centro("Fatura: " + numeroFatura, LARGURA - 2), true);
     linhaTexto(centro("Cliente ID: " + to_string(idCliente), LARGURA - 2), true);
-    // Adicionar nome do cliente se disponível
     string nomeCliente = getNomeCliente();
     if (!nomeCliente.empty()) {
         linhaTexto(centro("Bem-vindo!", LARGURA - 2), true);
@@ -175,12 +169,8 @@ void Venda::imprimirTalao() const {
         linhaTexto(centro(ossPontos.str(), LARGURA - 2), true);
     }
     linhaBranca('-');
-
-    // Cabeçalho
     linhaTexto(centro("ITENS COMPRADOS", LARGURA - 2), true);
     linhaBranca('-');
-
-    // Itens com margem interna
     for (const auto& item : itens) {
         ostringstream oss;
         string nome = toUpper(item.nomeProduto);
@@ -192,48 +182,41 @@ void Venda::imprimirTalao() const {
         oss << " = ";
         oss << right << setw(7) << fixed << setprecision(2) << item.precoSemIVA;
         string linha = oss.str();
-        // Adiciona margem interna
         linha = " " + linha + " ";
         if (linha.length() > static_cast<size_t>(LARGURA - 2))
             linha = linha.substr(0, LARGURA - 2);
         else if (linha.length() < static_cast<size_t>(LARGURA - 2))
-            linha += string(LARGURA - 2 - linha.length(), ' ');
-        cout << MARGEM << FUNDO_BRANCO << TEXTO_PRETO << linha << RESET << endl;
+            linha += std::string(LARGURA - 2 - linha.length(), ' ');
+        linhaTexto(linha, false);
     }
     linhaBranca('-');
-
     double total = getValorTotal();
-        double semIVA = total / 1.23;
-        double iva = total - semIVA;
-
-    // Função para alinhar totais igual à linha do item, sem pipes intermediários
-    auto linhaTotalSemPipes = [&](const string& label, double valor) {
-            ostringstream oss;
-        oss << left << setw(2) << ""; // espaço do número
+    double semIVA = total / 1.23;
+    double iva = total - semIVA;
+    auto addLinhaTotal = [&](const string& label, double valor) {
+        ostringstream oss;
+        oss << left << setw(2) << "";
         oss << left << setw(20) << label;
-        oss << left << setw(3) << ""; // espaço da quantidade
-        oss << left << setw(4) << ""; // espaço do 'x'
-        oss << left << setw(6) << ""; // espaço do preço unitário
-        oss << left << setw(3) << ""; // espaço do '='
+        oss << left << setw(3) << "";
+        oss << left << setw(4) << "";
+        oss << left << setw(6) << "";
+        oss << left << setw(3) << "";
         oss << right << setw(7) << fixed << setprecision(2) << valor;
         string linha = oss.str();
         if (linha.length() < LARGURA - 2)
-            linha += string(LARGURA - 2 - linha.length(), ' ');
-        cout << MARGEM << FUNDO_BRANCO << TEXTO_PRETO << linha << RESET << endl;
+            linha += std::string(LARGURA - 2 - linha.length(), ' ');
+        linhaTexto(linha, false);
     };
-
-    linhaTotalSemPipes("Subtotal:", semIVA);
-    linhaTotalSemPipes("IVA (23%):", iva);
-    linhaTotalSemPipes("TOTAL:", total);
+    addLinhaTotal("Subtotal:", semIVA);
+    addLinhaTotal("IVA (23%):", iva);
+    addLinhaTotal("TOTAL:", total);
     linhaBranca('-');
-    linhaTotalSemPipes("Valor pago:", valorEntregue);
-    linhaTotalSemPipes("Troco:", troco);
+    addLinhaTotal("Valor pago:", valorEntregue);
+    addLinhaTotal("Troco:", troco);
     linhaBranca('-');
-    // Frase final centralizada
-    // Mensagem de parabéns se for aniversário
     string dataNasc = getDataNascimentoCliente();
     bool parabens = false;
-    if (dataNasc.length() == 10) { // formato dd-mm-aaaa
+    if (dataNasc.length() == 10) {
         int diaNasc = stoi(dataNasc.substr(0,2));
         int mesNasc = stoi(dataNasc.substr(3,2));
         if (diaNasc == tempoLocal.tm_mday && mesNasc == (tempoLocal.tm_mon + 1)) {
@@ -249,18 +232,18 @@ void Venda::imprimirTalao() const {
 
 void Venda::removerItemPorLinha(int numeroLinha) {
     if (itens.empty()) {
-        std::cout << "Nao ha itens para remover.\n";
+        std::cout << MARGEM << "Nao ha itens para remover.\n";
         return;
     }
     auto it = std::find_if(itens.begin(), itens.end(), [numeroLinha](const ItemVenda& item) {
         return item.numeroLinha == numeroLinha;
     });
     if (it == itens.end()) {
-        std::cout << "Item nao encontrado.\n";
+        std::cout << MARGEM << "Item nao encontrado.\n";
         return;
     }
     if (!confirmarAcao("Tem certeza que deseja remover o item da linha " + std::to_string(numeroLinha) + "?")) {
-        std::cout << "Operacao cancelada.\n";
+        std::cout << MARGEM << "Operacao cancelada.\n";
         return;
     }
     itens.erase(it);
@@ -268,20 +251,20 @@ void Venda::removerItemPorLinha(int numeroLinha) {
     for (size_t i = 0; i < itens.size(); ++i) {
         itens[i].numeroLinha = i + 1;
     }
-    std::cout << "Item removido.\n";
+    std::cout << MARGEM << "Item removido.\n";
 }
 
 void Venda::cancelarVenda() {
     if (itens.empty()) {
-        std::cout << "Nao ha venda em andamento para cancelar.\n";
+        std::cout << MARGEM << "Nao ha venda em andamento para cancelar.\n";
         return;
     }
     if (!confirmarAcao("Tem certeza que deseja cancelar toda a venda?")) {
-        std::cout << "Operacao cancelada.\n";
+        std::cout << MARGEM << "Operacao cancelada.\n";
         return;
     }
     itens.clear();
     valorEntregue = 0.0;
     troco = 0.0;
-    std::cout << "Venda cancelada.\n";
+    std::cout << MARGEM << "Venda cancelada.\n";
 }

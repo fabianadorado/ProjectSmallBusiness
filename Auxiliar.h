@@ -9,17 +9,27 @@
 using namespace std;
 
 extern const std::string MARGEM;
+extern const std::string FUNDO_BRANCO;
+extern const std::string TEXTO_PRETO;
+
+extern const char* RESET;
+extern const char* RED;
+extern const char* GREEN;
+extern const char* YELLOW;
+extern const char* CYAN;
+extern const char* BOLD;
+extern const char* FG_BLACK;
 
 int lernumero(const string& mensagem);
 double lerFloatPositivo(const string& mensagem);
 string toLower(const string& str);
 string toUpper(const string& str);
 
-#define END_COLOR  "\033[0m"
-#define CYAN    "\033[36m"
-#define GREEN   "\033[32m"
-#define BOLD    "\033[1m"
-#define YELLOW  "\033[33m"
+#define BG_BLUE "\033[44m"
+#define FG_BRIGHT_GRAY "\033[97m"
+#define BG_GRAY "\033[100m"
+#define FG_BLUE "\033[34m"
+#define FG_GRAY_MEDIUM "\033[38;5;245m"
 
 void limparBuffer();
 void desenharLinhaHorizontal(const string& inicio, const string& fim, size_t largura);
@@ -51,3 +61,13 @@ Produto* encontrarProdutoPorNome(const std::string& nome, std::vector<Produto>& 
 Cliente* encontrarClientePorNome(const std::string& nome, std::vector<Cliente>& clientes);
 
 std::string trim(const std::string& str);
+
+void preencherTela(const std::string& bgColor, const std::string& fgColor, int linhas = 40, int colunas = 120);
+
+string normalizarNomeProduto(const string& nome);
+
+string alinhar(const string& texto, int largura);
+
+void imprimirCabecalhoDetalhadoTabela(const std::string& margem, int wProd, int wQtd, int wUnit, int wTotal, int wCusto, int wLucro);
+
+string centroExato(const string& texto, int largura);

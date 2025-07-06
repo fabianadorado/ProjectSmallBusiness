@@ -1083,5 +1083,176 @@ Comentários Didáticos:
 - O uso de `carregarDados()` e `salvarDados()` garante persistência entre execuções.
 
 ------------------------------
+CORES E MACROS DE FORMATAÇÃO
+------------------------------
+
+**Macros utilizadas:**
+- BG_GRAY, FG_BLACK, FUNDO_BRANCO, TEXTO_PRETO, BG_BLUE, FG_BRIGHT_GRAY, FG_BLUE, FG_GRAY_MEDIUM, RESET, RED, GREEN, YELLOW, CYAN, BOLD
+
+**Exemplo de uso:**
+```cpp
+cout << BG_GRAY << FG_BLACK << "Texto com fundo cinza e texto preto" << RESET << endl;
+cout << FUNDO_BRANCO << TEXTO_PRETO << "Talão" << RESET << endl;
+```
+
+**Resumo:**
+Macros de cor são usadas para personalizar a aparência do terminal, destacando áreas importantes como talão, tabelas, mensagens de erro e prompts.
+
+**Comentários Didáticos:**
+- O uso de macros facilita a manutenção e padronização visual do sistema.
+- RESET deve ser usado após cada linha colorida para evitar "vazamento" de cor.
+
+------------------------------
+FUNÇÕES AUXILIARES DE COR E LAYOUT
+------------------------------
+
+**Funções principais:**
+- preencherTela(bgColor, fgColor, linhas, colunas): Preenche a tela com cor.
+- imprimirLinhaInterna, imprimirLinhaHorizontalBranca, imprimirLinhaTabela, imprimirTituloCentralizado: Funções para impressão de linhas/tabelas com cor e alinhamento.
+- desenharLinhaHorizontal, desenharLinhaHorizontalVenda, desenharCaixaTitulo: Desenho de linhas e caixas com cor.
+
+**Exemplo real do programa:**
+```cpp
+preencherTela(BG_GRAY, FG_BLUE, 40, 120);
+```
+**Detalhamento:**
+- `preencherTela`: Função que imprime linhas preenchendo toda a tela com a cor de fundo e texto especificadas.
+- `BG_GRAY`: Cor de fundo cinza.
+- `FG_BLUE`: Cor do texto azul.
+- `40, 120`: Quantidade de linhas e colunas a preencher.
+
+**Resumo:**
+Essas funções centralizam a lógica de layout e cor, facilitando a criação de telas e tabelas padronizadas.
+
+**Comentários Didáticos:**
+- Separar lógica de cor/layout em funções auxiliares evita repetição e facilita ajustes visuais.
+
+------------------------------
+FUNÇÕES DE FORMATAÇÃO E ALINHAMENTO
+------------------------------
+
+**Funções principais:**
+- centro, centroExato, alinhar, repetir: Centralizam, alinham e repetem strings para formatação de tabelas e textos.
+
+**Exemplo real do programa:**
+```cpp
+cout << centro("TALAO DE COMPRA", 60) << endl;
+```
+**Detalhamento:**
+- `centro`: Função que centraliza o texto em uma largura fixa.
+- `"TALAO DE COMPRA"`: Texto a ser centralizado.
+- `60`: Largura total da linha.
+
+**Resumo:**
+Permitem criar tabelas e relatórios visualmente organizados.
+
+**Comentários Didáticos:**
+- Centralizar e alinhar textos melhora a legibilidade das tabelas e relatórios.
+
+------------------------------
+FUNÇÕES DE ENTRADA E VALIDAÇÃO
+------------------------------
+
+**Funções principais:**
+- lernumero, lerFloatPositivo, lerTelefone, formatarTelefone, confirmarAcao, desejaContinuar
+
+**Exemplo real do programa:**
+```cpp
+int id = lernumero("Digite o ID do produto: ");
+```
+**Detalhamento:**
+- `lernumero`: Função que exibe a mensagem e lê um número inteiro válido do usuário.
+- `"Digite o ID do produto: "`: Mensagem exibida ao usuário.
+- O valor digitado é validado antes de ser retornado.
+
+**Resumo:**
+Centralizam a lógica de entrada e validação, tornando o código principal mais limpo.
+
+**Comentários Didáticos:**
+- Funções de validação evitam erros de entrada e melhoram a experiência do usuário.
+
+------------------------------
+UTILITÁRIOS DE ARQUIVO E BUSCA
+------------------------------
+
+**Funções principais:**
+- arquivoExiste, criarDiretorioSeNaoExistir, encontrarProdutoPorNome, encontrarClientePorNome, trim, normalizarNomeProduto, removerPontuacao
+
+**Exemplo real do programa:**
+```cpp
+if (arquivoExiste("produtos.txt")) {
+    // Carrega produtos do arquivo
+}
+```
+**Detalhamento:**
+- `arquivoExiste`: Função que verifica se o arquivo existe no sistema.
+- `"produtos.txt"`: Nome do arquivo a ser verificado.
+- O bloco só é executado se o arquivo existir.
+
+**Resumo:**
+Facilitam operações comuns de arquivo e busca, centralizando lógica recorrente.
+
+**Comentários Didáticos:**
+- Centralizar utilidades reduz bugs e facilita manutenção.
+
+------------------------------
+PADRÕES DE UX E FLUXOS VISUAIS
+------------------------------
+
+**Principais padrões:**
+- Margem colorida à esquerda do talão (BG_GRAY)
+- Mensagem de retorno com fundo cinza
+- Tabelas e relatórios com cabeçalhos coloridos
+- Mensagens de erro coloridas
+- Confirmação de ações com prompts customizados
+
+**Exemplo real do programa:**
+```cpp
+cout << BG_GRAY << FG_BLACK << MARGEM << FUNDO_BRANCO << TEXTO_PRETO << linhaTalão << RESET << std::endl;
+```
+**Detalhamento:**
+- `BG_GRAY << FG_BLACK << MARGEM`: Imprime a margem à esquerda do talão com fundo cinza.
+- `FUNDO_BRANCO << TEXTO_PRETO << linhaTalão`: Imprime o conteúdo do talão com fundo branco e texto preto.
+- `RESET`: Restaura as cores padrão após cada linha.
+
+**Resumo:**
+Esses padrões garantem uma experiência visual consistente e profissional.
+
+**Comentários Didáticos:**
+- O uso de cor e margem melhora a usabilidade e o aspecto visual do sistema.
+
+------------------------------
+ESTRUTURAS E MÉTODOS NÃO DETALHADOS
+------------------------------
+
+**Exemplo real do programa:**
+```cpp
+struct ItemVenda {
+    int numeroLinha;
+    string nomeProduto;
+    int quantidade;
+    double precoUnitario;
+    double precoSemIVA;
+    double iva;
+    double totalComIVA;
+    double precoCusto;
+};
+```
+**Detalhamento:**
+- `numeroLinha`: Número da linha do item no talão.
+- `nomeProduto`: Nome do produto vendido.
+- `quantidade`: Quantidade vendida.
+- `precoUnitario`: Preço unitário do produto.
+- `precoSemIVA`: Preço sem imposto.
+- `iva`: Valor do imposto.
+- `totalComIVA`: Total do item com imposto.
+- `precoCusto`: Preço de custo do produto.
+
+**Resumo:**
+Essas estruturas e métodos complementam as funcionalidades principais, permitindo controle detalhado de vendas, estoque e relatórios.
+
+**Comentários Didáticos:**
+- Documentar todas as estruturas e métodos facilita o entendimento e a evolução do sistema.
+
 FIM DO DOCUMENTO
 ------------------------------ 
