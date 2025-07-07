@@ -100,6 +100,13 @@ void desenharLinhaHorizontal(const string& inicio, const string& fim, size_t lar
     cout << BOLD << MARGEM << inicio << linha_str << fim << RESET << endl;
 }
 
+void desenharLinhaHorizontalVenda(const string& inicio, const string& fim, size_t largura) {
+    string linha_str;
+    for (size_t i = 0; i < largura; ++i) {
+        linha_str += "-";
+    }
+    cout << BOLD << MARGEM << inicio << linha_str << fim << RESET << endl;
+}
 
 string repetir(const string& s, size_t n) {
     string r;
@@ -347,10 +354,47 @@ string centroExato(const string& texto, int largura) {
     return string(esq, ' ') + t + string(dir, ' ');
 }
 
+int lerIDPositivo(const std::string& mensagem, bool suprimirErro) {
+    int valor;
     std::string input;
     while (true) {
+        std::cout << BG_GRAY << FG_BLUE << mensagem << std::flush;
         std::getline(std::cin, input);
         std::cout << RESET;
+        std::istringstream iss(input);
+        if ((iss >> valor) && valor > 0) {
+            char extra;
+            if (!(iss >> extra)) {
+                return valor;
+            }
         }
+        if (!suprimirErro) {
+            std::cout << std::endl;
+            std::cout << BG_BLUE << RED << MARGEM << "ID invalido. Digite um numero inteiro positivo." << RESET << std::endl;
+        }
+    }
+}
+
+void desenharNALATA() {
+    const int largura_terminal = 80; // ajuste conforme necessário
+    const char* FG_DARK_RED = "\033[38;5;208m";
+    //const char* BG_BLUE = "\033[44m";
+    string banner = R"(
+    )           (                                
+ ( /(   (       )\ )    (       *   )    (      
+ )\())  )\     (()/(    )\    ` )  /(    )\     
+((_)\((((_)(    /(_))((((_)(   ( )(_))((((_)(   
+ _((_) 5c _ )\  (_))   )\ _ )\ (_(_())  )\ _ )\  
+| \| |(_)_\(_) | |    (_)_\(_)|_   _|  (_)_\(_) 
+| .` | / _ \   | |__   / _ \    | |     / _ \   
+|_|\_|/_/ \_\  |____| /_/ \_\   |_|    /_/ \_\  
+                                                
+)";
+    istringstream iss(banner);
+    string linha;
+    while (getline(iss, linha)) {
+        int espacos = (largura_terminal - (int)linha.length());
+        if (espacos < 0) espacos = 0;
+        cout << BG_BLUE << FG_DARK_RED << string(espacos / 2, ' ') << linha << RESET << endl;
     }
 }
