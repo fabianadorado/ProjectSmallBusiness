@@ -315,9 +315,12 @@ std::string trim(const std::string& str) {
 }
 
 void preencherTela(const std::string& bgColor, const std::string& fgColor, int linhas, int colunas) {
-    for (int i = 0; i < linhas; ++i)
-        std::cout << bgColor << fgColor << std::string(colunas, ' ') << RESET << std::endl;
-    std::cout << "\033[" << linhas << "A";
+    // Preenche mais linhas e colunas para garantir cobertura total em terminais grandes
+    int linhasMax = std::max(linhas, 500); // ajuste conforme necessário
+    int colunasMax = std::max(colunas, 200); // ajuste conforme necessário
+    for (int i = 0; i < linhasMax; ++i)
+        std::cout << bgColor << fgColor << std::string(colunasMax, ' ') << RESET << std::endl;
+    std::cout << "\033[" << linhasMax << "A";
     std::cout << bgColor << fgColor;
 }
 
@@ -370,7 +373,7 @@ int lerIDPositivo(const std::string& mensagem, bool suprimirErro) {
         }
         if (!suprimirErro) {
             std::cout << std::endl;
-            std::cout << BG_BLUE << RED << MARGEM << "ID invalido. Digite um numero inteiro positivo." << RESET << std::endl;
+            std::cout << BG_GRAY << RED << MARGEM << "ID invalido. Digite um numero inteiro positivo." << RESET << std::endl;
         }
     }
 }

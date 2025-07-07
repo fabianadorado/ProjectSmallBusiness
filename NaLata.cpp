@@ -56,6 +56,7 @@ int main()
                     cin.clear();
                     cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                     do {
+                        system("cls");
                         preencherTela(BG_GRAY, FG_BLUE);
                         cout << BG_GRAY << FG_BLUE << std::string(MARGEM) << "REGISTO DE PRODUTO" << RESET << endl;
                         cout << endl;

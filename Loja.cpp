@@ -599,7 +599,7 @@ void Loja::efetuarVenda() {
     novaVenda.finalizarVenda(valorEntregue);
                 valorValido = true;
             } catch (const std::invalid_argument& e) {
-                cout << endl << RED << "Erro: " << e.what() << RESET << endl;
+                cout << endl << RED << std::string(MARGEM )<< "Erro: " << e.what() << RESET << endl;
                 // Repete o loop para pedir o valor novamente
             }
         }
