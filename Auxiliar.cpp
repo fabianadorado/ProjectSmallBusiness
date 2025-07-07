@@ -13,6 +13,8 @@
 #include <locale>
 #include <codecvt>
 #include <regex>
+#include <string>
+
 
 using namespace std;
 
@@ -23,8 +25,12 @@ const char* GREEN = "\033[38;5;22m";
 const char* YELLOW = "\033[38;5;3m";
 const char* CYAN = "\033[36m";
 const char* BOLD = "\033[1m";
+const char* FG_BLACK = "\033[30m";
+const std::string FUNDO_BRANCO = "\033[47m";
+const std::string TEXTO_PRETO = "\033[30m";
 #define BG_GRAY "\033[100m"
 #define FG_BLUE "\033[34m"
+#define FG_BRIGHT_WHITE "\033[97m"
 
 int lernumero(const string& mensagem) {
     int valor;
@@ -53,7 +59,7 @@ double lerFloatPositivo(const string& mensagem) {
             cout << mensagem;
             string input;
             getline(cin, input);
-            input = normalizarDecimal(input);
+            replace(input.begin(), input.end(), ',', '.');
             istringstream iss(input);
             if (iss >> valor && valor >= 0.0f) {
                 char extra;
@@ -94,7 +100,6 @@ void desenharLinhaHorizontal(const string& inicio, const string& fim, size_t lar
     cout << BOLD << MARGEM << inicio << linha_str << fim << RESET << endl;
 }
 
-// Função desenharLinhaHorizontalVenda removida - usar apenas desenharLinhaHorizontal()
 
 string repetir(const string& s, size_t n) {
     string r;
@@ -124,45 +129,48 @@ string removerPontuacao(const string& str) {
 }
 
 int mostrarMenu(const string& titulo, const vector<string>& opcoes) {
-    // system("cls");
-    // preencherTela(BG_BLUE, FG_GRAY_MEDIUM);
-    // Exibe o desenho da lata apenas no menu principal
-    if (titulo == "MENU PRINCIPAL") {
-        // (desenho removido)
-    }
-    // Calcula largura da caixa
     size_t largura = max<size_t>(titulo.length(), 40);
     for (const auto& op : opcoes) {
         string linha = "X - " + op;
         if (linha.length() > largura) largura = linha.length();
     }
     largura += 8;
-    // Topo
-    std::cout << BG_BLUE << FG_GRAY_MEDIUM << "\n" << MARGEM << "+" << string(largura, '-') << "+\n";
-    // Título centralizado
-    size_t espacoEsq = (largura - titulo.length()) / 2;
-    size_t espacoDir = largura - titulo.length() - espacoEsq;
-    std::cout << BG_BLUE << FG_GRAY_MEDIUM << MARGEM << "|" << string(espacoEsq, ' ') << titulo << string(espacoDir, ' ') << "|\n";
-    std::cout << BG_BLUE << FG_GRAY_MEDIUM << MARGEM << "+" << string(largura, '-') << "+\n";
-    // Opções
-    for (size_t i = 0; i < opcoes.size(); ++i) {
-        string texto = to_string(i + 1) + " - " + opcoes[i];
-        size_t espaco = largura - texto.length();
-        std::cout << BG_BLUE << FG_GRAY_MEDIUM << MARGEM << "| " << texto << string(espaco - 1, ' ') << "|\n";
-    }
-    std::cout << BG_BLUE << FG_GRAY_MEDIUM << MARGEM << "+" << string(largura, '-') << "+\n";
-    // Frase de escolha com fundo azul e letras cinza
-    std::cout << BG_BLUE << FG_GRAY_MEDIUM << "\n" << MARGEM << "Escolha uma opcao: ";
-    std::cout << BG_BLUE;
-    int opcao = 0;
-    std::string input;
-    std::getline(std::cin, input);
-    std::istringstream iss(input);
-    if (!(iss >> opcao)) {
-        opcao = -1; // Valor impossível para forçar erro
-    }
-    std::cout << RESET;
-    return opcao;
+    int opcao = -1;
+    bool primeiraTentativa = true;
+    do {
+        system("cls");
+        preencherTela(BG_BLUE, FG_BRIGHT_WHITE);
+        desenharNALATA();
+        // Topo
+        cout << BG_BLUE << FG_GRAY_MEDIUM << "\n" << MARGEM << "+" << string(largura, '-') << "+" << RESET << "\n";
+        // Título centralizado
+        size_t espacoEsq = (largura - titulo.length()) / 2;
+        size_t espacoDir = largura - titulo.length() - espacoEsq;
+        cout << BG_BLUE << FG_GRAY_MEDIUM << MARGEM << "|" << string(espacoEsq, ' ') << titulo << string(espacoDir, ' ') << "|" << RESET << "\n";
+        cout << BG_BLUE << FG_GRAY_MEDIUM << MARGEM << "+" << string(largura, '-') << "+" << RESET << "\n";
+        // Opções
+        for (size_t i = 0; i < opcoes.size(); ++i) {
+            string texto = to_string(i + 1) + " - " + opcoes[i];
+            size_t espaco = largura - texto.length();
+            cout << BG_BLUE << FG_GRAY_MEDIUM << MARGEM << "| " << texto << string(espaco - 1, ' ') << "|" << RESET << "\n";
+        }
+        cout << BG_BLUE << FG_GRAY_MEDIUM << MARGEM << "+" << string(largura, '-') << "+" << RESET << "\n";
+        cout << BG_BLUE << FG_GRAY_MEDIUM << "\n" << MARGEM << "Escolha uma opcao: " << BG_BLUE << FG_GRAY_MEDIUM;
+        string input;
+        getline(cin, input);
+        cout << RESET;
+        istringstream iss(input);
+        if ((iss >> opcao) && opcao > 0 && opcao <= (int)opcoes.size()) {
+            char extra;
+            if (!(iss >> extra)) {
+                return opcao;
+            }
+        }
+        if (!primeiraTentativa) {
+            cout << BG_BLUE << RED << MARGEM << "Opcao invalida. Digite um numero entre 1 e " << opcoes.size() << "." << RESET << endl;
+        }
+        primeiraTentativa = false;
+    } while (true);
 }
 
 bool arquivoExiste(const string& nomeArquivo) {
@@ -185,7 +193,7 @@ void imprimirLinhaInterna(const string& margem, int largura, const string& conte
     if (conteudoAjustado.length() > static_cast<size_t>(largura - 2)) {
         conteudoAjustado = conteudoAjustado.substr(0, largura - 2);
     }
-    int espacos = static_cast<int>(largura - 2 - conteudoAjustado.length());
+    int espacos = largura - 2 - conteudoAjustado.length();
     if (espacos < 0) espacos = 0;
     cout << margem << "|" << corFundo << corTexto << conteudoAjustado << string(espacos, ' ') << reset << "|" << endl;
 }
@@ -242,9 +250,7 @@ string centro(const string& texto, int largura) {
     return string(esq, ' ') + t + string(dir, ' ');
 }
 
-// Função desejaContinuar removida - usar apenas confirmarAcao()
-
-bool confirmarAcao(const std::string& mensagem) {
+bool desejaContinuar(const std::string& mensagem) {
     std::string input;
     while (true) {
         std::cout << BG_GRAY << FG_BLUE << std::string(MARGEM) << mensagem << " (s/n): " << RESET;
@@ -261,11 +267,21 @@ bool confirmarAcao(const std::string& mensagem) {
     }
 }
 
-// Função auxiliar para normalizar entrada decimal (substituir vírgula por ponto)
-string normalizarDecimal(const string& input) {
-    string resultado = input;
-    std::replace(resultado.begin(), resultado.end(), ',', '.');
-    return resultado;
+bool confirmarAcao(const std::string& mensagem) {
+    std::string input;
+    while (true) {
+        std::cout << BG_GRAY << FG_BLUE << std::string(MARGEM) << mensagem << " (s/n): " << RESET;
+        std::cout << BG_GRAY << FG_BLUE;
+        std::getline(std::cin, input);
+        std::cout << RESET;
+        if (input.length() == 1 && (input[0] == 's' || input[0] == 'S')) {
+            return true;
+        } else if (input.length() == 1 && (input[0] == 'n' || input[0] == 'N')) {
+            return false;
+        } else {
+            std::cout << BG_GRAY << RED << MARGEM << "Entrada invalida. Digite 's' para sim ou 'n' para nao." << RESET << std::endl;
+        }
+    }
 }
 
 Produto* encontrarProdutoPorNome(const std::string& nome, std::vector<Produto>& produtos) {
@@ -309,52 +325,32 @@ string alinhar(const string& texto, int largura) {
 
 void imprimirCabecalhoDetalhadoTabela(const std::string& margem, int wProd, int wQtd, int wUnit, int wTotal, int wCusto, int wLucro) {
     std::cout << BG_GRAY << FG_BLUE << margem
-        << "|" << centro("NOME DO PRODUTO", wProd)
-        << "|" << centro("QTD", wQtd)
-        << "|" << centro("PRECO UNIT.", wUnit)
-        << "|" << centro("TOTAL C/IVA", wTotal)
-        << "|" << centro("CUSTO", wCusto)
-        << "|" << centro("LUCRO", wLucro)
+        << "|" << centroExato("NOME DO PRODUTO", wProd)
+        << "|" << centroExato("QTD", wQtd)
+        << "|" << centroExato("PRECO UNIT.", wUnit)
+        << "|" << centroExato("TOTAL C/IVA", wTotal)
+        << "|" << centroExato("CUSTO", wCusto)
+        << "|" << centroExato("LUCRO", wLucro)
         << "|" << RESET << std::endl;
     std::cout << BG_GRAY << FG_BLUE << margem
         << std::string(wProd, '-') << "+" << std::string(wQtd, '-') << "+" << std::string(wUnit, '-') << "+"
         << std::string(wTotal, '-') << "+" << std::string(wCusto, '-') << "+" << std::string(wLucro, '-') << "+"
         << RESET << std::endl;
 }
-
-void desenharNALATA() {
-    const int largura_terminal = 80;
-    const char* arte[] = {
-        "    )           (                               ",
-        " ( /(   (       )\\ )    (       *   )    (      ",
-        " )\\())  )\\     (()/(    )\\    ` )  /(    )\\     ",
-        "((_)\\((((_)(    /(_))((((_)(   ( )(_))((((_)(   ",
-        " _((_)\\ \\ _ )\\  (_))   )\\ _ )\\ (_(_())  )\\ _ )\\  ",
-        "| \\| |(_)_\\(_) | |    (_)_\\(_)|_   _|  (_)_\\(_) ",
-        "| .` | / _ \\   | |__   / _ \\    | |     / _ \\   ",
-        "|_|\\_|/_/ \\_\\  |____| /_/ \\_\\   |_|    /_/ \\_\\  ",
-        "                                                "
-    };
-    cout << BG_BLUE << FG_RED;
-    for (const char* linha : arte) {
-        int espacos = static_cast<int>((largura_terminal - strlen(linha)) / 2);
-        if (espacos < 0) espacos = 0;
-        cout << string(espacos, ' ') << linha << endl;
-    }
-    cout << RESET;
+// Centraliza texto e garante exatamente o tamanho da largura
+string centroExato(const string& texto, int largura) {
+    string t = texto;
+    if ((int)t.length() > largura) t = t.substr(0, largura);
+    int espacos = largura - (int)t.length();
+    int esq = espacos / 2;
+    int dir = espacos - esq;
+    return string(esq, ' ') + t + string(dir, ' ');
 }
 
-int lerIDPositivo(const std::string& mensagem) {
     std::string input;
     while (true) {
-        std::cout << mensagem << BG_GRAY << FG_BLUE << flush;
         std::getline(std::cin, input);
         std::cout << RESET;
-        bool soDigitos = !input.empty() && std::all_of(input.begin(), input.end(), ::isdigit);
-        if (soDigitos) {
-            int id = std::stoi(input);
-            if (id > 0) return id;
         }
-        std::cout << BG_GRAY << RED << MARGEM << "ID inválido. " << RESET << std::endl;
     }
 }

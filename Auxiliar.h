@@ -26,14 +26,10 @@ string toLower(const string& str);
 string toUpper(const string& str);
 
 #define BG_BLUE "\033[44m"
-#define FG_BRIGHT_GRAY "\033[37m"
+#define FG_BRIGHT_GRAY "\033[97m"
 #define BG_GRAY "\033[100m"
 #define FG_BLUE "\033[34m"
 #define FG_GRAY_MEDIUM "\033[38;5;245m"
-#define FG_RED "\033[31m"
-#define FG_BLACK "\033[30m"
-#define FUNDO_BRANCO "\033[47m"
-#define TEXTO_PRETO "\033[30m"
 
 void limparBuffer();
 void desenharLinhaHorizontal(const string& inicio, const string& fim, size_t largura);
@@ -76,8 +72,6 @@ void imprimirCabecalhoDetalhadoTabela(const std::string& margem, int wProd, int 
 
 string centroExato(const string& texto, int largura);
 
-string normalizarDecimal(const string& input);
+int lerIDPositivo(const std::string& mensagem, bool suprimirErro = false);
 
 void desenharNALATA();
-
-int lerIDPositivo(const std::string& mensagem);

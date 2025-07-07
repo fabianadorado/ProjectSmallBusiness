@@ -1,4 +1,4 @@
-Resumo de Melhorias e Correções - Projeto Small Business
+Resumo de Melhorias e Correcaoes - Projeto Small Business
 =======================================================
 
 1. Configuração de Locale e UTF-8

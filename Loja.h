@@ -23,7 +23,7 @@ private:
     int proximaPosicaoVenda;
     const int MAX_VENDAS = 100;
 
-    // Métodos de persistência privados
+    // Metodos de persistencia privados
     bool salvarClientes(const string& caminho);
     bool salvarProdutos(const string& caminho);
     bool salvarVendas(const string& caminho);

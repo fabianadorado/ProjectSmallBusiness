@@ -37,7 +37,7 @@ public:
     void setMorada(string morada);
     void setDataNascimento(const string& data);
 
-    // Outros métodos
+    // Outros metodos
     void liberarId();
     void adicionarCompra(double valor);
     string toString() const;

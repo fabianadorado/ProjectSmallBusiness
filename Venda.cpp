@@ -124,11 +124,11 @@ int Venda::getIdCliente() const
 
 void Venda::imprimirTalao(const std::string& margemCentral) const {
     const int LARGURA = 60;
-    // Função utilitária para imprimir qualquer linha do talão com fundo branco e texto preto, e margem cinza
+    // Funcao utilitaria para imprimir qualquer linha do talao com fundo branco e texto preto, e margem cinza
     auto printLinhaTalao = [&](const std::string& texto) {
         // Imprime a margem com fundo cinza
         std::cout << BG_GRAY << FG_BLACK << margemCentral << RESET;
-        // Imprime o talão com fundo branco
+        // Imprime o talao com fundo branco
         std::cout << FUNDO_BRANCO << TEXTO_PRETO << texto << RESET << std::endl;
     };
     auto linhaBranca = [&](char c) {
@@ -152,7 +152,7 @@ void Venda::imprimirTalao(const std::string& margemCentral) const {
         to_string(tempoLocal.tm_mon + 1) + "/" +
         to_string(tempoLocal.tm_year + 1900);
 
-    // Montar o talão no vetor
+    // Montar o talao no vetor
     linhaBranca('=');
     linhaTexto("TALAO DE COMPRA", true);
     linhaBranca('=');

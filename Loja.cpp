@@ -45,7 +45,7 @@ void Loja::adicionarStock(int idProduto, int quantidade)
             return;
         }
     }
-    cout << RED << "Produto nao encontrado.\n" << RESET;
+    cout << BG_GRAY << RED << "Produto nao encontrado.\n" << RESET;
 }
 
 bool Loja::eliminarProduto(int idProduto)
@@ -63,7 +63,7 @@ bool Loja::eliminarProduto(int idProduto)
             return true;
         }
     }
-    cout << RED << "Produto nao encontrado.\n" << RESET;
+    cout << BG_GRAY << RED << "Produto nao encontrado.\n" << RESET;
     return false;
 }
 
@@ -181,7 +181,7 @@ void Loja::eliminarCliente(int idCliente)
             return;
         }
     }
-    cout << std::string(MARGEM) << RED << "Cliente nao encontrado." << RESET << endl;
+    cout << BG_GRAY << std::string(MARGEM) << RED << "Cliente nao encontrado." << RESET << endl;
 }
 
 void Loja::alterarNomeCliente(int idCliente, const string& novoNome) 
@@ -196,7 +196,7 @@ void Loja::alterarNomeCliente(int idCliente, const string& novoNome)
             return;
         }
     }
-    cout << std::string(MARGEM)<< RED << "Cliente nao encontrado.\n" << RESET;
+    cout << BG_GRAY << std::string(MARGEM)<< RED << "Cliente nao encontrado.\n" << RESET;
 }
 bool Loja::carregarClientes(const string& caminho) {
     if (!arquivoExiste(caminho)) {
@@ -287,7 +287,7 @@ void Loja::listarClientes() const {
     const int larguraTabela = wId + wNome + wTel + wMorada + 5; // 5 pipes
     const int larguraTotal = larguraTabela;
 
-    
+
     // Título centralizado perfeitamente com a tabela
     cout << BG_GRAY << FG_BLUE << std::string(MARGEM) << "+" << string(larguraTabela - 2, '=') << "+" << RESET << endl;
     cout << BG_GRAY << FG_BLUE << std::string(MARGEM) << "|" << centro("LISTA DE CLIENTES", larguraTabela - 2) << "|" << RESET << endl;
@@ -331,9 +331,12 @@ void Loja::efetuarVenda() {
     int idCliente;
     Cliente* clienteEncontrado = nullptr;
     bool tentarNovamenteCliente = true;
+
+    cout << BG_GRAY << FG_BLUE << std::string(MARGEM) << "REALIZAR VENDA" << RESET << endl << endl;
+    // std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Limpa buffer só uma vez antes do loop (REMOVIDO)
+
     while (tentarNovamenteCliente) {
-        cout << BG_GRAY << FG_BLUE << std::string(MARGEM) << "REALIZAR VENDA" << RESET << endl << endl;
-        idCliente = lerIDPositivo(std::string(BG_GRAY) + std::string(FG_BLUE) + std::string(MARGEM) + "ID do cliente: " + RESET);
+        idCliente = lerIDPositivo(std::string(BG_GRAY) + std::string(FG_BLUE) + std::string(MARGEM) + "ID do cliente: ");
         clienteEncontrado = nullptr;
         for (auto& c : clientes) {
             if (c.getIdCliente() == idCliente) {
@@ -342,14 +345,14 @@ void Loja::efetuarVenda() {
             }
         }
         if (!clienteEncontrado) {
-            cout << BG_GRAY << RED << std::string(MARGEM) << "ID inválido. Digite apenas números de um cliente existente." << RESET << endl;
+            cout << BG_GRAY << RED << std::string(MARGEM) << "ID invalido. Digite apenas numeros de um cliente existente." << RESET << endl;
             string resposta;
             while (true) {
                 cout << BG_GRAY << FG_BLUE << std::string(MARGEM) << "Deseja tentar novamente? (s/n): ";
                 getline(cin, resposta);
                 if (!resposta.empty() && (resposta[0] == 's' || resposta[0] == 'S')) {
+                    std::cout << std::endl; // Espaço visual antes do novo prompt (opcional)
                     tentarNovamenteCliente = true;
-                    system("cls");
                     break;
                 } else if (!resposta.empty() && (resposta[0] == 'n' || resposta[0] == 'N')) {
                     tentarNovamenteCliente = false;
@@ -363,7 +366,7 @@ void Loja::efetuarVenda() {
         }
     }
     if (!clienteEncontrado) {
-        cout << std::string(MARGEM) << RED << "Operação de venda cancelada." << RESET << endl;
+        cout << std::string(MARGEM) << RED << "Operacao de venda cancelada." << RESET << endl;
         return;
     }
 
@@ -389,13 +392,10 @@ void Loja::efetuarVenda() {
         int idProduto;
         bool tentarNovamente = true;
         while (tentarNovamente) {
-            cout << BG_GRAY << FG_BLUE;
-            cout << std::string(MARGEM) << "ID do Produto: ";
-            cin >> idProduto;
-            cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            idProduto = lerIDPositivo(std::string(BG_GRAY) + std::string(FG_BLUE) + std::string(MARGEM) + "ID do Produto: ");
             if (idProduto < 1) {
                 // ID inválido
-                cout << std::string(MARGEM) << RED << "ID inválido." << RESET << endl;
+                cout << std::string(MARGEM) << RED << "ID invalido." << RESET << endl;
             } else {
                 // Procura o produto
                 produtoSelecionado = nullptr;
@@ -406,9 +406,9 @@ void Loja::efetuarVenda() {
                     }
                 }
                 if (!produtoSelecionado) {
-                    cout << std::string(MARGEM) << RED << "Produto inexistente." << RESET << endl;
+                    cout << BG_GRAY << RED << std::string(MARGEM) << "Produto inexistente." << RESET << endl;
                 } else if (produtoSelecionado->getQuantidade() == 0) {
-                    cout << std::string(MARGEM) << RED << "Produto sem estoque. Escolha outro produto." << RESET << endl;
+                    cout << BG_GRAY << std::string(MARGEM) << RED << "Produto sem estoque. Escolha outro produto." << RESET << endl;
                 } else {
                     // Produto válido encontrado
                     break;
@@ -421,6 +421,7 @@ void Loja::efetuarVenda() {
                 cout << std::string(MARGEM) << "Deseja tentar novamente? (s/n): ";
                 getline(cin, resposta);
                 if (!resposta.empty() && (resposta[0] == 's' || resposta[0] == 'S')) {
+                    std::cout << std::endl; // Espaço visual antes do novo prompt (opcional)
                     tentarNovamente = true;
                     break;
                 } else if (!resposta.empty() && (resposta[0] == 'n' || resposta[0] == 'N')) {
@@ -431,11 +432,11 @@ void Loja::efetuarVenda() {
                 }
             }
         }
-        if (!produtoSelecionado) {
-            // Usuário optou por não tentar novamente
+        if (!produtoSelecionado || produtoSelecionado->getQuantidade() == 0) {
+            // Usuário optou por não tentar novamente ou produto sem estoque
             break;
         }
-        // Só pede quantidade e adiciona produto se produtoSelecionado for válido
+        // Só pede quantidade e adiciona produto se produtoSelecionado for válido e tem estoque
         int quantidade;
         bool primeiraTentativaQuantidade = true;
         while (true) {
@@ -486,10 +487,26 @@ void Loja::efetuarVenda() {
         cout << std::string(MARGEM) << "1 - Prosseguir para pagamento\n";
         cout << std::string(MARGEM) << "2 - Remover um item\n";
         cout << std::string(MARGEM) << "3 - Cancelar toda a venda\n";
-        cout << std::string(MARGEM) << "Opcao: ";
-        int op;
-        cin >> op;
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        int op = -1;
+        do {
+            system("cls");
+            preencherTela(BG_GRAY, FG_BLUE);
+            mostrarResumoVenda(novaVenda);
+            cout << BG_GRAY << FG_BLUE << std::string(MARGEM) << "O que deseja fazer?" << RESET << endl;
+            cout << BG_GRAY << FG_BLUE << std::string(MARGEM) << "1 - Prosseguir para pagamento" << RESET << endl;
+            cout << BG_GRAY << FG_BLUE << std::string(MARGEM) << "2 - Remover um item" << RESET << endl;
+            cout << BG_GRAY << FG_BLUE << std::string(MARGEM) << "3 - Cancelar toda a venda" << RESET << endl;
+            cout << BG_GRAY << FG_BLUE << std::string(MARGEM) << "Opcao: " << BG_GRAY << FG_BLUE;
+            string input;
+            getline(cin, input);
+            cout << RESET;
+            istringstream iss(input);
+            if ((iss >> op) && (op >= 1 && op <= 3)) {
+                char extra;
+                if (!(iss >> extra)) break;
+            }
+            // Se inválido, repete o loop e redesenha o menu
+        } while (true);
         if (op == 1) {
             break;
         } else if (op == 2) {
@@ -498,30 +515,45 @@ void Loja::efetuarVenda() {
                 continue;
             }
             int linha;
-            cout << BG_GRAY << FG_BLUE;
-            cout << std::string(MARGEM) << "Digite o numero do item a remover: ";
-            cin >> linha;
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            // Antes de remover, repor estoque do item
-            const auto& itensVenda = novaVenda.getItens();
-            auto it = std::find_if(itensVenda.begin(), itensVenda.end(), [linha](const ItemVenda& item) {
-                return item.numeroLinha == linha;
-            });
-            if (it != itensVenda.end()) {
-                reporEstoqueItem(*it);
+            while (true) {
+                linha = lerIDPositivo(std::string(MARGEM) + "Digite o numero do item a remover: ", true);
+                // Verifica se o item existe
+                const auto& itensVenda = novaVenda.getItens();
+                auto it = std::find_if(itensVenda.begin(), itensVenda.end(), [linha](const ItemVenda& item) {
+                    return item.numeroLinha == linha;
+                });
+                if (it != itensVenda.end()) {
+                    reporEstoqueItem(*it);
+                    novaVenda.removerItemPorLinha(linha);
+                    if (novaVenda.getItens().empty()) {
+                        cout << std::string(MARGEM) << RED << "Todos os itens foram removidos. Venda cancelada automaticamente." << RESET << endl;
+                        return;
+                    }
+                    // Atualiza tela e resumo após remoção de item
+                    mostrarResumoVenda(novaVenda);
+                    break;
+                }
+                // Se não encontrou, apenas repete o prompt sem mostrar erro
             }
-            novaVenda.removerItemPorLinha(linha);
-            if (novaVenda.getItens().empty()) {
-                cout << std::string(MARGEM) << RED << "Todos os itens foram removidos. Venda cancelada automaticamente." << RESET << endl;
-                return;
-            }
-            // Atualiza tela e resumo após remoção de item
-            mostrarResumoVenda(novaVenda);
         } else if (op == 3) {
-            // Antes de cancelar, repor estoque de todos os itens
-            reporEstoqueVenda(novaVenda);
-            novaVenda.cancelarVenda();
-            return;
+            // Confirmação antes de cancelar
+            string resposta;
+            while (true) {
+                cout << BG_GRAY << FG_BLUE << std::string(MARGEM) << "Tem certeza que deseja cancelar toda a venda? (s/n): " << BG_GRAY << FG_BLUE;
+                getline(cin, resposta);
+                cout << RESET;
+                if (!resposta.empty() && (resposta[0] == 's' || resposta[0] == 'S')) {
+                    reporEstoqueVenda(novaVenda);
+                    novaVenda.cancelarVenda();
+                    return;
+                } else if (!resposta.empty() && (resposta[0] == 'n' || resposta[0] == 'N')) {
+                    system("cls");
+                    mostrarResumoVenda(novaVenda);
+                    break; // Volta ao menu de opções
+                } else {
+                    cout << std::string(MARGEM) << RED << "Entrada invalida. Digite 's' para sim ou 'n' para nao." << RESET << endl;
+                }
+            }
         } else {
             cout << std::string(MARGEM) << RED << "Opção invalida!" << RESET << endl;
         }
@@ -555,7 +587,7 @@ void Loja::efetuarVenda() {
                 cout << BG_GRAY << FG_BLUE << std::string(MARGEM) << "Valor entregue pelo cliente: " << BG_GRAY << flush;
                 string valorStr;
                 getline(cin, valorStr);
-                replace(valorStr.begin(), valorStr.end(), ',', '.');
+                std::replace(valorStr.begin(), valorStr.end(), ',', '.');
                 istringstream issValor(valorStr);
                 if (issValor >> valorEntregue && valorEntregue >= 0.0) {
                     char extra;
@@ -578,6 +610,9 @@ void Loja::efetuarVenda() {
     cout << RESET;
     novaVenda.imprimirTalao(MARGEM);
     cout << RESET;
+
+    cout << BG_GRAY << FG_BLUE << std::string(MARGEM) << "Pressione Enter para continuar..." << RESET;
+    cin.get();
 }
 
 void Loja::mostrarResumoVenda(const Venda& venda) const {
@@ -797,7 +832,7 @@ bool Loja::carregarProdutos(const string& caminho) {
                 precoStr.erase(0, precoStr.find_first_not_of(" \n\r\t"));
                 
                 // Normaliza entrada decimal
-                precoStr = normalizarDecimal(precoStr);
+                std::replace(precoStr.begin(), precoStr.end(), ',', '.');
 
                 int id = stoi(idStr);
                 int quantidade = stoi(qtdStr);

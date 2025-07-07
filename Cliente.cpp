@@ -10,15 +10,15 @@ using namespace std;
 int Cliente::proximoCliente = 1;
 vector<int> Cliente::idsDisponiveis;
 
-// Construtor padrão
+// Construtor padrao
 Cliente::Cliente()
     : idCliente(proximoCliente++), nome(""), telefone(""), morada(""), dataNascimento(""), totalComprado(0.0) {
 }
 
-// Construtor com parâmetros
+// Construtor com parametros
 Cliente::Cliente(string nome, string telefone, string morada, string dataNascimento, double totalComprado)
     : idCliente(proximoCliente++), nome(nome), telefone(telefone), morada(morada), dataNascimento(dataNascimento), totalComprado(totalComprado) {
-    // Verifica se há IDs disponíveis para reutilização
+    // Verifica se ha IDs disponiveis para reutilizacao
     if (!idsDisponiveis.empty()) {
         idCliente = idsDisponiveis.back();
         idsDisponiveis.pop_back();
@@ -83,7 +83,7 @@ void Cliente::setDataNascimento(const string& data) {
     dataNascimento = data;
 }
 
-// Método para liberar ID quando cliente é removido
+// Metodo para liberar ID quando cliente e removido
 void Cliente::liberarId() {
     idsDisponiveis.push_back(idCliente);
     sort(idsDisponiveis.begin(), idsDisponiveis.end());
